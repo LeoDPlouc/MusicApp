@@ -10,7 +10,7 @@ namespace MusicApp.Beans
     class Artist
     {
         [PrimaryKey, AutoIncrement]
-        public int Id { get; }
-        public string Name;
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -12,15 +12,16 @@ namespace MusicApp.Beans
     class Song
     {
         [PrimaryKey, AutoIncrement]
-        public int Id { get; }
-        public string Title;
-        public int N;
-        public TimeSpan Duration;
-        public bool Like;
-        public bool Heart;
-        public Image Cover;
-        public DateTime Date;
-        public Artist Artist;
-        public Album Album;
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public int N { get; set; }
+        public TimeSpan Duration { get; set; }
+        public bool Like { get; set; }
+        public bool Heart { get; set; }
+        public DateTime Date { get; set; }
+        [Ignore]
+        public Artist Artist { get; set; }
+        [Ignore]
+        public Album Album { get; set; }
     }
 }

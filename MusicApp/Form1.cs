@@ -1,4 +1,5 @@
-﻿using SQLite.Net;
+﻿using MusicApp.Beans;
+using SQLite.Net;
 using SQLite.Net.Platform.Win32;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,14 @@ namespace MusicApp
         public Form1()
         {
             InitializeComponent();
+            Load += Form1_Load;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            connection.CreateTable<Artist>();
+            connection.CreateTable<Album>();
+            connection.CreateTable<Song>();
         }
     }
 }
