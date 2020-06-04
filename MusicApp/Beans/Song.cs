@@ -18,10 +18,10 @@ namespace MusicApp.Beans
         public TimeSpan Duration { get; set; }
         public bool Like { get; set; }
         public bool Heart { get; set; }
-        public DateTime Date { get; set; }
         [Ignore]
         public Artist Artist { get; set; }
         [Ignore]
         public Album Album { get; set; }
+        public string Path { get; set; }
     }
 }

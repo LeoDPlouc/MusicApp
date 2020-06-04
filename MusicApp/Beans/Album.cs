@@ -21,5 +21,6 @@ namespace MusicApp.Beans
         public string[] Tags { get; set; }
         [Ignore]
         public Image Cover { get; set; }
+        public int Year { get; set; }
     }
 }
