@@ -8,5 +8,6 @@ namespace MusicApp.Beans
 {
     class Artist
     {
+        public string Name;
     }
 }
