@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SQLite.Net;
+using SQLite.Net.Platform.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,6 +14,10 @@ namespace MusicApp
 {
     public partial class Form1 : Form
     {
+        static string _dbPath = "db.db3";
+        static SQLitePlatformWin32 _platform = new SQLitePlatformWin32();
+        SQLiteConnection connection = new SQLiteConnection(_platform, _dbPath);
+
         public Form1()
         {
             InitializeComponent();

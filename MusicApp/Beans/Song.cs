@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite.Net.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace MusicApp.Beans
 {
     class Song
     {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; }
         public string Title;
         public int N;
         public TimeSpan Duration;
