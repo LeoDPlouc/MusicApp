@@ -1,6 +1,4 @@
 ﻿using MusicApp.Beans;
-using SQLite.Net;
-using SQLite.Net.Platform.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,26 +8,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using LibVLCSharp.Shared;
+using LibVLCSharp.Forms.Shared;
+using MusicApp.Control;
 
 namespace MusicApp
 {
     public partial class Form1 : Form
     {
-        static string _dbPath = "db.db3";
-        static SQLitePlatformWin32 _platform = new SQLitePlatformWin32();
-        SQLiteConnection connection = new SQLiteConnection(_platform, _dbPath);
+        int playerH = 60;
+
+        Player player;
 
         public Form1()
         {
+            Core.Initialize();
             InitializeComponent();
-            Load += Form1_Load;
+
+            Resize += Form1_Resize;
+
+            BackColor = Color.Black;
+
+            player = new Player() { Height = 50, buttonMarging = 15 };
+            player.InitAudioPlayer();
+
+            Controls.Add(player);
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Form1_Resize(object sender, EventArgs e)
         {
-            connection.CreateTable<Artist>();
-            connection.CreateTable<Album>();
-            connection.CreateTable<Song>();
+            Invalidate();
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            player.Location = new Point(0, DisplayRectangle.Height - playerH);
+            player.Size = new Size(DisplayRectangle.Width, playerH);
         }
     }
 }
