@@ -12,6 +12,7 @@ using System.IO;
 using LibVLCSharp.Shared;
 using LibVLCSharp.Forms.Shared;
 using MusicApp.Control;
+using MusicApp.DB;
 
 namespace MusicApp
 {
@@ -24,6 +25,8 @@ namespace MusicApp
         public Form1()
         {
             Core.Initialize();
+            Music_DataBase.Start();
+
             InitializeComponent();
 
             Resize += Form1_Resize;
@@ -34,6 +37,9 @@ namespace MusicApp
             player.InitAudioPlayer();
 
             Controls.Add(player);
+
+            TextBox t = new TextBox() { Height = 500, Width = 500 };
+            Controls.Add(t);
         }
 
         private void Form1_Resize(object sender, EventArgs e)

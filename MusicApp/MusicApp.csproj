@@ -129,7 +129,10 @@
     <Compile Include="Control\Playlist Button.Designer.cs">
       <DependentUpon>Playlist Button.cs</DependentUpon>
     </Compile>
+    <Compile Include="DB\Album.cs" />
+    <Compile Include="DB\Artist.cs" />
     <Compile Include="DB\Music DataBase.cs" />
+    <Compile Include="DB\Song.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

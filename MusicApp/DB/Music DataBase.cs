@@ -4,12 +4,40 @@ using Microsoft.Data.Sqlite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace MusicApp.DB
 {
-    class Music_DataBase
+    partial class Music_DataBase
     {
-        static string _dbPath = "db.db3";
-        SqliteConnection _connection = new SqliteConnection("Data Source=" + _dbPath);
+        const string DB_PATH = "db.db3";
+        const string CREATE_ARTIST_TABLE_STAT = "create table artist(id integer primary key autoincrement, name string);";
+        const string CREATE_PICTURE_TABLE_STAT = "create table picture(id integer primary key autoincrement, data blob);";
+        const string CREATE_ALBUM_TABLE_STAT = "create table album(id integer primary key autoincrement, title text, artist_id integer references artist(id), tags text, pic_id integer references picture(id), year integer);";
+        const string CREATE_SONG_TABLE_STAT ="create table song(id integer primary key autoincrement, title text, n integer, like boolean, heart boolean, artist_id integer references artist(id), album_id references album(id), path text, pic_id integer references picture(id));";
+
+        static SqliteConnection connection;
+
+        public async static void Start()
+        {
+            connection = new SqliteConnection("Data Source=" + DB_PATH);
+            await connection.OpenAsync();
+            if (!File.Exists(DB_PATH)) Initialize();
+        }
+
+        static void Initialize()
+        {
+            SqliteCommand command = new SqliteCommand(CREATE_ARTIST_TABLE_STAT, connection);
+            command.ExecuteNonQuery();
+
+            command = new SqliteCommand(CREATE_PICTURE_TABLE_STAT, connection);
+            command.ExecuteNonQuery();
+
+            command = new SqliteCommand(CREATE_ALBUM_TABLE_STAT, connection);
+            command.ExecuteNonQuery();
+
+            command = new SqliteCommand(CREATE_SONG_TABLE_STAT, connection);
+            command.ExecuteNonQuery();
+        }
     }
 }

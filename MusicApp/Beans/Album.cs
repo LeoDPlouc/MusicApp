@@ -12,7 +12,6 @@ namespace MusicApp.Beans
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public TimeSpan Duration { get; set; }
         public Artist Artist { get; set; }
         public string[] Tags { get; set; }
         public Image Cover { get; set; }
