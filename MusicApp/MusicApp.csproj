@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="Beans\Album.cs" />
     <Compile Include="Beans\Artist.cs" />
+    <Compile Include="Beans\Picture.cs" />
     <Compile Include="Beans\Song.cs" />
     <Compile Include="Control\Next Button.cs">
       <SubType>UserControl</SubType>
@@ -132,6 +133,7 @@
     <Compile Include="DB\Album.cs" />
     <Compile Include="DB\Artist.cs" />
     <Compile Include="DB\Music DataBase.cs" />
+    <Compile Include="DB\Picture.cs" />
     <Compile Include="DB\Song.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -139,6 +141,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Processing\SongCollector.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

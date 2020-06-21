@@ -20,14 +20,7 @@ namespace MusicApp.Beans
         public bool Heart { get; set; }
         public Artist Artist { get; set; }
         public Album Album { get; set; }
+        public Picture Cover { get; set; }
         public string Path { get; set; }
-
-        public static Song PathToSong(string path)
-        {
-            File file = File.Create(path);
-
-            Song song = new Song {/*Album = file.Tag.Album, Artist = file.Tag.Artist,*/ N = (int)file.Tag.Track, Title = file.Tag.Title, Path = path };
-            return song;
-        }
     }
 }

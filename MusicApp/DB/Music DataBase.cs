@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using LibVLCSharp.Shared;
 
 namespace MusicApp.DB
 {
@@ -18,11 +19,16 @@ namespace MusicApp.DB
 
         static SqliteConnection connection;
 
-        public async static void Start()
+        public static void Start()
         {
+            Core.Initialize();
+
+            bool dbExist = File.Exists(DB_PATH);
+
             connection = new SqliteConnection("Data Source=" + DB_PATH);
-            await connection.OpenAsync();
-            if (!File.Exists(DB_PATH)) Initialize();
+            connection.Open();
+
+            if (!dbExist) Initialize();
         }
 
         static void Initialize()

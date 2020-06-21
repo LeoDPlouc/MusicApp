@@ -10,20 +10,22 @@ namespace MusicApp.DB
 {
     partial class Music_DataBase
     {
-        const string CREATE_PICTURE_STAT = "insert into song(data) values(%data);";
-        const string SELECT_ID_PICTURE_STAT = "select max(id) from picture;";
-        const string EXIST_PICTURE_STAT = "select count(*) from picture where data = %data;";
-        const string UPDATE_PICTURE_STAT = "update picture set data = %data where id =  %id;";
+        const string CREATE_PICTURE_STAT = "insert into picture(data) values(@data);";
+        const string SELECT_LAST_ID_PICTURE_STAT = "select max(id) from picture;";
+        const string EXIST_PICTURE_STAT = "select count(*) from picture where data = @data;";
+        const string UPDATE_PICTURE_STAT = "update picture set data = @data where id =  @id;";
+        const string SELECT_PICTURE_ID_STAT = "select * from picture where id = @id;";
+        const string SELECT_PICTURE_DATA_STAT = "select * from picture where data = @data;";
 
         public static int CreatePicture(Picture picture)
         {
             SqliteCommand command = new SqliteCommand(CREATE_PICTURE_STAT, connection);
 
-            command.Parameters.Add(new SqliteParameter("data", picture.Data));
+            command.Parameters.Add(new SqliteParameter("@data", picture.Data));
 
             command.ExecuteNonQuery();
 
-            command = new SqliteCommand(SELECT_ID_PICTURE_STAT, connection);
+            command = new SqliteCommand(SELECT_LAST_ID_PICTURE_STAT, connection);
 
             var reader = command.ExecuteReader();
 
@@ -51,6 +53,46 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("id", picture.Id));
 
             command.ExecuteNonQuery();
+        }
+        public static List<Picture> SelectPicture(int id)
+        {
+            SqliteCommand command = new SqliteCommand(SELECT_PICTURE_ID_STAT, connection);
+
+            command.Parameters.Add(new SqliteParameter("@id", id));
+
+            var reader = command.ExecuteReader();
+            List<Picture> pictures = new List<Picture>();
+
+            while(reader.Read())
+            {
+                pictures.Add(new Picture
+                {
+                    Id = reader.GetInt32(0),
+                    Data = (byte[])reader.GetValue(1)
+                });
+            }
+
+            return pictures;
+        }
+        public static List<Picture> SelectPicture(byte[] data)
+        {
+            SqliteCommand command = new SqliteCommand(SELECT_PICTURE_DATA_STAT, connection);
+
+            command.Parameters.Add(new SqliteParameter("@data", data));
+
+            var reader = command.ExecuteReader();
+            List<Picture> pictures = new List<Picture>();
+
+            while (reader.Read())
+            {
+                pictures.Add(new Picture
+                {
+                    Id = reader.GetInt32(0),
+                    Data = (byte[])reader.GetValue(1)
+                });
+            }
+
+            return pictures;
         }
     }
 }

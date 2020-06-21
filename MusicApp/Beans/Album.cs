@@ -14,7 +14,7 @@ namespace MusicApp.Beans
         public string Title { get; set; }
         public Artist Artist { get; set; }
         public string[] Tags { get; set; }
-        public Image Cover { get; set; }
+        public Picture Cover { get; set; }
         public int Year { get; set; }
     }
 }
