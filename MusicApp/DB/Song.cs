@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using Xamarin.Forms;
+using System.Windows.Forms;
 
 namespace MusicApp.DB
 {
@@ -15,7 +17,8 @@ namespace MusicApp.DB
         const string EXIST_SONG_STAT = "select count(*) from song where title = @title, album_id = @albumid, artist_id = @artistid;";
         const string EXIST_SONG_PATH_STAT = "select count(*) from song where path = @path;";
         const string UPDATE_SONG_STAT = "update song set title = @title, n = @n, like = @like, heart = @heart, artist_id = @artistid, album_id = @albumid, path = @path, pic_id = @picid where id =  @id;";
-
+        const string SEARCH_SONG_TITLE_STAT = "select * from song where title like @arg;";
+        const string LIST_SONG_STAT = "select * from song;";
         public static int CreateSong(Song song)
         {
             SqliteCommand command = new SqliteCommand(CREATE_SONG_STAT, connection);
@@ -80,6 +83,66 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("id", song.Id));
 
             command.ExecuteNonQuery();
+        }
+
+        public static List<Song> SearchTitle(string arg)
+        {
+            SqliteCommand command = new SqliteCommand(SEARCH_SONG_TITLE_STAT, connection);
+
+            command.Parameters.Add(new SqliteParameter("arg", arg));
+
+            List<Song> songs = new List<Song>();
+            var reader = command.ExecuteReader();
+            while(reader.Read())
+            {
+                Song song = new Song()
+                {
+                    Album = SelectAlbum(reader.GetInt32(6)).First(),
+                    Artist = SelectArtist(reader.GetInt32(5)).First(),
+                    Cover = SelectPicture(reader.GetInt32(8)).First(),
+                    Heart = reader.GetBoolean(4),
+                    Id = reader.GetInt32(0),
+                    Like = reader.GetBoolean(3),
+                    N = reader.GetInt32(2),
+                    Path = reader.GetString(7),
+                    Title = reader.GetString(1)
+                };
+                songs.Add(song);
+            }
+
+            reader.Close();
+            return songs;
+        }
+        public static List<Song> ListSongs()
+        {
+            SqliteCommand command = new SqliteCommand(LIST_SONG_STAT, connection);
+
+            List<Song> songs = new List<Song>();
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                songs.Add(ReaderToSong(reader));
+            }
+
+            reader.Close();
+            return songs;
+        }
+
+        private static Song ReaderToSong(SqliteDataReader reader)
+        {
+            Song song = new Song()
+            {
+                Album = SelectAlbum(reader.GetInt32(6)).First(),
+                Artist = SelectArtist(reader.GetInt32(5)).First(),
+                Cover = SelectPicture(reader.GetInt32(8)).First(),
+                Heart = reader.GetBoolean(4),
+                Id = reader.GetInt32(0),
+                Like = reader.GetBoolean(3),
+                N = reader.GetInt32(2),
+                Path = reader.GetString(7),
+                Title = reader.GetString(1)
+            };
+            return song;
         }
     }
 }

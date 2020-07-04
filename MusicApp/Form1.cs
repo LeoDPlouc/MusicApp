@@ -20,8 +20,10 @@ namespace MusicApp
     public partial class Form1 : Form
     {
         int playerH = 60;
+        int margin = 15;
 
         Player player;
+        Main main;
 
         public Form1()
         {
@@ -33,10 +35,14 @@ namespace MusicApp
 
             BackColor = Color.Black;
 
-            player = new Player() { Height = 50, buttonMarging = 15 };
+            player = new Player() { buttonMarging = margin };
             player.InitAudioPlayer();
 
             Controls.Add(player);
+
+            main = new Main();
+            Controls.Add(main);
+            main.SongDoubleClick += Main_SongDoubleClick;
 
             TextBox t = new TextBox() { Height = 500, Width = 500 };
             Controls.Add(t);
@@ -44,6 +50,14 @@ namespace MusicApp
             SongCollector.Collect();
 
             t.Text = "done";
+            BackgroundWorker worker = new BackgroundWorker();
+
+
+        }
+
+        private void Main_SongDoubleClick(object sender, SongDoubleClickEventArgs e)
+        {
+            player.AddMedia(e.Song.Path);
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -55,6 +69,9 @@ namespace MusicApp
         {
             player.Location = new Point(0, DisplayRectangle.Height - playerH);
             player.Size = new Size(DisplayRectangle.Width, playerH);
+
+            main.Location = new Point(0, 0);
+            main.Size = new Size(DisplayRectangle.Width, Height - playerH - margin);
         }
     }
 }

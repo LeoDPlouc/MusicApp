@@ -81,6 +81,11 @@ namespace MusicApp.Control
         {
             Media media = new Media(vlc, uri);
             mediaPlayer.Media = media;
+
+            if (play.play)
+            {
+                mediaPlayer.Play();
+            }
         }
     }
 }

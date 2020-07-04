@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MusicApp.Beans
 {
-    class Artist
+    public class Artist
     {
         public int Id { get; set; }
         public string Name { get; set; }

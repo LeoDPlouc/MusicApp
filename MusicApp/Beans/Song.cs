@@ -10,7 +10,7 @@ using TagLib;
 
 namespace MusicApp.Beans
 {
-    class Song
+    public class Song
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -15,6 +15,7 @@ namespace MusicApp.DB
         const string EXIST_ALBUM_STAT = "select count(*) from album where title = @title, artist_id = @artistid;";
         const string UPDATE_ALBUM_STAT = "update abum set title = @title, artist_id = @artistid, tags = @tags, pic_id = @picid, year = @picid where id = @id;";
         const string SELECT_ALBUM_TITLE_STAT = "select * from album where title=@title;";
+        const string SELECT_ALBUM_ID_STAT = "select * from album where id=@id;";
 
         public static int CreateAlbum(Album album)
         {
@@ -87,6 +88,30 @@ namespace MusicApp.DB
                     Title = reader.GetString(1),
                     Year = reader.GetInt32(5)
                 }) ;
+            }
+
+            return albums;
+        }
+        public static List<Album> SelectAlbum(int id)
+        {
+            SqliteCommand command = new SqliteCommand(SELECT_ALBUM_ID_STAT, connection);
+
+            command.Parameters.Add(new SqliteParameter("@id", id));
+
+            var reader = command.ExecuteReader();
+            List<Album> albums = new List<Album>();
+
+            while (reader.Read())
+            {
+                albums.Add(new Album
+                {
+                    Artist = SelectArtist(reader.GetInt32(2)).First(),
+                    Cover = SelectPicture(reader.GetInt32(4)).First(),
+                    Id = reader.GetInt32(0),
+                    Tags = reader.GetString(3).Split(';'),
+                    Title = reader.GetString(1),
+                    Year = reader.GetInt32(5)
+                });
             }
 
             return albums;

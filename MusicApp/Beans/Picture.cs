@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MusicApp.Beans
 {
-    class Picture
+    public class Picture
     {
         public int Id { get; set; }
         public byte[] Data { get; set; }
