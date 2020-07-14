@@ -16,10 +16,12 @@ namespace MusicApp.Control
         Pen pen;
         Brush brush;
 
-        public bool play { get; set; }
-        bool hover;
+        public event EventHandler<PlayButtonEventArgs> StateChanged;
 
-        public bool sem { get; set; }
+        public PlayButtonEventArgs.States State { get { return play ? PlayButtonEventArgs.States.Play : PlayButtonEventArgs.States.Pause; } }
+
+        private bool hover;
+        private bool play;
 
         public Play_Button()
         {
@@ -32,7 +34,6 @@ namespace MusicApp.Control
 
             play = false;
             hover = false;
-            sem = false;
 
             MouseClick += Play_Button_MouseClick;
             MouseEnter += Play_Button_MouseEnter;
@@ -56,7 +57,7 @@ namespace MusicApp.Control
             play = !play;
             Invalidate();
 
-            sem = true;
+            OnStateChange(new PlayButtonEventArgs { State = play ? PlayButtonEventArgs.States.Play : PlayButtonEventArgs.States.Pause });
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
@@ -69,6 +70,10 @@ namespace MusicApp.Control
             if (play) drawPause(g);
             else drawPlay(g);
             
+        }
+        protected void OnStateChange(PlayButtonEventArgs e)
+        {
+            StateChanged?.Invoke(this, e);
         }
 
         private void drawPlay(Graphics g)
@@ -99,5 +104,16 @@ namespace MusicApp.Control
                 g.DrawRectangle(pen, r2);
             }
         }
+    }
+
+    public class PlayButtonEventArgs : EventArgs
+    {
+        public enum States
+        {
+            Play = 0,
+            Pause = 1
+        }
+
+        public States State { get; set; }
     }
 }

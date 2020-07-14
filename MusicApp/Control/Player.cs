@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LibVLCSharp;
 using LibVLCSharp.Shared;
+using System.Threading;
 
 namespace MusicApp.Control
 {
@@ -20,7 +21,10 @@ namespace MusicApp.Control
         LibVLC vlc;
         MediaPlayer mediaPlayer;
 
+        public event EventHandler SongFinished;
+
         public int buttonMarging { get; set; }
+        public Media Media { get; set; }
 
         public Player()
         {
@@ -37,24 +41,21 @@ namespace MusicApp.Control
             BackColor = Color.Transparent;
             Dock = DockStyle.Bottom;
 
-            play.Click += Play_Click;
-
             InitAudioPlayer();
+
+            play.StateChanged += Play_StateChanged;
+            mediaPlayer.EndReached += MediaPlayer_EndReached;
         }
 
-        private async void Play_Click(object sender, EventArgs e)
+        private void MediaPlayer_EndReached(object sender, EventArgs e)
         {
-            var b = (Play_Button)sender;
+            ThreadPool.QueueUserWorkItem(_ => OnSongFinish(e));
+        }
 
-            while(!b.sem)
-            {
-                await Task.Delay(100);
-            }
-
-            if (b.play) mediaPlayer.Play();
+        private void Play_StateChanged(object sender, PlayButtonEventArgs e)
+        {
+            if (e.State == PlayButtonEventArgs.States.Play) mediaPlayer.Play();
             else mediaPlayer.Pause();
-
-            b.sem = false;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -68,6 +69,10 @@ namespace MusicApp.Control
             playlist.Size = new Size(Size.Height - buttonMarging * 2, Size.Height - buttonMarging * 2);
             playlist.Location = new Point(Size.Width - Size.Height + buttonMarging, buttonMarging);
         }
+        protected void OnSongFinish(EventArgs e)
+        {
+            SongFinished?.Invoke(this, e);
+        }
 
         public void InitAudioPlayer()
         {
@@ -79,10 +84,11 @@ namespace MusicApp.Control
 
         public void AddMedia(string uri)
         {
-            Media media = new Media(vlc, uri);
-            mediaPlayer.Media = media;
+            Media = new Media(vlc, uri);
+            Media.AddOption(":no-video");
+            mediaPlayer.Media = Media;
 
-            if (play.play)
+            if (play.State == PlayButtonEventArgs.States.Play)
             {
                 mediaPlayer.Play();
             }

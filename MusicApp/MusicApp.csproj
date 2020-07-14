@@ -130,17 +130,17 @@
     <Compile Include="Control\Playlist Button.Designer.cs">
       <DependentUpon>Playlist Button.cs</DependentUpon>
     </Compile>
-    <Compile Include="Control\Main.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Control\Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Control\Song List.cs">
+    <Compile Include="Control\Playlist.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Control\Song List.Designer.cs">
-      <DependentUpon>Song List.cs</DependentUpon>
+    <Compile Include="Control\Playlist.Designer.cs">
+      <DependentUpon>Playlist.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Control\SongList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Control\SongList.Designer.cs">
+      <DependentUpon>SongList.cs</DependentUpon>
     </Compile>
     <Compile Include="DB\Album.cs" />
     <Compile Include="DB\Artist.cs" />

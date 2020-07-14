@@ -21,8 +21,6 @@ namespace MusicApp.DB
 
         public static void Start()
         {
-            Core.Initialize();
-
             bool dbExist = File.Exists(DB_PATH);
 
             connection = new SqliteConnection("Data Source=" + DB_PATH);

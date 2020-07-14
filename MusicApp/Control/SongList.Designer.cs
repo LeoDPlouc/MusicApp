@@ -1,6 +1,6 @@
 ﻿namespace MusicApp.Control
 {
-    partial class Main
+    partial class SongList
     {
         /// <summary> 
         /// Variable nécessaire au concepteur.
@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         }
 
         #endregion

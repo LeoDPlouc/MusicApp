@@ -14,7 +14,7 @@ namespace MusicApp.Processing
     {
         public static void Collect()
         {
-            string path = ;
+            string path = @"";
 
             foreach (string s in Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories))
             {

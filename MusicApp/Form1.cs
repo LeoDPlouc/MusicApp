@@ -21,48 +21,33 @@ namespace MusicApp
     {
         int playerH = 60;
         int margin = 15;
+        int playlistW = 300;
 
         Player player;
-        Main main;
+        SongList songlist;
+        Playlist playlist;
 
         public Form1()
         {
-            Music_DataBase.Start();
-
             InitializeComponent();
 
-            Resize += Form1_Resize;
-
-            BackColor = Color.Black;
-
-            player = new Player() { buttonMarging = margin };
-            player.InitAudioPlayer();
-
-            Controls.Add(player);
-
-            main = new Main();
-            Controls.Add(main);
-            main.SongDoubleClick += Main_SongDoubleClick;
-
-            TextBox t = new TextBox() { Height = 500, Width = 500 };
-            Controls.Add(t);
+            InitForm();
+            InitPlayer();
+            InitDB();
+            InitSongList();
+            InitPlaylist();
 
             SongCollector.Collect();
-
-            t.Text = "done";
-            BackgroundWorker worker = new BackgroundWorker();
-
-
-        }
-
-        private void Main_SongDoubleClick(object sender, SongDoubleClickEventArgs e)
-        {
-            player.AddMedia(e.Song.Path);
         }
 
         private void Form1_Resize(object sender, EventArgs e)
         {
             Invalidate();
+        }
+        private void SongList_SongDoubleClicked(object sender, SongEventArgs e)
+        {
+            playlist.Position = e.pos;
+            playlist.Load(songlist.songlist);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -70,8 +55,56 @@ namespace MusicApp
             player.Location = new Point(0, DisplayRectangle.Height - playerH);
             player.Size = new Size(DisplayRectangle.Width, playerH);
 
-            main.Location = new Point(0, 0);
-            main.Size = new Size(DisplayRectangle.Width, Height - playerH - margin);
+            songlist.Location = new Point(0, 0);
+            songlist.Size = new Size(DisplayRectangle.Width - playlistW, DisplayRectangle.Height - playerH - margin);
+
+            playlist.Location = new Point(DisplayRectangle.Width - playlistW, 0);
+            playlist.Size = new Size(playlistW, DisplayRectangle.Height - playerH - margin);
+        }
+
+        protected void InitForm()
+        {
+            BackColor = Color.Black;
+
+            Resize += Form1_Resize;
+        }
+        protected void InitPlayer()
+        {
+            player = new Player() { buttonMarging = margin };
+
+            Controls.Add(player);
+
+            player.SongFinished += Player_SongFinished;
+        }
+        protected void InitDB()
+        {
+            Music_DataBase.Start();
+        }
+        protected void InitSongList()
+        {
+            songlist = new SongList();
+            songlist.Load(SongListing.SearchSong(""));
+
+            Controls.Add(songlist);
+
+            songlist.SongDoubleClicked += SongList_SongDoubleClicked;
+        }
+        protected void InitPlaylist()
+        {
+            playlist = new Playlist();
+
+            Controls.Add(playlist);
+
+            playlist.PlaylistChanged += Playlist_PlaylistChanged;
+        }
+
+        private void Playlist_PlaylistChanged(object sender, SongEventArgs e)
+        {
+            player.AddMedia(e.song.Path);
+        }
+        private void Player_SongFinished(object sender, EventArgs e)
+        {
+            player.AddMedia(playlist.Next().Path);
         }
     }
 }
