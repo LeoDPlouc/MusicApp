@@ -26,6 +26,7 @@ namespace MusicApp
         Player player;
         SongList songlist;
         Playlist playlist;
+        AlbumGrid albumgrid;
 
         public Form1()
         {
@@ -36,6 +37,7 @@ namespace MusicApp
             InitDB();
             InitSongList();
             InitPlaylist();
+            InitAlbumGrid();
 
             SongCollector.Collect();
         }
@@ -60,6 +62,9 @@ namespace MusicApp
 
             playlist.Location = new Point(DisplayRectangle.Width - playlistW, 0);
             playlist.Size = new Size(playlistW, DisplayRectangle.Height - playerH - margin);
+
+            albumgrid.Location = new Point(0, 0);
+            albumgrid.Size = new Size(DisplayRectangle.Width - playlistW, DisplayRectangle.Height - playerH - margin);
         }
 
         protected void InitForm()
@@ -78,16 +83,17 @@ namespace MusicApp
         }
         protected void InitDB()
         {
-            Music_DataBase.Start();
+            MusicDataBase.Start();
         }
         protected void InitSongList()
         {
             songlist = new SongList();
-            songlist.Load(SongListing.SearchSong(""));
+            songlist.Load(Listing.SearchSong(""));
 
             Controls.Add(songlist);
 
             songlist.SongDoubleClicked += SongList_SongDoubleClicked;
+            songlist.Visible = false;
         }
         protected void InitPlaylist()
         {
@@ -96,6 +102,13 @@ namespace MusicApp
             Controls.Add(playlist);
 
             playlist.PlaylistChanged += Playlist_PlaylistChanged;
+        }
+        protected void InitAlbumGrid()
+        {
+            albumgrid = new AlbumGrid();
+            albumgrid.LoadAlbum(Listing.SearchAlbum(""));
+
+            Controls.Add(albumgrid);
         }
 
         private void Playlist_PlaylistChanged(object sender, SongEventArgs e)

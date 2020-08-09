@@ -14,14 +14,14 @@ namespace MusicApp.Processing
     {
         public static void Collect()
         {
-            string path = @"";
+            string path = ;
 
             foreach (string s in Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories))
             {
-                if(!Music_DataBase.ExistSong(s))
+                if(!MusicDataBase.ExistSong(s))
                 {
                     Song song = LoadSong(s);
-                    Music_DataBase.CreateSong(song);
+                    MusicDataBase.CreateSong(song);
                 }
             }
         }
@@ -52,11 +52,11 @@ namespace MusicApp.Processing
             byte[] data = file.Tag.Pictures.First().Data.Data;
 
             Beans.Picture cover;
-            List<Beans.Picture> pictures = Music_DataBase.SelectPicture(data);
+            List<Beans.Picture> pictures = MusicDataBase.SelectPicture(data);
             if (pictures.Count == 0)
             {
                 cover = new Beans.Picture { Data = data };
-                cover.Id = Music_DataBase.CreatePicture(cover);
+                cover.Id = MusicDataBase.CreatePicture(cover);
             }
             else cover = pictures.First();
 
@@ -67,14 +67,14 @@ namespace MusicApp.Processing
             string name = file.Tag.FirstAlbumArtist;
 
             Artist artist;
-            List<Artist> artists = Music_DataBase.SelectArtist(name);
+            List<Artist> artists = MusicDataBase.SelectArtist(name);
             if (artists.Count == 0)
             {
                 artist = new Artist
                 {
                     Name = name
                 };
-                artist.Id = Music_DataBase.CreateArtist(artist);
+                artist.Id = MusicDataBase.CreateArtist(artist);
             }
             else artist = artists.First();
 
@@ -85,7 +85,7 @@ namespace MusicApp.Processing
             string title = file.Tag.Album;
 
             Album album;
-            List<Album> albums = Music_DataBase.SelectAlbum(title).FindAll(x => x.Artist.Name == artist.Name);
+            List<Album> albums = MusicDataBase.SelectAlbum(title).FindAll(x => x.Artist.Name == artist.Name);
             if (albums.Count == 0)
             {
                 album = new Album
@@ -96,7 +96,7 @@ namespace MusicApp.Processing
                     Title = title,
                     Year = (int)file.Tag.Year
                 };
-                album.Id = Music_DataBase.CreateAlbum(album);
+                album.Id = MusicDataBase.CreateAlbum(album);
             }
             else album = albums.First();
 

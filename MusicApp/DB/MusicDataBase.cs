@@ -9,7 +9,7 @@ using LibVLCSharp.Shared;
 
 namespace MusicApp.DB
 {
-    partial class Music_DataBase
+    partial class MusicDataBase
     {
         const string DB_PATH = "db.db3";
         const string CREATE_ARTIST_TABLE_STAT = "create table artist(id integer primary key autoincrement, name string);";

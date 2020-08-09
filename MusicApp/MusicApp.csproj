@@ -106,6 +106,12 @@
     <Compile Include="Beans\Artist.cs" />
     <Compile Include="Beans\Picture.cs" />
     <Compile Include="Beans\Song.cs" />
+    <Compile Include="Control\AlbumGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Control\AlbumGrid.Designer.cs">
+      <DependentUpon>AlbumGrid.cs</DependentUpon>
+    </Compile>
     <Compile Include="Control\Next Button.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -144,7 +150,7 @@
     </Compile>
     <Compile Include="DB\Album.cs" />
     <Compile Include="DB\Artist.cs" />
-    <Compile Include="DB\Music DataBase.cs" />
+    <Compile Include="DB\MusicDataBase.cs" />
     <Compile Include="DB\Picture.cs" />
     <Compile Include="DB\Song.cs" />
     <Compile Include="Form1.cs">
@@ -154,7 +160,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Processing\SongCollector.cs" />
-    <Compile Include="Processing\SongListing.cs" />
+    <Compile Include="Processing\Listing.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

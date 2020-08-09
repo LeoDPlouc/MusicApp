@@ -8,7 +8,7 @@ using Microsoft.Data.Sqlite;
 
 namespace MusicApp.DB
 {
-    partial class Music_DataBase
+    partial class MusicDataBase
     {
         const string CREATE_ARTIST_STAT = "insert into artist(name) values(@name);";
         const string SELECT_LAST_ID_ARTIST_STAT = "select max(id) from artist;";

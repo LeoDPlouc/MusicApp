@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace MusicApp.DB
 {
-    partial class Music_DataBase
+    partial class MusicDataBase
     {
         const string CREATE_SONG_STAT = "insert into song(title, n, like, heart, artist_id, album_id, path, pic_id) values(@title, @n, @like, @heart, @artist_id, @album_id, @path, @pic_id);";
         const string SELECT_ID_SONG_STAT = "select max(id) from song;";
@@ -85,7 +85,7 @@ namespace MusicApp.DB
             command.ExecuteNonQuery();
         }
 
-        public static List<Song> SearchTitle(string arg)
+        public static List<Song> SearchSongTitle(string arg)
         {
             SqliteCommand command = new SqliteCommand(SEARCH_SONG_TITLE_STAT, connection);
 
