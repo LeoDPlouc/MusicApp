@@ -9,32 +9,33 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MusicApp.Beans;
 using System.IO;
+using MusicApp.DB;
 
 namespace MusicApp.Control
 {
-    public partial class AlbumGrid : FlowLayoutPanel
+    public partial class ArtistGrid : FlowLayoutPanel
     {
-        public BindingList<Album> albumlist;
-        public AlbumGrid()
+        public BindingList<Artist> artistlist;
+        public ArtistGrid()
         {
             InitializeComponent();
 
-            albumlist = new BindingList<Album>();
-            albumlist.ListChanged += Albumlist_ListChanged;
+            artistlist = new BindingList<Artist>();
+            artistlist.ListChanged += Artistlist_ListChanged;
 
             Init();
         }
 
-        public event EventHandler<AlbumControlEventArgs> AlbumControlClicked;
+        public event EventHandler<ArtistControlEventArgs> ArtistControlClicked;
 
-        private void Albumlist_ListChanged(object sender, ListChangedEventArgs e)
+        private void Artistlist_ListChanged(object sender, ListChangedEventArgs e)
         {
             Controls.Clear();
 
-            foreach (Album a in albumlist)
+            foreach (Artist a in artistlist)
             {
-                var ac = new AlbumControl();
-                ac.LoadAlbum(a);
+                var ac = new ArtistControl();
+                ac.LoadArtist(a);
                 Controls.Add(ac);
 
                 ac.DoubleClick += Ac_DoubleClick;
@@ -43,17 +44,17 @@ namespace MusicApp.Control
 
         private void Ac_DoubleClick(object sender, EventArgs e)
         {
-            AlbumControl ac = (AlbumControl)sender;
-            AlbumControlClicked?.Invoke(this, new AlbumControlEventArgs()
+            ArtistControl ac = (ArtistControl)sender;
+            ArtistControlClicked?.Invoke(this, new ArtistControlEventArgs()
             {
-                album = ac.Album
+                artist = ac.Artist
             });
         }
 
-        public void LoadAlbum(IEnumerable<Album> albums)
+        public void LoadArtist(IEnumerable<Artist> artists)
         {
-            albumlist.Clear();
-            foreach (Album a in albums) albumlist.Add(a);
+            artistlist.Clear();
+            foreach (Artist a in artists) artistlist.Add(a);
         }
 
         private void Init()
@@ -69,48 +70,43 @@ namespace MusicApp.Control
             int colCount = DisplayRectangle.Width / 200;
             if (colCount == 0) colCount = 1;
             int w = DisplayRectangle.Width / colCount - 2 * Margin.All;
-            foreach (AlbumControl a in Controls) a.Width = w;
+            foreach (ArtistControl a in Controls) a.Width = w;
         }
     }
-
-    public class AlbumControl : UserControl
+    public class ArtistControl : UserControl
     {
         private FlowLayoutPanel panel;
         private PictureBox cover;
-        private Label albumName;
         private Label artistName;
 
-        public Album Album { get; set; }
+        public Artist Artist { get; set; }
 
-        public AlbumControl()
+        public ArtistControl()
         {
             panel = new FlowLayoutPanel() { FlowDirection = FlowDirection.TopDown, AutoSize = true, AutoScroll = false };
             cover = new PictureBox() { SizeMode = PictureBoxSizeMode.StretchImage };
-            albumName = new Label() { Anchor = AnchorStyles.None, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.Purple };
             artistName = new Label() { Anchor = AnchorStyles.None, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.Purple };
 
             DoubleBuffered = true;
 
             panel.Controls.Add(cover);
-            panel.Controls.Add(albumName);
             panel.Controls.Add(artistName);
             Controls.Add(panel);
         }
 
-        public void LoadAlbum(Album album)
+        public void LoadArtist(Artist artist)
         {
-            Album = album; 
+            Artist = artist;
 
             try
             {
-                using (MemoryStream s = new MemoryStream(album.Cover.Data))
+                using (MemoryStream s = new MemoryStream(MusicDataBase.SelectAlbumArtist(artist.Id).First().Cover.Data))
                 {
                     cover.Image = Image.FromStream(s, true, true);
                 }
             }
             catch { }
-            albumName.Text = album.Title;
-            artistName.Text = album.Artist.Name;
+            artistName.Text = artist.Name;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -120,9 +116,8 @@ namespace MusicApp.Control
             Height = Width + 50;
         }
     }
-
-    public class AlbumControlEventArgs : EventArgs
+    public class ArtistControlEventArgs : EventArgs
     {
-        public Album album { get; set; }
+        public Artist artist { get; set; }
     }
 }

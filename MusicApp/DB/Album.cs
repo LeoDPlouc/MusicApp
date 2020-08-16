@@ -16,6 +16,7 @@ namespace MusicApp.DB
         const string UPDATE_ALBUM_STAT = "update abum set title = @title, artist_id = @artistid, tags = @tags, pic_id = @picid, year = @picid where id = @id;";
         const string SELECT_ALBUM_TITLE_STAT = "select * from album where title=@title;";
         const string SELECT_ALBUM_ID_STAT = "select * from album where id=@id;";
+        const string SELECT_ALBUM_ARTIST_STAT = "select * from album where artist_id = @id;";
         const string SEARCH_ALBUM_TITLE_STAT = "select * from album where title like @arg;";
         const string LIST_ALBUM_STAT = "select * from album;";
 
@@ -110,7 +111,6 @@ namespace MusicApp.DB
 
             return albums;
         }
-
         public static List<Album> SearchAlbumTitle(string arg)
         {
             SqliteCommand command = new SqliteCommand(SEARCH_ALBUM_TITLE_STAT, connection);
@@ -120,6 +120,22 @@ namespace MusicApp.DB
             List<Album> albums = new List<Album>();
             var reader = command.ExecuteReader();
             while (reader.Read())
+            {
+                albums.Add(ReaderToAlbum(reader));
+            }
+
+            reader.Close();
+            return albums;
+        }
+        public static List<Album> SelectAlbumArtist(int id)
+        {
+            SqliteCommand command = new SqliteCommand(SELECT_ALBUM_ARTIST_STAT, connection);
+
+            command.Parameters.Add(new SqliteParameter("id", id));
+
+            List<Album> albums = new List<Album>();
+            var reader = command.ExecuteReader();
+            while(reader.Read())
             {
                 albums.Add(ReaderToAlbum(reader));
             }

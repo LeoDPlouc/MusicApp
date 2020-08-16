@@ -112,6 +112,12 @@
     <Compile Include="Control\AlbumGrid.Designer.cs">
       <DependentUpon>AlbumGrid.cs</DependentUpon>
     </Compile>
+    <Compile Include="Control\ArtistGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Control\ArtistGrid.Designer.cs">
+      <DependentUpon>ArtistGrid.cs</DependentUpon>
+    </Compile>
     <Compile Include="Control\Next Button.cs">
       <SubType>UserControl</SubType>
     </Compile>

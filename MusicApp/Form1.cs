@@ -27,6 +27,7 @@ namespace MusicApp
         SongList songlist;
         Playlist playlist;
         AlbumGrid albumgrid;
+        ArtistGrid artistgrid;
 
         public Form1()
         {
@@ -37,7 +38,7 @@ namespace MusicApp
             InitDB();
             InitSongList();
             InitPlaylist();
-            InitAlbumGrid();
+            InitArtistGrid(Listing.SearchArtist(""));
 
             SongCollector.Collect();
         }
@@ -63,8 +64,8 @@ namespace MusicApp
             playlist.Location = new Point(DisplayRectangle.Width - playlistW, 0);
             playlist.Size = new Size(playlistW, DisplayRectangle.Height - playerH - margin);
 
-            albumgrid.Location = new Point(0, 0);
-            albumgrid.Size = new Size(DisplayRectangle.Width - playlistW, DisplayRectangle.Height - playerH - margin);
+            artistgrid.Location = new Point(0, 0);
+            artistgrid.Size = new Size(DisplayRectangle.Width - playlistW, DisplayRectangle.Height - playerH - margin);
         }
 
         protected void InitForm()
@@ -103,12 +104,19 @@ namespace MusicApp
 
             playlist.PlaylistChanged += Playlist_PlaylistChanged;
         }
-        protected void InitAlbumGrid()
+        protected void InitAlbumGrid(List<Album> albums)
         {
             albumgrid = new AlbumGrid();
-            albumgrid.LoadAlbum(Listing.SearchAlbum(""));
+            albumgrid.LoadAlbum(albums);
 
             Controls.Add(albumgrid);
+        }
+        protected void InitArtistGrid(List<Artist> artists)
+        {
+            artistgrid = new ArtistGrid();
+            artistgrid.LoadArtist(artists);
+
+            Controls.Add(artistgrid);
         }
 
         private void Playlist_PlaylistChanged(object sender, SongEventArgs e)

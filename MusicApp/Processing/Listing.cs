@@ -20,5 +20,10 @@ namespace MusicApp.Processing
             if (string.IsNullOrEmpty(arg)) return MusicDataBase.ListAlbum();
             else return MusicDataBase.SearchAlbumTitle(arg);
         }
+        public static List<Artist> SearchArtist(string arg)
+        {
+            if (string.IsNullOrEmpty(arg)) return MusicDataBase.ListArtist();
+            else return MusicDataBase.SelectArtist(arg);
+        }
     }
 }
