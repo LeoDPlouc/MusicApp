@@ -69,6 +69,7 @@ namespace MusicApp.Control
         {
             SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
+            AllowUserToAddRows = false;
             CellBorderStyle = DataGridViewCellBorderStyle.None;
             DefaultCellStyle = new DataGridViewCellStyle()
             {
@@ -86,6 +87,7 @@ namespace MusicApp.Control
             GridColor = Color.Purple;
             EditMode = DataGridViewEditMode.EditProgrammatically;
             AutoGenerateColumns = true;
+            BackgroundColor = Color.Black;
         }
         protected void OnPlaylistChange()
         {

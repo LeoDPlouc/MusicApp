@@ -16,6 +16,7 @@ namespace MusicApp.DB
         const string UPDATE_ARTIST_STAT = "update artist set name = %name where id = @id;";
         const string SELECT_ARTIST_ID_STAT = "select * from artist where id = @id;";
         const string SELECT_ARTIST_NAME_STAT = "select * from artist where name = @name;";
+        const string SEARCH_ARTIST_NAME_STAT = "select * from artist where name like '%@arg%';";
         const string LIST_ARTIST_STAT = "select * from artist;";
 
         public static int CreateArtist(Artist artist)
@@ -72,6 +73,19 @@ namespace MusicApp.DB
             SqliteCommand command = new SqliteCommand(SELECT_ARTIST_NAME_STAT, connection);
 
             command.Parameters.Add(new SqliteParameter("@name", name));
+
+            var reader = command.ExecuteReader();
+
+            List<Artist> artists = new List<Artist>();
+            while (reader.Read()) artists.Add(SqlReaderToArtist(reader));
+            return artists;
+        }
+
+        public static List<Artist> SearchArtist(string arg)
+        {
+            string cmd = SEARCH_ARTIST_NAME_STAT.Replace("@arg", arg);
+
+            SqliteCommand command = new SqliteCommand(cmd, connection);
 
             var reader = command.ExecuteReader();
 

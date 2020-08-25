@@ -15,12 +15,23 @@ namespace MusicApp.Control
         Pen pen = new Pen(Brushes.Purple, 1);
         Brush brush = Brushes.Purple;
         bool hover = false;
+        
+        public bool On { get; set; }
+
         public Playlist_Button()
         {
+            On = false;
+
             InitializeComponent(); 
             BackColor = Color.Transparent;
             MouseEnter += Play_Button_MouseEnter;
             MouseLeave += Play_Button_MouseLeave;
+            Click += Playlist_Button_Click;
+        }
+
+        private void Playlist_Button_Click(object sender, EventArgs e)
+        {
+            On = !On;
         }
 
         private void Play_Button_MouseLeave(object sender, EventArgs e)
@@ -37,7 +48,6 @@ namespace MusicApp.Control
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
-
             base.OnPaint(pevent);
             var g = pevent.Graphics;
             g.Clear(Color.Transparent);

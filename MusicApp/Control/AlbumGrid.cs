@@ -54,6 +54,7 @@ namespace MusicApp.Control
         {
             albumlist.Clear();
             foreach (Album a in albums) albumlist.Add(a);
+            Invalidate();
         }
 
         private void Init()
@@ -88,6 +89,11 @@ namespace MusicApp.Control
             cover = new PictureBox() { SizeMode = PictureBoxSizeMode.StretchImage };
             albumName = new Label() { Anchor = AnchorStyles.None, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.Purple };
             artistName = new Label() { Anchor = AnchorStyles.None, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.Purple };
+
+            panel.DoubleClick += (sender, e) => OnDoubleClick(e);
+            cover.DoubleClick += (sender, e) => OnDoubleClick(e);
+            albumName.DoubleClick += (sender, e) => OnDoubleClick(e);
+            artistName.DoubleClick += (sender, e) => OnDoubleClick(e);
 
             DoubleBuffered = true;
 

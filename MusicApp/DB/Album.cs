@@ -17,7 +17,7 @@ namespace MusicApp.DB
         const string SELECT_ALBUM_TITLE_STAT = "select * from album where title=@title;";
         const string SELECT_ALBUM_ID_STAT = "select * from album where id=@id;";
         const string SELECT_ALBUM_ARTIST_STAT = "select * from album where artist_id = @id;";
-        const string SEARCH_ALBUM_TITLE_STAT = "select * from album where title like @arg;";
+        const string SEARCH_ALBUM_TITLE_STAT = "select * from album where title like '%@arg%';";
         const string LIST_ALBUM_STAT = "select * from album;";
 
         public static int CreateAlbum(Album album)
@@ -113,9 +113,9 @@ namespace MusicApp.DB
         }
         public static List<Album> SearchAlbumTitle(string arg)
         {
-            SqliteCommand command = new SqliteCommand(SEARCH_ALBUM_TITLE_STAT, connection);
+            string cmd = SEARCH_ALBUM_TITLE_STAT.Replace("@arg", arg);
 
-            command.Parameters.Add(new SqliteParameter("arg", arg));
+            SqliteCommand command = new SqliteCommand(cmd, connection);
 
             List<Album> albums = new List<Album>();
             var reader = command.ExecuteReader();
@@ -127,11 +127,11 @@ namespace MusicApp.DB
             reader.Close();
             return albums;
         }
-        public static List<Album> SelectAlbumArtist(int id)
+        public static List<Album> SelectAlbumArtist(Artist artist)
         {
             SqliteCommand command = new SqliteCommand(SELECT_ALBUM_ARTIST_STAT, connection);
 
-            command.Parameters.Add(new SqliteParameter("id", id));
+            command.Parameters.Add(new SqliteParameter("@id", artist.Id));
 
             List<Album> albums = new List<Album>();
             var reader = command.ExecuteReader();

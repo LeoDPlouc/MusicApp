@@ -22,6 +22,8 @@ namespace MusicApp.Control
         MediaPlayer mediaPlayer;
 
         public event EventHandler SongFinished;
+        public event EventHandler PlaylistButtonClicked;
+        public event EventHandler NextButtonClicked;
 
         public int buttonMarging { get; set; }
         public Media Media { get; set; }
@@ -45,6 +47,23 @@ namespace MusicApp.Control
 
             play.StateChanged += Play_StateChanged;
             mediaPlayer.EndReached += MediaPlayer_EndReached;
+            playlist.Click += Playlist_Click;
+            next.Click += Next_Click;
+        }
+
+        private void Next_Click(object sender, EventArgs e)
+        {
+            NextButtonClicked?.Invoke(this, new EventArgs());
+        }
+
+        public void ForcePlay()
+        {
+            play.ForceChangeState();
+        }
+
+        private void Playlist_Click(object sender, EventArgs e)
+        {
+            OnPlaylistButtonClick(e);
         }
 
         private void MediaPlayer_EndReached(object sender, EventArgs e)
@@ -72,6 +91,10 @@ namespace MusicApp.Control
         protected void OnSongFinish(EventArgs e)
         {
             SongFinished?.Invoke(this, e);
+        }
+        protected void OnPlaylistButtonClick(EventArgs e)
+        {
+            PlaylistButtonClicked?.Invoke(playlist, e);
         }
 
         public void InitAudioPlayer()

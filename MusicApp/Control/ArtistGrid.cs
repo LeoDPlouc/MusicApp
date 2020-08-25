@@ -55,6 +55,7 @@ namespace MusicApp.Control
         {
             artistlist.Clear();
             foreach (Artist a in artists) artistlist.Add(a);
+            Invalidate();
         }
 
         private void Init()
@@ -89,6 +90,10 @@ namespace MusicApp.Control
 
             DoubleBuffered = true;
 
+            panel.DoubleClick += (sender, e) => OnDoubleClick(e);
+            cover.DoubleClick += (sender, e) => OnDoubleClick(e);
+            artistName.DoubleClick += (sender, e) => OnDoubleClick(e);
+
             panel.Controls.Add(cover);
             panel.Controls.Add(artistName);
             Controls.Add(panel);
@@ -100,7 +105,7 @@ namespace MusicApp.Control
 
             try
             {
-                using (MemoryStream s = new MemoryStream(MusicDataBase.SelectAlbumArtist(artist.Id).First().Cover.Data))
+                using (MemoryStream s = new MemoryStream(MusicDataBase.SelectAlbumArtist(artist).First().Cover.Data))
                 {
                     cover.Image = Image.FromStream(s, true, true);
                 }

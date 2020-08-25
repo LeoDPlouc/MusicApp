@@ -16,7 +16,7 @@ namespace MusicApp.Control
 {
     public partial class SongList : DataGridView
     {
-        public List<Song> songlist;
+        public BindingList<Song> songlist;
 
         public event EventHandler<SongEventArgs> SongDoubleClicked;
 
@@ -25,7 +25,7 @@ namespace MusicApp.Control
             InitializeComponent();
             Init();
 
-            songlist = new List<Song>();
+            songlist = new BindingList<Song>();
             DataSource = songlist;
         }
 
@@ -53,13 +53,16 @@ namespace MusicApp.Control
         public void Load(IEnumerable<Song> songs)
         {
             songlist.Clear();
-            songlist.AddRange(songs);
+
+            foreach(Song s in songs) songlist.Add(s);
         }
 
         protected void Init()
         {
             SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
+            AllowUserToAddRows = false;
+            BackgroundColor = Color.Black;
             CellBorderStyle = DataGridViewCellBorderStyle.None;
             DefaultCellStyle = new DataGridViewCellStyle()
             {

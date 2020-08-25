@@ -40,6 +40,11 @@ namespace MusicApp.Control
             MouseLeave += Play_Button_MouseLeave;
         }
 
+        public void ForceChangeState()
+        {
+            if (!play) OnMouseClick(new MouseEventArgs(MouseButtons.Right, 0, MousePosition.X, MousePosition.Y, 0));
+        }
+
         private void Play_Button_MouseLeave(object sender, EventArgs e)
         {
             hover = false;
