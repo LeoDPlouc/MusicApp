@@ -112,6 +112,12 @@
     <Compile Include="Control\AlbumGrid.Designer.cs">
       <DependentUpon>AlbumGrid.cs</DependentUpon>
     </Compile>
+    <Compile Include="Control\AlbumHeader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\AlbumHeader.Designer.cs">
+      <DependentUpon>AlbumHeader.cs</DependentUpon>
+    </Compile>
     <Compile Include="Control\ArtistGrid.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -147,6 +153,12 @@
     </Compile>
     <Compile Include="Control\Playlist.Designer.cs">
       <DependentUpon>Playlist.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Control\Slider.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\Slider.Designer.cs">
+      <DependentUpon>Slider.cs</DependentUpon>
     </Compile>
     <Compile Include="Control\SongList.cs">
       <SubType>Component</SubType>

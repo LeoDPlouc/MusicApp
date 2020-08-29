@@ -18,15 +18,21 @@ namespace MusicApp.Control
         Next_Button next;
         Play_Button play;
         Playlist_Button playlist;
+        Slider volume;
+        Slider progressBar;
+
         LibVLC vlc;
         MediaPlayer mediaPlayer;
 
         public event EventHandler SongFinished;
         public event EventHandler PlaylistButtonClicked;
         public event EventHandler NextButtonClicked;
-
-        public int buttonMarging { get; set; }
         public Media Media { get; set; }
+
+        int progressBarH = 8;
+        int volumeH = 10;
+        int volumeW = 100;
+        int margin = 10;
 
         public Player()
         {
@@ -35,10 +41,14 @@ namespace MusicApp.Control
             next = new Next_Button();
             play = new Play_Button();
             playlist = new Playlist_Button();
+            volume = new Slider() { Value = 75 };
+            progressBar = new Slider() { Value = 0 };
 
             Controls.Add(next);
             Controls.Add(play);
             Controls.Add(playlist);
+            Controls.Add(volume);
+            Controls.Add(progressBar);
 
             BackColor = Color.Transparent;
             Dock = DockStyle.Bottom;
@@ -49,6 +59,25 @@ namespace MusicApp.Control
             mediaPlayer.EndReached += MediaPlayer_EndReached;
             playlist.Click += Playlist_Click;
             next.Click += Next_Click;
+            volume.SliderValueChanged += Volume_SliderValueChanged;
+            mediaPlayer.PositionChanged += MediaPlayer_PositionChanged;
+            progressBar.SliderValueChanged += ProgressBar_SliderValueChanged;
+        }
+
+        private void ProgressBar_SliderValueChanged(object sender, EventArgs e)
+        {
+            mediaPlayer.Position = ((Slider)sender).Value / 100;
+        }
+
+        private void MediaPlayer_PositionChanged(object sender, MediaPlayerPositionChangedEventArgs e)
+        {
+            progressBar.Value = e.Position * 100;
+            progressBar.Invalidate();
+        }
+
+        private void Volume_SliderValueChanged(object sender, EventArgs e)
+        {
+            mediaPlayer.Volume = (int)((Slider)sender).Value;
         }
 
         private void Next_Click(object sender, EventArgs e)
@@ -79,14 +108,23 @@ namespace MusicApp.Control
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            play.Size = new Size(Size.Height - buttonMarging * 2, Size.Height - buttonMarging * 2);
-            play.Location = new Point(Size.Width / 2 - Size.Height / 2 + buttonMarging, buttonMarging);
+            int wh = Height - progressBarH - margin * 2;
+            int y = (Height - progressBarH) / 2 + progressBarH;
 
-            next.Size = new Size(Size.Height - buttonMarging * 2, Size.Height - buttonMarging * 2);
-            next.Location = new Point(Size.Width / 2 + Size.Height / 2 + buttonMarging, buttonMarging);
+            play.Size = new Size(wh, wh);
+            play.Location = new Point(Width / 2 - wh / 2, y - wh / 2);
 
-            playlist.Size = new Size(Size.Height - buttonMarging * 2, Size.Height - buttonMarging * 2);
-            playlist.Location = new Point(Size.Width - Size.Height + buttonMarging, buttonMarging);
+            next.Size = new Size(wh, wh);
+            next.Location = new Point(Width / 2 + wh + margin * 2, y - wh / 2);
+
+            playlist.Size = new Size(wh, wh);
+            playlist.Location = new Point(Width - wh - margin, y - wh / 2);
+
+            volume.Size = new Size(volumeW, volumeH);
+            volume.Location = new Point(margin, y - volumeH / 2);
+
+            progressBar.Size = new Size(Width, progressBarH);
+            progressBar.Location = new Point(0, 0);
         }
         protected void OnSongFinish(EventArgs e)
         {
@@ -103,6 +141,8 @@ namespace MusicApp.Control
 
             vlc = new LibVLC();
             mediaPlayer = new MediaPlayer(vlc);
+
+            mediaPlayer.Volume = (int)volume.Value;
         }
 
         public void AddMedia(string uri)

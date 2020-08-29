@@ -27,6 +27,35 @@ namespace MusicApp.Control
 
             songlist = new BindingList<Song>();
             DataSource = songlist;
+
+            DataBindingComplete += SongList_DataBindingComplete;
+        }
+
+        private void SongList_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            if (Columns["ArtistName"] == null) Columns.Add("ArtistName", "Artist");
+            if (Columns["AlbumName"] == null) Columns.Add("AlbumName", "Album");
+            if (Columns["HeartControl"] == null) Columns.Add("HeartControl", "Heart");
+
+            Columns["Id"].Visible = false;
+            Columns["Artist"].Visible = false;
+            Columns["Album"].Visible = false;
+            Columns["Path"].Visible = false;
+            Columns["Cover"].Visible = false;
+            Columns["Heart"].Visible = false;
+            Columns["Like"].Visible = false;
+
+            Columns["N"].DisplayIndex = 0;
+
+            foreach(DataGridViewRow r in Rows)
+            {
+                Song s = (Song)r.DataBoundItem;
+                r.Cells["ArtistName"].Value = s.Artist.Name;
+                r.Cells["AlbumName"].Value = s.Album.Title;
+
+                r.Cells["HeartControl"].Value = "♥";
+                r.Cells["HeartControl"].Style = new DataGridViewCellStyle() { ForeColor = s.Like ? (s.Heart ? Color.DarkRed : Color.MediumPurple) : Color.White };
+            }
         }
 
         private void Song_List_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -82,6 +111,7 @@ namespace MusicApp.Control
                 BackColor = Color.FromArgb(10, 10, 10)
             };
             EditMode = DataGridViewEditMode.EditProgrammatically;
+            DoubleBuffered = true;
 
             CellDoubleClick += Song_List_CellDoubleClick;
         }

@@ -63,6 +63,9 @@ namespace MusicApp.Control
         public Song Next()
         {
             Position++;
+
+            HighlightCurrentSong();
+
             return CurrentSong;
         }
         protected void Init()
@@ -96,6 +99,23 @@ namespace MusicApp.Control
                 song = CurrentSong,
                 pos = Position
             });
+
+            HighlightCurrentSong();
+        }
+
+        protected void HighlightCurrentSong()
+        {
+            DataGridViewCellStyle style = new DataGridViewCellStyle() { BackColor = Color.FromArgb(10, 10, 10) };
+
+            Rows[Position].Cells["title"].Style = style;
+            Rows[Position].Cells["artist"].Style = style;
+
+            if (Position > 0)
+            {
+                Rows[Position - 1].Cells["title"].Style = DefaultCellStyle;
+                Rows[Position - 1].Cells["artist"].Style = DefaultCellStyle;
+            }
+
         }
     }
 }

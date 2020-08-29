@@ -20,9 +20,9 @@ namespace MusicApp
     public partial class Form1 : Form
     {
         int playerH = 60;
-        int margin = 15;
         int playlistW = 300;
         int tabH = 30;
+        int albumHeaderH = 200;
 
         Player player;
         SongList songlist;
@@ -33,6 +33,7 @@ namespace MusicApp
         Label albumtab;
         Label artisttab;
         TextBox search;
+        AlbumHeader albumHeader;
 
         public Form1()
         {
@@ -66,25 +67,31 @@ namespace MusicApp
             player.Location = new Point(0, DisplayRectangle.Height - playerH);
             player.Size = new Size(DisplayRectangle.Width, playerH);
 
-            Size middlePanelSize = new Size(DisplayRectangle.Width - (playlist.Visible ? playlistW : 0), DisplayRectangle.Height - playerH - margin - tabH);
-            Point middlePanelLocation = new Point(0, tabH);
+            Size middlePanelSize = new Size(DisplayRectangle.Width - (playlist.Visible ? playlistW : 0), DisplayRectangle.Height - playerH - tabH - (albumHeader != null ? albumHeaderH : 0));
+            Point middlePanelLocation = new Point(0, tabH + (albumHeader != null ? albumHeaderH : 0));
 
-            if (songlist != null)
+            if (songlist != null) 
             {
                 songlist.Location = middlePanelLocation;
                 songlist.Size = middlePanelSize;
             }
 
-            if(albumgrid != null)
+            if (albumgrid != null)
             {
                 albumgrid.Location = middlePanelLocation;
                 albumgrid.Size = middlePanelSize;
             }
 
-            if(artistgrid != null)
+            if (artistgrid != null) 
             {
                 artistgrid.Location = middlePanelLocation;
                 artistgrid.Size = middlePanelSize;
+            }
+
+            if (albumHeader != null)
+            {
+                albumHeader.Location = new Point(0, tabH);
+                albumHeader.Size = new Size(middlePanelSize.Width, albumHeaderH);
             }
 
             songtab.Location = new Point(0, 0);
@@ -94,7 +101,7 @@ namespace MusicApp
             search.Location = new Point(Width - 250 - playlistW, 0);
 
             playlist.Location = new Point(DisplayRectangle.Width - playlistW, 0);
-            playlist.Size = new Size(playlistW, DisplayRectangle.Height - playerH - margin);
+            playlist.Size = new Size(playlistW, DisplayRectangle.Height - playerH);
 
         }
 
@@ -157,7 +164,7 @@ namespace MusicApp
 
         protected void InitPlayer()
         {
-            player = new Player() { buttonMarging = margin };
+            player = new Player();
 
             Controls.Add(player);
 
@@ -195,6 +202,20 @@ namespace MusicApp
 
             Invalidate();
         }
+        protected void InitAlbumSongList()
+        {
+            ClearMiddlePannel();
+
+            songlist = new SongList();
+            albumHeader = new AlbumHeader();
+
+            Controls.Add(songlist);
+            Controls.Add(albumHeader);
+
+            songlist.SongDoubleClicked += SongList_SongDoubleClicked;
+
+            Invalidate();
+        }
         protected void InitPlaylist()
         {
             playlist = new Playlist() { Visible = false };
@@ -218,9 +239,10 @@ namespace MusicApp
 
         private void Albumgrid_AlbumControlClicked(object sender, AlbumControlEventArgs e)
         {
-            InitSongList();
+            InitAlbumSongList();
 
             songlist.Load(MusicDataBase.SelectSongAlbum(e.album));
+            albumHeader.LoadAlbum(e.album);
         }
 
         protected void InitArtistGrid(List<Artist> artists)
@@ -256,14 +278,17 @@ namespace MusicApp
             albumgrid?.Dispose();
             artistgrid?.Dispose();
             songlist?.Dispose();
+            albumHeader?.Dispose();
 
             Controls.Remove(albumgrid);
             Controls.Remove(artistgrid);
             Controls.Remove(songlist);
+            Controls.Remove(albumHeader);
 
             albumgrid = null;
             artistgrid = null;
             songlist = null;
+            albumHeader = null;
         }
     }
 }
