@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using MusicApp.DB;
 
-namespace MusicApp.Configuration
+namespace MusicApp.Config
 {
     class Configuration
     {

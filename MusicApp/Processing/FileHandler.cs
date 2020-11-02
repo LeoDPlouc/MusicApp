@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace MusicApp.Processing
 {
@@ -87,6 +89,14 @@ namespace MusicApp.Processing
             return album;
         }
 
+        public static string HashFromFile(string path)
+        {
+            byte[] data = File.ReadAllBytes(path);
+            using(SHA256 h = SHA256.Create())
+            {
+                return Encoding.UTF8.GetString(h.ComputeHash(data));
+            }
+        }
         public static void SaveSong(Song song)
         {
             TagLib.File f = TagLib.File.Create(song.Path);

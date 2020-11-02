@@ -14,7 +14,7 @@ using LibVLCSharp.Forms.Shared;
 using MusicApp.Control;
 using MusicApp.DB;
 using MusicApp.Processing;
-using MusicApp.Configuration;
+using MusicApp.Config;
 
 namespace MusicApp
 {
@@ -196,7 +196,7 @@ namespace MusicApp
 
         protected void InitConfig()
         {
-            Configuration.Configuration.Init();
+            Config.Configuration.Init();
         }
         protected void InitDB()
         {
