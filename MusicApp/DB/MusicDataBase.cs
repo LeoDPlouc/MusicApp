@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.IO;
 using LibVLCSharp.Shared;
 using MusicApp.Config;
+using MusicApp.Beans;
+using MusicApp.Processing;
 
 namespace MusicApp.DB
 {
@@ -31,6 +33,21 @@ namespace MusicApp.DB
 
             if (!dbExist) Initialize();
             Update();
+            UpdateContent();
+        }
+        public static void UpdateContent()
+        {
+            foreach(Song s in ListSongs())
+            {
+                if (s.Hash != FileHandler.HashFromFile(s.Path))
+                {
+                    Song song = FileHandler.LoadSong(s.Path);
+
+                    song.Id = s.Id;
+                    song.ComputeHash();
+                    song.Save();
+                }
+            }
         }
         
         static void Initialize()
