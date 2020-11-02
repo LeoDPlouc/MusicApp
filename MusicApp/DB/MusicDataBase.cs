@@ -11,6 +11,8 @@ namespace MusicApp.DB
 {
     partial class MusicDataBase
     {
+        public const string DB_VERSION = "1.0";
+
         const string DB_PATH = "db.db3";
         const string CREATE_ARTIST_TABLE_STAT = "create table artist(id integer primary key autoincrement, name string);";
         const string CREATE_PICTURE_TABLE_STAT = "create table picture(id integer primary key autoincrement, data blob);";
