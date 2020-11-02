@@ -124,6 +124,12 @@
     <Compile Include="Control\ArtistGrid.Designer.cs">
       <DependentUpon>ArtistGrid.cs</DependentUpon>
     </Compile>
+    <Compile Include="Control\ArtistHeader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\ArtistHeader.Designer.cs">
+      <DependentUpon>ArtistHeader.cs</DependentUpon>
+    </Compile>
     <Compile Include="Control\Next Button.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -177,6 +183,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Processing\FileHandler.cs" />
     <Compile Include="Processing\SongCollector.cs" />
     <Compile Include="Processing\Listing.cs" />
     <Compile Include="Program.cs" />

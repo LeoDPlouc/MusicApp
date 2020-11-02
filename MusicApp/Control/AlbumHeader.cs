@@ -51,6 +51,33 @@ namespace MusicApp.Control
             Controls.Add(Cover);
             Controls.Add(AlbumName);
             Controls.Add(ArtistName);
+
+            AlbumName.ContextMenuStrip = new ContextMenuStrip();
+            AlbumName.ContextMenuStrip.Items.Add("Edit");
+            AlbumName.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+        }
+
+        private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (e.ClickedItem.Text == "Edit")
+            {
+                Label newTitleLabel = new Label() { Text = "New Album Title", AutoSize = true, Margin = new Padding(0, 6, 0, 0) };
+                TextBox NewTitle = new TextBox() { Width = 100 };
+
+                FlowLayoutPanel panel = new FlowLayoutPanel() { FlowDirection = FlowDirection.LeftToRight };
+                panel.Controls.Add(newTitleLabel);
+                panel.Controls.Add(NewTitle);
+
+                Form form = new Form() { Size = new Size(210, 65) };
+                form.Controls.Add(panel);
+
+                form.ShowDialog();
+
+                AlbumName.Text = NewTitle.Text;
+                Album.Title = AlbumName.Text;
+
+                Album.Save();
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)

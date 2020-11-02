@@ -69,7 +69,7 @@ namespace MusicApp.DB
 
             return reader.GetInt32(0) > 0;
         }
-        public static void UpdateSong(Song song, int picId)
+        public static void UpdateSong(Song song)
         {
             SqliteCommand command = new SqliteCommand(UPDATE_SONG_STAT, connection);
 
@@ -80,7 +80,7 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("artistid", song.Artist.Id));
             command.Parameters.Add(new SqliteParameter("albumid", song.Album.Id));
             command.Parameters.Add(new SqliteParameter("path", song.Path));
-            command.Parameters.Add(new SqliteParameter("picid", picId));
+            command.Parameters.Add(new SqliteParameter("picid", song.Cover.Id));
             command.Parameters.Add(new SqliteParameter("id", song.Id));
 
             command.ExecuteNonQuery();

@@ -22,7 +22,7 @@ namespace MusicApp
         int playerH = 60;
         int playlistW = 300;
         int tabH = 30;
-        int albumHeaderH = 200;
+        int headerH = 200;
 
         Player player;
         SongList songlist;
@@ -34,6 +34,7 @@ namespace MusicApp
         Label artisttab;
         TextBox search;
         AlbumHeader albumHeader;
+        ArtistHeader artistHeader;
 
         public Form1()
         {
@@ -67,8 +68,8 @@ namespace MusicApp
             player.Location = new Point(0, DisplayRectangle.Height - playerH);
             player.Size = new Size(DisplayRectangle.Width, playerH);
 
-            Size middlePanelSize = new Size(DisplayRectangle.Width - (playlist.Visible ? playlistW : 0), DisplayRectangle.Height - playerH - tabH - (albumHeader != null ? albumHeaderH : 0));
-            Point middlePanelLocation = new Point(0, tabH + (albumHeader != null ? albumHeaderH : 0));
+            Size middlePanelSize = new Size(DisplayRectangle.Width - (playlist.Visible ? playlistW : 0), DisplayRectangle.Height - playerH - tabH - (albumHeader != null ? headerH : 0));
+            Point middlePanelLocation = new Point(0, tabH + (albumHeader != null || artistHeader != null ? headerH : 0));
 
             if (songlist != null) 
             {
@@ -91,7 +92,13 @@ namespace MusicApp
             if (albumHeader != null)
             {
                 albumHeader.Location = new Point(0, tabH);
-                albumHeader.Size = new Size(middlePanelSize.Width, albumHeaderH);
+                albumHeader.Size = new Size(middlePanelSize.Width, headerH);
+            }
+
+            if (artistHeader != null)
+            {
+                artistHeader.Location = new Point(0, tabH);
+                artistHeader.Size = new Size(middlePanelSize.Width, headerH);
             }
 
             songtab.Location = new Point(0, 0);
@@ -216,6 +223,21 @@ namespace MusicApp
 
             Invalidate();
         }
+
+        protected void InitArtistAlbumList()
+        {
+            ClearMiddlePannel();
+
+            albumgrid = new AlbumGrid();
+            artistHeader = new ArtistHeader();
+
+            Controls.Add(albumgrid);
+            Controls.Add(artistHeader);
+
+            albumgrid.AlbumControlClicked += Albumgrid_AlbumControlClicked;
+
+            Invalidate();
+        }
         protected void InitPlaylist()
         {
             playlist = new Playlist() { Visible = false };
@@ -261,7 +283,10 @@ namespace MusicApp
 
         private void Artistgrid_ArtistControlClicked(object sender, ArtistControlEventArgs e)
         {
-            InitAlbumGrid(MusicDataBase.SelectAlbumArtist(e.artist));
+            InitArtistAlbumList();
+
+            albumgrid.LoadAlbum(MusicDataBase.SelectAlbumArtist(e.artist));
+            artistHeader.LoadArtist(e.artist);
         }
 
         private void Playlist_PlaylistChanged(object sender, SongEventArgs e)
@@ -279,16 +304,19 @@ namespace MusicApp
             artistgrid?.Dispose();
             songlist?.Dispose();
             albumHeader?.Dispose();
+            artistHeader?.Dispose();
 
             Controls.Remove(albumgrid);
             Controls.Remove(artistgrid);
             Controls.Remove(songlist);
             Controls.Remove(albumHeader);
+            Controls.Remove(artistHeader);
 
             albumgrid = null;
             artistgrid = null;
             songlist = null;
             albumHeader = null;
+            artistHeader = null;
         }
     }
 }

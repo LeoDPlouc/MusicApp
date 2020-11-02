@@ -13,7 +13,7 @@ namespace MusicApp.DB
         const string CREATE_ARTIST_STAT = "insert into artist(name) values(@name);";
         const string SELECT_LAST_ID_ARTIST_STAT = "select max(id) from artist;";
         const string EXIST_ARTIST_STAT = "select count(*) from artist where name = @name;";
-        const string UPDATE_ARTIST_STAT = "update artist set name = %name where id = @id;";
+        const string UPDATE_ARTIST_STAT = "update artist set name = @name where id = @id;";
         const string SELECT_ARTIST_ID_STAT = "select * from artist where id = @id;";
         const string SELECT_ARTIST_NAME_STAT = "select * from artist where name = @name;";
         const string SEARCH_ARTIST_NAME_STAT = "select * from artist where name like '%@arg%';";
@@ -51,8 +51,8 @@ namespace MusicApp.DB
         {
             SqliteCommand command = new SqliteCommand(UPDATE_ARTIST_STAT, connection);
 
-            command.Parameters.Add(new SqliteParameter("title", artist.Name));
-            command.Parameters.Add(new SqliteParameter("id", artist.Id));
+            command.Parameters.Add(new SqliteParameter("@name", artist.Name));
+            command.Parameters.Add(new SqliteParameter("@id", artist.Id));
 
             command.ExecuteNonQuery();
         }

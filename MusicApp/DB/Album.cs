@@ -13,7 +13,7 @@ namespace MusicApp.DB
         const string CREATE_ALBUM_STAT = "insert into album(title, artist_id, tags, pic_id, year) values (@title, @artist_id, @tags, @pic_id, @year);";
         const string SELECT_LAST_ID_ALBUM_STAT = "select max(id) from album;";
         const string EXIST_ALBUM_STAT = "select count(*) from album where title = @title, artist_id = @artistid;";
-        const string UPDATE_ALBUM_STAT = "update abum set title = @title, artist_id = @artistid, tags = @tags, pic_id = @picid, year = @picid where id = @id;";
+        const string UPDATE_ALBUM_STAT = "update album set title = @title, artist_id = @artistid, tags = @tags, pic_id = @picid, year = @picid where id = @id;";
         const string SELECT_ALBUM_TITLE_STAT = "select * from album where title=@title;";
         const string SELECT_ALBUM_ID_STAT = "select * from album where id=@id;";
         const string SELECT_ALBUM_ARTIST_STAT = "select * from album where artist_id = @id;";
@@ -56,7 +56,7 @@ namespace MusicApp.DB
 
             return reader.GetInt32(0) > 0;
         }
-        public static void UpdateAlbum(Album album, int picId)
+        public static void UpdateAlbum(Album album)
         {
             string t = "";
             foreach (string tag in album.Tags) t += tag + ";";
@@ -66,7 +66,7 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("@title", album.Title));
             command.Parameters.Add(new SqliteParameter("@artistid", album.Artist.Id));
             command.Parameters.Add(new SqliteParameter("@tags", t));
-            command.Parameters.Add(new SqliteParameter("@picid", picId));
+            command.Parameters.Add(new SqliteParameter("@picid", album.Cover.Id));
             command.Parameters.Add(new SqliteParameter("@id", album.Id));
 
             command.ExecuteNonQuery();

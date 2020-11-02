@@ -1,4 +1,6 @@
 ﻿using LibVLCSharp.Shared;
+using MusicApp.DB;
+using MusicApp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,5 +24,11 @@ namespace MusicApp.Beans
         public Album Album { get; set; }
         public Picture Cover { get; set; }
         public string Path { get; set; }
+
+        public void Save()
+        {
+            MusicDataBase.UpdateSong(this);
+            FileHandler.SaveSong(this);
+        }
     }
 }

@@ -20,6 +20,13 @@ namespace MusicApp.Control
 
         public event EventHandler<SongEventArgs> SongDoubleClicked;
 
+        public SongListType Type;
+        public enum SongListType
+        {
+            Main = 0,
+            Album = 1
+        }
+
         public SongList()
         {
             InitializeComponent();
@@ -37,6 +44,8 @@ namespace MusicApp.Control
             if (Columns["AlbumName"] == null) Columns.Add("AlbumName", "Album");
             if (Columns["HeartControl"] == null) Columns.Add("HeartControl", "Heart");
 
+            Columns["N"].Visible = Type == SongListType.Album;
+
             Columns["Id"].Visible = false;
             Columns["Artist"].Visible = false;
             Columns["Album"].Visible = false;
@@ -50,11 +59,13 @@ namespace MusicApp.Control
             foreach(DataGridViewRow r in Rows)
             {
                 Song s = (Song)r.DataBoundItem;
+                Color sColor = s.Like ? (s.Heart ? Color.DarkRed : Color.MediumPurple) : Color.White;
+
                 r.Cells["ArtistName"].Value = s.Artist.Name;
                 r.Cells["AlbumName"].Value = s.Album.Title;
 
                 r.Cells["HeartControl"].Value = "♥";
-                r.Cells["HeartControl"].Style = new DataGridViewCellStyle() { ForeColor = s.Like ? (s.Heart ? Color.DarkRed : Color.MediumPurple) : Color.White };
+                r.Cells["HeartControl"].Style = new DataGridViewCellStyle() { ForeColor = sColor, SelectionForeColor = sColor};
             }
         }
 
@@ -64,6 +75,22 @@ namespace MusicApp.Control
 
             DataGridViewRow row = Rows[e.RowIndex];
             Song s = (Song)row.DataBoundItem;
+
+            if(row.Cells[e.ColumnIndex].OwningColumn.Name == "HeartControl")
+            {
+                if (s.Like && !s.Heart) s.Heart = true;
+                else if (s.Like && s.Heart)
+                {
+                    s.Like = false;
+                    s.Like = false;
+                }
+                else if (!s.Like && !s.Heart) s.Like = true;
+
+                s.Save();
+                SongList_DataBindingComplete(null, null);
+
+                return;
+            }
 
             SongDoubleClicked?.Invoke(this, new SongEventArgs()
             {
@@ -106,14 +133,69 @@ namespace MusicApp.Control
             AllowUserToResizeColumns = false;
             AllowUserToResizeRows = false;
             GridColor = Color.Purple;
-            AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle()
-            {
-                BackColor = Color.FromArgb(10, 10, 10)
-            };
             EditMode = DataGridViewEditMode.EditProgrammatically;
             DoubleBuffered = true;
 
+            ContextMenuStrip = new ContextMenuStrip();
+            ContextMenuStrip.Items.Add("Edit");
+            ContextMenuStrip.Opening += ContextMenuStrip_Opening;
+            ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
+
             CellDoubleClick += Song_List_CellDoubleClick;
+            CellContextMenuStripNeeded += SongList_CellContextMenuStripNeeded;
+            CellEndEdit += SongList_CellEndEdit;
+        }
+
+        private void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            if (CurrentCell != null) e.Cancel = false;
+        }
+
+        private void SongList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridViewRow r = Rows[e.RowIndex];
+            Song s = r.DataBoundItem as Song;
+
+            string artistName = r.Cells[Columns["ArtistName"].Index].Value as string;
+            Artist artist = MusicDataBase.SearchArtist(artistName).FirstOrDefault();
+            if (artist == null)
+            {
+                artist = new Artist { Name = artistName };
+                artist.Id = MusicDataBase.CreateArtist(artist);
+            }
+
+            string albumName = r.Cells[Columns["AlbumName"].Index].Value as string;
+            Album album = MusicDataBase.SearchAlbumTitle(albumName).FirstOrDefault();
+            if (album == null)
+            {
+                album = new Album() { Artist = artist, Title = albumName, Cover = s.Cover, Tags = s.Album.Tags, Year = s.Album.Year };
+                album.Id = MusicDataBase.CreateAlbum(album);
+            }
+
+            s.Album = album;
+            s.Artist = artist;
+
+            s.Save();
+
+            CurrentCell = null;
+        }
+
+        private void SongList_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)
+        {
+            CurrentCell = Rows[e.RowIndex].Cells[e.ColumnIndex];
+        }
+
+        private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            DataGridViewCell c = CurrentCell;
+
+            if (c.ColumnIndex == Columns["HeartControl"].Index || c.ColumnIndex == Columns["Duration"].Index) return;
+
+            if (e.ClickedItem.Text == "Edit")
+            {
+                BeginEdit(true);
+                c.InitializeEditingControl(c.RowIndex, "", c.Style);
+            }
         }
     }
 
