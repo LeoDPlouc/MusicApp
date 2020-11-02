@@ -25,6 +25,12 @@ namespace MusicApp.Beans
         public Picture Cover { get; set; }
         public string Path { get; set; }
 
+        public string Hash { get; set; }
+
+        public void ComputeHash()
+        {
+            Hash = FileHandler.HashFromFile(Path);
+        }
         public void Save()
         {
             MusicDataBase.UpdateSong(this);

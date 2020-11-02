@@ -53,6 +53,7 @@ namespace MusicApp.Control
             Columns["Cover"].Visible = false;
             Columns["Heart"].Visible = false;
             Columns["Like"].Visible = false;
+            Columns["Hash"].Visible = false;
 
             Columns["N"].DisplayIndex = 0;
 
