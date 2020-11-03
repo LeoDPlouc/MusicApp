@@ -12,17 +12,21 @@ namespace MusicApp.Processing
 {
     class FileHandler
     {
-        public static Song LoadSong(string path)
+        public async static Task<Song> LoadSong(string path)
         {
             TagLib.File f = TagLib.File.Create(path);
 
-            Artist artist = LoadArtist(f);
-            Beans.Picture cover = LoadCover(f);
-            Album album = LoadAlbum(f, artist, cover);
+            var coverTask = LoadCover(f);
+            var artistTask =  LoadArtist(f);
+
+            Beans.Picture cover = await coverTask;
+            Artist artist = await artistTask;
+
+            var albumTask = LoadAlbum(f, artist, cover);
 
             return new Song
             {
-                Album = album,
+                Album = await albumTask,
                 Artist = artist,
                 Cover = cover,
                 Duration = f.Length,
@@ -33,12 +37,14 @@ namespace MusicApp.Processing
                 Title = f.Tag.Title
             };
         }
-        private static Beans.Picture LoadCover(TagLib.File file)
+        private async static Task<Beans.Picture> LoadCover(TagLib.File file)
         {
             byte[] data = file.Tag.Pictures.First().Data.Data;
 
+            var coverTask = MusicDataBase.SelectPicture(data);
+
             Beans.Picture cover;
-            List<Beans.Picture> pictures = MusicDataBase.SelectPicture(data);
+            List<Beans.Picture> pictures = await coverTask;
             if (pictures.Count == 0)
             {
                 cover = new Beans.Picture { Data = data };
@@ -48,12 +54,13 @@ namespace MusicApp.Processing
 
             return cover;
         }
-        private static Artist LoadArtist(TagLib.File file)
+        private async static Task<Artist> LoadArtist(TagLib.File file)
         {
             string name = file.Tag.FirstAlbumArtist;
+            var artistTask = MusicDataBase.SelectArtist(name);
 
             Artist artist;
-            List<Artist> artists = MusicDataBase.SelectArtist(name);
+            List<Artist> artists = await artistTask;
             if (artists.Count == 0)
             {
                 artist = new Artist
@@ -66,12 +73,14 @@ namespace MusicApp.Processing
 
             return artist;
         }
-        private static Album LoadAlbum(TagLib.File file, Artist artist, Beans.Picture cover)
+        private async static Task<Album> LoadAlbum(TagLib.File file, Artist artist, Beans.Picture cover)
         {
             string title = file.Tag.Album;
+            var albumTask = MusicDataBase.SelectAlbum(title);
 
             Album album;
-            List<Album> albums = MusicDataBase.SelectAlbum(title).FindAll(x => x.Artist.Name == artist.Name);
+            var albumResult = await albumTask;
+            List<Album> albums =albumResult.FindAll(x => x.Artist.Name == artist.Name);
             if (albums.Count == 0)
             {
                 album = new Album

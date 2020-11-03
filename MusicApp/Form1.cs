@@ -142,26 +142,26 @@ namespace MusicApp
             search.TextChanged += Search_TextChanged;
         }
 
-        private void Search_TextChanged(object sender, EventArgs e)
+        private async void Search_TextChanged(object sender, EventArgs e)
         {
             string text = ((TextBox)sender).Text;
 
-            songlist?.Load(Listing.SearchSong(text));
-            albumgrid?.LoadAlbum(Listing.SearchAlbum(text));
-            artistgrid?.LoadArtist(Listing.SearchArtist(text));
+            songlist?.Load(await Listing.SearchSong(text));
+            albumgrid?.LoadAlbum(await Listing.SearchAlbum(text));
+            artistgrid?.LoadArtist(await Listing.SearchArtist(text));
 
             Invalidate();
         }
 
-        private void Albumtab_Click(object sender, EventArgs e)
+        private async void Albumtab_Click(object sender, EventArgs e)
         {
-            InitAlbumGrid(Listing.SearchAlbum(""));
+            InitAlbumGrid(await Listing.SearchAlbum(""));
             search.Text = "";
         }
 
-        private void Artisttab_Click(object sender, EventArgs e)
+        private async void Artisttab_Click(object sender, EventArgs e)
         {
-            InitArtistGrid(Listing.SearchArtist(""));
+            InitArtistGrid(await Listing.SearchArtist(""));
             search.Text = "";
         }
 
@@ -196,22 +196,25 @@ namespace MusicApp
 
         protected void InitConfig()
         {
-            Config.Configuration.Init();
+            Configuration.Init();
         }
         protected void InitDB()
         {
             MusicDataBase.Start();
         }
-        protected void InitSongList()
+        protected async void InitSongList()
         {
+            var searchTask = Listing.SearchSong("");
+
             ClearMiddlePannel();
 
             songlist = new SongList();
-            songlist.Load(Listing.SearchSong(""));
 
             Controls.Add(songlist);
 
             songlist.SongDoubleClicked += SongList_SongDoubleClicked;
+
+            songlist.Load(await searchTask);
 
             Invalidate();
         }
@@ -265,11 +268,13 @@ namespace MusicApp
             albumgrid.AlbumControlClicked += Albumgrid_AlbumControlClicked;
         }
 
-        private void Albumgrid_AlbumControlClicked(object sender, AlbumControlEventArgs e)
+        private async void Albumgrid_AlbumControlClicked(object sender, AlbumControlEventArgs e)
         {
+            var songAlbumTask = MusicDataBase.SelectSongAlbum(e.album);
+
             InitAlbumSongList();
 
-            songlist.Load(MusicDataBase.SelectSongAlbum(e.album));
+            songlist.Load(await songAlbumTask);
             albumHeader.LoadAlbum(e.album);
         }
 
@@ -287,11 +292,13 @@ namespace MusicApp
             artistgrid.ArtistControlClicked += Artistgrid_ArtistControlClicked;
         }
 
-        private void Artistgrid_ArtistControlClicked(object sender, ArtistControlEventArgs e)
+        private async void Artistgrid_ArtistControlClicked(object sender, ArtistControlEventArgs e)
         {
+            var t = MusicDataBase.SelectAlbumArtist(e.artist);
+
             InitArtistAlbumList();
 
-            albumgrid.LoadAlbum(MusicDataBase.SelectAlbumArtist(e.artist));
+            albumgrid.LoadAlbum(await t);
             artistHeader.LoadArtist(e.artist);
         }
 

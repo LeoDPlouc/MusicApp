@@ -13,11 +13,11 @@ namespace MusicApp.Beans
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public void Save()
+        public async void Save()
         {
             MusicDataBase.UpdateArtist(this);
 
-            foreach(Album a in MusicDataBase.SelectAlbumArtist(this))
+            foreach(Album a in await MusicDataBase.SelectAlbumArtist(this))
             {
                 a.Save();
             }

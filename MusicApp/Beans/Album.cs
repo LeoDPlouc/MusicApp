@@ -19,11 +19,11 @@ namespace MusicApp.Beans
         public Picture Cover { get; set; }
         public int Year { get; set; }
 
-        public void Save()
+        public async void Save()
         {
             MusicDataBase.UpdateAlbum(this);
 
-            foreach (Song s in MusicDataBase.SelectSongAlbum(this))
+            foreach (Song s in await MusicDataBase.SelectSongAlbum(this))
             {
                 FileHandler.SaveSong(s);
             }

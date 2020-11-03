@@ -42,8 +42,10 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
 
             reader.Read();
+            var r = reader.GetInt32(0) > 0;
+            reader.Close();
 
-            return reader.GetInt32(0) > 0;
+            return r;
         }
         public static void UpdatePicture(Picture picture)
         {
@@ -54,7 +56,7 @@ namespace MusicApp.DB
 
             command.ExecuteNonQuery();
         }
-        public static List<Picture> SelectPicture(int id)
+        public async static Task<List<Picture>> SelectPicture(int id)
         {
             SqliteCommand command = new SqliteCommand(SELECT_PICTURE_ID_STAT, connection);
 
@@ -65,34 +67,37 @@ namespace MusicApp.DB
 
             while(reader.Read())
             {
-                pictures.Add(new Picture
-                {
-                    Id = reader.GetInt32(0),
-                    Data = (byte[])reader.GetValue(1)
-                });
+                pictures.Add(ReaderToPicture(reader));
+                await Task.Delay(1);
             }
 
             return pictures;
         }
-        public static List<Picture> SelectPicture(byte[] data)
+        public async static Task<List<Picture>> SelectPicture(byte[] data)
         {
             SqliteCommand command = new SqliteCommand(SELECT_PICTURE_DATA_STAT, connection);
 
             command.Parameters.Add(new SqliteParameter("@data", data));
 
-            var reader = command.ExecuteReader();
             List<Picture> pictures = new List<Picture>();
 
+            var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                pictures.Add(new Picture
-                {
-                    Id = reader.GetInt32(0),
-                    Data = (byte[])reader.GetValue(1)
-                });
+                pictures.Add(ReaderToPicture(reader));
+                await Task.Delay(1);
             }
 
             return pictures;
+        }
+
+        private static Picture ReaderToPicture(SqliteDataReader reader)
+        {
+            return new Picture
+            {
+                Id = reader.GetInt32(0),
+                Data = (byte[])reader.GetValue(1)
+            };
         }
     }
 }

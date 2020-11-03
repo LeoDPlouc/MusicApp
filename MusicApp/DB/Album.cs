@@ -40,8 +40,10 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
 
             reader.Read();
+            var r = reader.GetInt32(0);
+            reader.Close();
 
-            return reader.GetInt32(0);
+            return r;
         }
         public static bool ExistAlbum(Album album)
         {
@@ -53,8 +55,10 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
 
             reader.Read();
+            var r = reader.GetInt32(0) > 0;
+            reader.Close();
 
-            return reader.GetInt32(0) > 0;
+            return r;
         }
         public static void UpdateAlbum(Album album)
         {
@@ -71,7 +75,7 @@ namespace MusicApp.DB
 
             command.ExecuteNonQuery();
         }
-        public static List<Album> SelectAlbum(string title)
+        public async static Task<List<Album>> SelectAlbum(string title)
         {
             SqliteCommand command = new SqliteCommand(SELECT_ALBUM_TITLE_STAT, connection);
 
@@ -82,20 +86,14 @@ namespace MusicApp.DB
 
             while (reader.Read())
             {
-                albums.Add(new Album
-                {
-                    Artist = SelectArtist(reader.GetInt32(2)).First(),
-                    Cover = SelectPicture(reader.GetInt32(4)).First(),
-                    Id = reader.GetInt32(0),
-                    Tags = reader.GetString(3).Split(';'),
-                    Title = reader.GetString(1),
-                    Year = reader.GetInt32(5)
-                });
+                albums.Add(await ReaderToAlbum(reader));
+                await Task.Delay(1);
             }
 
+            reader.Close();
             return albums;
         }
-        public static List<Album> SelectAlbum(int id)
+        public async static Task<List<Album>> SelectAlbum(int id)
         {
             SqliteCommand command = new SqliteCommand(SELECT_ALBUM_ID_STAT, connection);
 
@@ -106,12 +104,14 @@ namespace MusicApp.DB
 
             while (reader.Read())
             {
-                albums.Add(ReaderToAlbum(reader));
+                albums.Add(await ReaderToAlbum(reader));
+                await Task.Delay(1);
             }
 
+            reader.Close();
             return albums;
         }
-        public static List<Album> SearchAlbumTitle(string arg)
+        public async static Task<List<Album>> SearchAlbumTitle(string arg)
         {
             string cmd = SEARCH_ALBUM_TITLE_STAT.Replace("@arg", arg);
 
@@ -121,13 +121,14 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                albums.Add(ReaderToAlbum(reader));
+                albums.Add(await ReaderToAlbum(reader));
+                await Task.Delay(1);
             }
 
             reader.Close();
             return albums;
         }
-        public static List<Album> SelectAlbumArtist(Artist artist)
+        public async static Task<List<Album>> SelectAlbumArtist(Artist artist)
         {
             SqliteCommand command = new SqliteCommand(SELECT_ALBUM_ARTIST_STAT, connection);
 
@@ -137,13 +138,14 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
             while(reader.Read())
             {
-                albums.Add(ReaderToAlbum(reader));
+                albums.Add(await ReaderToAlbum(reader));
+                await Task.Delay(1);
             }
 
             reader.Close();
             return albums;
         }
-        public static List<Album> ListAlbum()
+        public async static Task<List<Album>> ListAlbum()
         {
             SqliteCommand command = new SqliteCommand(LIST_ALBUM_STAT, connection);
 
@@ -151,19 +153,26 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                albums.Add(ReaderToAlbum(reader));
+                albums.Add(await ReaderToAlbum(reader));
+                await Task.Delay(1);
             }
 
             reader.Close();
             return albums;
         }
 
-        private static Album ReaderToAlbum(SqliteDataReader reader)
-        { 
+        private async static Task<Album> ReaderToAlbum(SqliteDataReader reader)
+        {
+            var coverTask = SelectPicture(reader.GetInt32(4));
+            var artistTask = SelectArtist(reader.GetInt32(2));
+
+            var artist = await artistTask;
+            var cover = await coverTask;
+
             return new Album
             {
-                Artist = SelectArtist(reader.GetInt32(2)).First(),
-                Cover = SelectPicture(reader.GetInt32(4)).First(),
+                Artist = artist.First(),
+                Cover =  cover.First(),
                 Id = reader.GetInt32(0),
                 Tags = reader.GetString(3).Split(';'),
                 Title = reader.GetString(1),

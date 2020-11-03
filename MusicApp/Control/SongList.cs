@@ -152,13 +152,14 @@ namespace MusicApp.Control
             if (CurrentCell != null) e.Cancel = false;
         }
 
-        private void SongList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private async void SongList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             DataGridViewRow r = Rows[e.RowIndex];
             Song s = r.DataBoundItem as Song;
 
             string artistName = r.Cells[Columns["ArtistName"].Index].Value as string;
-            Artist artist = MusicDataBase.SearchArtist(artistName).FirstOrDefault();
+            var searchArtist = await MusicDataBase.SearchArtist(artistName);
+            Artist artist = searchArtist.FirstOrDefault();
             if (artist == null)
             {
                 artist = new Artist { Name = artistName };
@@ -166,7 +167,8 @@ namespace MusicApp.Control
             }
 
             string albumName = r.Cells[Columns["AlbumName"].Index].Value as string;
-            Album album = MusicDataBase.SearchAlbumTitle(albumName).FirstOrDefault();
+            var searchAlbum = await MusicDataBase.SearchAlbumTitle(albumName);
+            Album album = searchAlbum.FirstOrDefault();
             if (album == null)
             {
                 album = new Album() { Artist = artist, Title = albumName, Cover = s.Cover, Tags = s.Album.Tags, Year = s.Album.Year };

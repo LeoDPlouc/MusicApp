@@ -56,7 +56,7 @@ namespace MusicApp.DB
 
             command.ExecuteNonQuery();
         }
-        public static List<Artist> SelectArtist(int id)
+        public async static Task<List<Artist>> SelectArtist(int id)
         {
             SqliteCommand command = new SqliteCommand(SELECT_ARTIST_ID_STAT, connection);
 
@@ -65,10 +65,15 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
 
             List<Artist> artists = new List<Artist>();
-            while (reader.Read()) artists.Add(SqlReaderToArtist(reader));
+            while (reader.Read())
+            {
+                artists.Add(SqlReaderToArtist(reader));
+                await Task.Delay(1);
+            }
+            reader.Close();
             return artists;
         }
-        public static List<Artist> SelectArtist(string name)
+        public async static Task<List<Artist>> SelectArtist(string name)
         {
             SqliteCommand command = new SqliteCommand(SELECT_ARTIST_NAME_STAT, connection);
 
@@ -77,11 +82,17 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
 
             List<Artist> artists = new List<Artist>();
-            while (reader.Read()) artists.Add(SqlReaderToArtist(reader));
+            while (reader.Read())
+            {
+                artists.Add(SqlReaderToArtist(reader));
+                await Task.Delay(1);
+            }
+
+            reader.Close();
             return artists;
         }
 
-        public static List<Artist> SearchArtist(string arg)
+        public async static Task<List<Artist>> SearchArtist(string arg)
         {
             string cmd = SEARCH_ARTIST_NAME_STAT.Replace("@arg", arg);
 
@@ -90,17 +101,29 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
 
             List<Artist> artists = new List<Artist>();
-            while (reader.Read()) artists.Add(SqlReaderToArtist(reader));
-            return artists;
+            while (reader.Read())
+            {
+                artists.Add(SqlReaderToArtist(reader));
+                await Task.Delay(1);
+            }
+
+            reader.Close();
+           return artists;
         }
-        public static List<Artist> ListArtist()
+        public async static Task<List<Artist>> ListArtist()
         {
             SqliteCommand command = new SqliteCommand(LIST_ARTIST_STAT, connection);
 
             var reader = command.ExecuteReader();
 
             List<Artist> artists = new List<Artist>();
-            while (reader.Read()) artists.Add(SqlReaderToArtist(reader));
+            while (reader.Read())
+            {
+                artists.Add(SqlReaderToArtist(reader));
+                await Task.Delay(1);
+            }
+
+            reader.Close();
             return artists;
         }
 

@@ -50,11 +50,17 @@ namespace MusicApp.Control
             });
         }
 
-        public void LoadAlbum(IEnumerable<Album> albums)
+        public async void LoadAlbum(IEnumerable<Album> albums)
         {
+            SuspendLayout();
             albumlist.Clear();
-            foreach (Album a in albums) albumlist.Add(a);
-            Invalidate();
+            foreach (Album a in albums)
+            {
+                albumlist.Add(a);
+                await Task.Delay(1);
+            }
+            ResumeLayout();
+            Invalidate(true);
         }
 
         private void Init()
@@ -67,10 +73,13 @@ namespace MusicApp.Control
 
         private void AlbumGrid_Resize(object sender, EventArgs e)
         {
+            SuspendLayout();
             int colCount = DisplayRectangle.Width / 200;
             if (colCount == 0) colCount = 1;
             int w = DisplayRectangle.Width / colCount - 2 * Margin.All;
             foreach (AlbumControl a in Controls) a.Width = w;
+            ResumeLayout();
+            Invalidate(true);
         }
     }
 

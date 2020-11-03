@@ -12,7 +12,7 @@ namespace MusicApp.Processing
 {
     class SongCollector
     {
-        public static void Collect()
+        public async static void Collect()
         {
             string path = @"C:\Users\Leo\Desktop\musictest";
 
@@ -20,9 +20,10 @@ namespace MusicApp.Processing
             {
                 if(!MusicDataBase.ExistSong(s))
                 {
-                    Song song = FileHandler.LoadSong(s);
+                    Song song = await FileHandler.LoadSong(s);
                     MusicDataBase.CreateSong(song);
                 }
+                await Task.Delay(1);
             }
         }
     }

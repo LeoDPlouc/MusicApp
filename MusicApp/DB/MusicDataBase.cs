@@ -35,18 +35,20 @@ namespace MusicApp.DB
             Update();
             UpdateContent();
         }
-        public static void UpdateContent()
+        public async static void UpdateContent()
         {
-            foreach(Song s in ListSongs())
+            foreach(Song s in await ListSongs())
             {
+                var loadSongTask = FileHandler.LoadSong(s.Path);
                 if (s.Hash != FileHandler.HashFromFile(s.Path))
                 {
-                    Song song = FileHandler.LoadSong(s.Path);
+                    Song song = await loadSongTask;
 
                     song.Id = s.Id;
                     song.ComputeHash();
                     song.Save();
                 }
+                await Task.Delay(1);
             }
         }
         

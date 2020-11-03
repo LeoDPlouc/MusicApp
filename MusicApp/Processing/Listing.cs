@@ -10,20 +10,20 @@ namespace MusicApp.Processing
 {
     class Listing
     {
-        public static List<Song> SearchSong(string arg)
+        public async static Task<List<Song>> SearchSong(string arg)
         {
-            if (string.IsNullOrEmpty(arg)) return MusicDataBase.ListSongs();
-            else return MusicDataBase.SearchSongTitle(arg);
+            if (string.IsNullOrEmpty(arg)) return await MusicDataBase.ListSongs();
+            else return await MusicDataBase.SearchSongTitle(arg);
         }
-        public static List<Album> SearchAlbum(string arg)
+        public async static Task<List<Album>> SearchAlbum(string arg)
         {
-            if (string.IsNullOrEmpty(arg)) return MusicDataBase.ListAlbum();
-            else return MusicDataBase.SearchAlbumTitle(arg);
+            if (string.IsNullOrEmpty(arg)) return await MusicDataBase.ListAlbum();
+            else return await MusicDataBase.SearchAlbumTitle(arg);
         }
-        public static List<Artist> SearchArtist(string arg)
+        public async static Task<List<Artist>> SearchArtist(string arg)
         {
-            if (string.IsNullOrEmpty(arg)) return MusicDataBase.ListArtist();
-            else return MusicDataBase.SearchArtist(arg);
+            if (string.IsNullOrEmpty(arg)) return await MusicDataBase.ListArtist();
+            else return await MusicDataBase.SearchArtist(arg);
         }
     }
 }

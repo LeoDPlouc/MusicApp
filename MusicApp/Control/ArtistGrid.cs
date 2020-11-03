@@ -51,11 +51,17 @@ namespace MusicApp.Control
             });
         }
 
-        public void LoadArtist(IEnumerable<Artist> artists)
+        public async void LoadArtist(IEnumerable<Artist> artists)
         {
+            SuspendLayout();
             artistlist.Clear();
-            foreach (Artist a in artists) artistlist.Add(a);
-            Invalidate();
+            foreach (Artist a in artists)
+            {
+                artistlist.Add(a);
+                await Task.Delay(1);
+            }
+            ResumeLayout();
+            Invalidate(true);
         }
 
         private void Init()
@@ -68,10 +74,12 @@ namespace MusicApp.Control
 
         private void AlbumGrid_Resize(object sender, EventArgs e)
         {
+            SuspendLayout();
             int colCount = DisplayRectangle.Width / 200;
             if (colCount == 0) colCount = 1;
             int w = DisplayRectangle.Width / colCount - 2 * Margin.All;
             foreach (ArtistControl a in Controls) a.Width = w;
+            ResumeLayout();
         }
     }
     public class ArtistControl : UserControl
@@ -99,13 +107,15 @@ namespace MusicApp.Control
             Controls.Add(panel);
         }
 
-        public void LoadArtist(Artist artist)
+        public async void LoadArtist(Artist artist)
         {
+            Task<List<Album>> albumsT = MusicDataBase.SelectAlbumArtist(artist);
             Artist = artist;
 
             try
             {
-                using (MemoryStream s = new MemoryStream(MusicDataBase.SelectAlbumArtist(artist).First().Cover.Data))
+                List<Album> albums = await albumsT;
+                using (MemoryStream s = new MemoryStream(albums.First().Cover.Data))
                 {
                     cover.Image = Image.FromStream(s, true, true);
                 }
