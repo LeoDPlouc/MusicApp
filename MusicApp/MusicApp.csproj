@@ -178,6 +178,7 @@
     </Compile>
     <Compile Include="DB\Album.cs" />
     <Compile Include="DB\Artist.cs" />
+    <Compile Include="DB\Manager.cs" />
     <Compile Include="DB\MusicDataBase.cs" />
     <Compile Include="DB\Picture.cs" />
     <Compile Include="DB\Song.cs" />

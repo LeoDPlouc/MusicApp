@@ -33,24 +33,11 @@ namespace MusicApp.DB
 
             if (!dbExist) Initialize();
             Update();
-            UpdateContent();
-        }
-        public async static void UpdateContent()
-        {
-            foreach(Song s in await ListSongs())
-            {
-                var loadSongTask = FileHandler.LoadSong(s.Path);
-                if (s.Hash != FileHandler.HashFromFile(s.Path))
-                {
-                    Song song = await loadSongTask;
 
-                    song.Id = s.Id;
-                    song.ComputeHash();
-                    song.Save();
-                }
-                await Task.Delay(1);
-            }
+            Manager.VerifyContent();
+            Manager.Collect();
         }
+        
         
         static void Initialize()
         {
