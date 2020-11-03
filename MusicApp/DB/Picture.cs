@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using TagLib.Riff;
 
 namespace MusicApp.DB
 {
@@ -16,6 +17,8 @@ namespace MusicApp.DB
         const string UPDATE_PICTURE_STAT = "update picture set data = @data where id =  @id;";
         const string SELECT_PICTURE_ID_STAT = "select * from picture where id = @id;";
         const string SELECT_PICTURE_DATA_STAT = "select * from picture where data = @data;";
+        const string LIST_PICTURE_ID_STAT = "select id from picture;";
+        const string DELETE_PICTURE_STAT = "delete frome picture where id =@id;";
 
         public static int CreatePicture(Picture picture)
         {
@@ -56,6 +59,13 @@ namespace MusicApp.DB
 
             command.ExecuteNonQuery();
         }
+        public static void DeletePicture(int id)
+        {
+            SqliteCommand command = new SqliteCommand(DELETE_PICTURE_STAT, connection);
+            command.Parameters.Add(new SqliteParameter("@id", id));
+
+            command.ExecuteNonQuery();
+        }
         public async static Task<List<Picture>> SelectPicture(int id)
         {
             SqliteCommand command = new SqliteCommand(SELECT_PICTURE_ID_STAT, connection);
@@ -89,6 +99,17 @@ namespace MusicApp.DB
             }
 
             return pictures;
+        }
+        public static List<int> ListIDPicture()
+        {
+            List<int> res = new List<int>();
+
+            SqliteCommand command = new SqliteCommand(LIST_PICTURE_ID_STAT, connection);
+            var reader = command.ExecuteReader();
+            while (reader.Read()) res.Add(reader.GetInt32(0));
+            reader.Close();
+
+            return res;
         }
 
         private static Picture ReaderToPicture(SqliteDataReader reader)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
+using System.Windows.Forms;
 
 namespace MusicApp.DB
 {
@@ -19,6 +20,7 @@ namespace MusicApp.DB
         const string SELECT_ALBUM_ARTIST_STAT = "select * from album where artist_id = @id;";
         const string SEARCH_ALBUM_TITLE_STAT = "select * from album where title like '%@arg%';";
         const string LIST_ALBUM_STAT = "select * from album;";
+        const string COUNT_ALBUM_WITH_PIC = "select count(*) from album where pic_id = 0id;";
 
         public static int CreateAlbum(Album album)
         {
@@ -159,6 +161,18 @@ namespace MusicApp.DB
 
             reader.Close();
             return albums;
+        }
+        public static int CountAlbumWithPic(int id)
+        {
+            SqliteCommand command = new SqliteCommand(COUNT_ALBUM_WITH_PIC, connection);
+            command.Parameters.Add(new SqliteParameter("@id", id));
+
+            var reader = command.ExecuteReader();
+            reader.Read();
+            var r = reader.GetInt32(0);
+            reader.Close();
+
+            return r;
         }
 
         private async static Task<Album> ReaderToAlbum(SqliteDataReader reader)

@@ -190,7 +190,6 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Processing\FileHandler.cs" />
-    <Compile Include="Processing\SongCollector.cs" />
     <Compile Include="Processing\Listing.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

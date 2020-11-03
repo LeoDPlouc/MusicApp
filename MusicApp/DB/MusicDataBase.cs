@@ -36,6 +36,7 @@ namespace MusicApp.DB
 
             Manager.VerifyContent();
             Manager.Collect();
+            Manager.Clean();
         }
         
         

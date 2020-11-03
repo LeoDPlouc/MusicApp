@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MusicApp.DB
@@ -13,13 +14,15 @@ namespace MusicApp.DB
     {
         public static void VerifyContent()
         {
-            TaskFactory factory = new TaskFactory();
-            factory.StartNew(() => VerifyContentTask());
+            Thread t = new Thread(new ThreadStart(VerifyContentTask));
         }
         public static void Collect()
         {
-            TaskFactory factory = new TaskFactory();
-            factory.StartNew(() => CollectTask());
+            Thread t = new Thread(new ThreadStart(CollectTask));
+        }
+        public static void Clean()
+        {
+            Thread t = new Thread(new ThreadStart(CleanTask));
         }
 
         private async static void VerifyContentTask()
@@ -38,7 +41,6 @@ namespace MusicApp.DB
                 await Task.Delay(1);
             }
         }
-
         private async static void CollectTask()
         {
             string path = @"C:\Users\Leo\Desktop\musictest";
@@ -51,6 +53,14 @@ namespace MusicApp.DB
                     MusicDataBase.CreateSong(song);
                 }
                 await Task.Delay(1);
+            }
+        }
+        private static void CleanTask()
+        {
+            var ids = MusicDataBase.ListIDPicture();
+            foreach(int id in ids)
+            {
+                if (MusicDataBase.CountAlbumWithPic(id) < 1) MusicDataBase.DeletePicture(id);
             }
         }
     }
