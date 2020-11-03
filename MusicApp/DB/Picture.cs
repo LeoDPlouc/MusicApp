@@ -18,7 +18,7 @@ namespace MusicApp.DB
         const string SELECT_PICTURE_ID_STAT = "select * from picture where id = @id;";
         const string SELECT_PICTURE_DATA_STAT = "select * from picture where data = @data;";
         const string LIST_PICTURE_ID_STAT = "select id from picture;";
-        const string DELETE_PICTURE_STAT = "delete frome picture where id =@id;";
+        const string DELETE_PICTURE_STAT = "delete from picture where id = @id;";
 
         public static int CreatePicture(Picture picture)
         {

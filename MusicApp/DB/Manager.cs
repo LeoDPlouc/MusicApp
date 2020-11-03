@@ -15,14 +15,17 @@ namespace MusicApp.DB
         public static void VerifyContent()
         {
             Thread t = new Thread(new ThreadStart(VerifyContentTask));
+            t.Start();
         }
         public static void Collect()
         {
             Thread t = new Thread(new ThreadStart(CollectTask));
+            t.Start();
         }
         public static void Clean()
         {
-            Thread t = new Thread(new ThreadStart(CleanTask));
+            Thread t = new Thread(new ThreadStart(CleanPicTask));
+            t.Start();
         }
 
         private async static void VerifyContentTask()
@@ -55,7 +58,7 @@ namespace MusicApp.DB
                 await Task.Delay(1);
             }
         }
-        private static void CleanTask()
+        private static void CleanPicTask()
         {
             var ids = MusicDataBase.ListIDPicture();
             foreach(int id in ids)

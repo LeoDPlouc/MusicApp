@@ -20,7 +20,7 @@ namespace MusicApp.DB
         const string SELECT_ALBUM_ARTIST_STAT = "select * from album where artist_id = @id;";
         const string SEARCH_ALBUM_TITLE_STAT = "select * from album where title like '%@arg%';";
         const string LIST_ALBUM_STAT = "select * from album;";
-        const string COUNT_ALBUM_WITH_PIC = "select count(*) from album where pic_id = 0id;";
+        const string COUNT_ALBUM_WITH_PIC = "select count(*) from album where pic_id = @id;";
 
         public static int CreateAlbum(Album album)
         {
