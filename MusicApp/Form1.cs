@@ -49,8 +49,6 @@ namespace MusicApp
             InitSearch();
             InitSongList();
             InitPlaylist();
-
-            SongCollector.Collect();
         }
 
         private void Form1_Resize(object sender, EventArgs e)

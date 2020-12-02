@@ -24,19 +24,9 @@ namespace MusicApp.DB
             Configuration.WriteDBVersion();
         }
 
-        private async static void Update1_2()
+        private static void Update1_2()
         {
-            var listSongTask = ListSongs();
-
-            SqliteCommand command = new SqliteCommand("alter table song add column hash string not null default '_';", connection);
-            await command.ExecuteNonQueryAsync();
-
-            List<Song> songs = await listSongTask;
-            foreach(Song s in songs)
-            {
-                s.ComputeHash();
-                s.Save();
-            }
+            return;
         }
     }
 }

@@ -100,7 +100,8 @@ namespace MusicApp.Processing
 
         public static string HashFromFile(string path)
         {
-            byte[] data = File.ReadAllBytes(path);
+            var f = TagLib.File.Create(path);
+            byte[] data = Encoding.Default.GetBytes(f.ToString());
             using(SHA256 h = SHA256.Create())
             {
                 return Encoding.UTF8.GetString(h.ComputeHash(data));
