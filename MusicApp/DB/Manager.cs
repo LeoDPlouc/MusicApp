@@ -60,7 +60,7 @@ namespace MusicApp.DB
         }
         private static void CleanPicTask()
         {
-            var ids = MusicDataBase.ListIDPicture();
+            var ids = MusicDataBase.ListIdPicture();
             foreach(int id in ids)
             {
                 if (MusicDataBase.CountAlbumWithPic(id) < 1) MusicDataBase.DeletePicture(id);

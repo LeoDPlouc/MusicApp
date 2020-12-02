@@ -11,13 +11,10 @@ namespace MusicApp.DB
     partial class MusicDataBase
     {
         const string CREATE_ARTIST_STAT = "insert into artist(name) values(@name);";
-        const string SELECT_LAST_ID_ARTIST_STAT = "select max(id) from artist;";
-        const string EXIST_ARTIST_STAT = "select count(*) from artist where name = @name;";
         const string UPDATE_ARTIST_STAT = "update artist set name = @name where id = @id;";
-        const string SELECT_ARTIST_ID_STAT = "select * from artist where id = @id;";
-        const string SELECT_ARTIST_NAME_STAT = "select * from artist where name = @name;";
-        const string SEARCH_ARTIST_NAME_STAT = "select * from artist where name like '%@arg%';";
+        const string DELETE_ARTIST_STAT = "delete from artist where id = @id;";
         const string LIST_ARTIST_STAT = "select * from artist;";
+        const string SELECT_LAST_ID_ARTIST_STAT = "select max(id) from artist;";
 
         public static int CreateArtist(Artist artist)
         {
@@ -35,18 +32,6 @@ namespace MusicApp.DB
 
             return reader.GetInt32(0);
         }
-        public static bool ExistArtist(Artist artist)
-        {
-            SqliteCommand command = new SqliteCommand(EXIST_ARTIST_STAT, connection);
-
-            command.Parameters.Add(new SqliteParameter("name", artist.Name));
-
-            var reader = command.ExecuteReader();
-
-            reader.Read();
-
-            return reader.GetInt32(0) > 0;
-        }
         public static void UpdateArtist(Artist artist)
         {
             SqliteCommand command = new SqliteCommand(UPDATE_ARTIST_STAT, connection);
@@ -55,60 +40,6 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("@id", artist.Id));
 
             command.ExecuteNonQuery();
-        }
-        public async static Task<List<Artist>> SelectArtist(int id)
-        {
-            SqliteCommand command = new SqliteCommand(SELECT_ARTIST_ID_STAT, connection);
-
-            command.Parameters.Add(new SqliteParameter("@id", id));
-
-            var reader = command.ExecuteReader();
-
-            List<Artist> artists = new List<Artist>();
-            while (reader.Read())
-            {
-                artists.Add(SqlReaderToArtist(reader));
-                await Task.Delay(1);
-            }
-            reader.Close();
-            return artists;
-        }
-        public async static Task<List<Artist>> SelectArtist(string name)
-        {
-            SqliteCommand command = new SqliteCommand(SELECT_ARTIST_NAME_STAT, connection);
-
-            command.Parameters.Add(new SqliteParameter("@name", name));
-
-            var reader = command.ExecuteReader();
-
-            List<Artist> artists = new List<Artist>();
-            while (reader.Read())
-            {
-                artists.Add(SqlReaderToArtist(reader));
-                await Task.Delay(1);
-            }
-
-            reader.Close();
-            return artists;
-        }
-
-        public async static Task<List<Artist>> SearchArtist(string arg)
-        {
-            string cmd = SEARCH_ARTIST_NAME_STAT.Replace("@arg", arg);
-
-            SqliteCommand command = new SqliteCommand(cmd, connection);
-
-            var reader = command.ExecuteReader();
-
-            List<Artist> artists = new List<Artist>();
-            while (reader.Read())
-            {
-                artists.Add(SqlReaderToArtist(reader));
-                await Task.Delay(1);
-            }
-
-            reader.Close();
-           return artists;
         }
         public async static Task<List<Artist>> ListArtist()
         {
@@ -125,6 +56,14 @@ namespace MusicApp.DB
 
             reader.Close();
             return artists;
+        }
+        public static void DeleteArtist(int id)
+        {
+            SqliteCommand command = new SqliteCommand(DELETE_ARTIST_STAT, connection);
+
+            command.Parameters.Add(new SqliteParameter("@id", id));
+
+            command.ExecuteNonQueryAsync();
         }
 
         private static Artist SqlReaderToArtist(SqliteDataReader reader)
