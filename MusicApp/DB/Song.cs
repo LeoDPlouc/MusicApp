@@ -30,7 +30,7 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("@artist_id", song.Artist.Id));
             command.Parameters.Add(new SqliteParameter("@album_id", song.Album.Id));
             command.Parameters.Add(new SqliteParameter("@path", song.Path));
-            command.Parameters.Add(new SqliteParameter("@pic_id", song.Cover.Id));
+            command.Parameters.Add(new SqliteParameter("@pic_id", song.CoverId));
             command.Parameters.Add(new SqliteParameter("@hash", song.Hash));
 
             command.ExecuteNonQuery();
@@ -56,7 +56,7 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("artistid", song.Artist.Id));
             command.Parameters.Add(new SqliteParameter("albumid", song.Album.Id));
             command.Parameters.Add(new SqliteParameter("path", song.Path));
-            command.Parameters.Add(new SqliteParameter("picid", song.Cover.Id));
+            command.Parameters.Add(new SqliteParameter("picid", song.CoverId));
             command.Parameters.Add(new SqliteParameter("hash", song.Hash));
             command.Parameters.Add(new SqliteParameter("id", song.Id));
 
@@ -71,7 +71,6 @@ namespace MusicApp.DB
             while (reader.Read())
             {
                 songs.Add(await ReaderToSong(reader));
-                await Task.Delay(1);
             }
 
             reader.Close();
@@ -87,19 +86,17 @@ namespace MusicApp.DB
 
         private async static Task<Song> ReaderToSong(SqliteDataReader reader)
         {
-            var albumTask = SelectAlbum(reader.GetInt32(6));
-            var artistTask = SelectArtist(reader.GetInt32(5));
-            var coversTask = SelectPicture(reader.GetInt32(8));
+            var albumTask = Album.SelectAlbumById(reader.GetInt32(6));
+            var artistTask = Artist.SelectArtistById(reader.GetInt32(5));
 
             var album = await albumTask;
             var artist = await artistTask;
-            var covers = await coversTask;
 
             Song song = new Song()
             {
-                Album = album.First(),
-                Artist = artist.First(),
-                Cover = covers.First(),
+                Album = album,
+                Artist = artist,
+                CoverId = reader.GetInt32(8),
                 Heart = reader.GetBoolean(4),
                 Id = reader.GetInt32(0),
                 Like = reader.GetBoolean(3),

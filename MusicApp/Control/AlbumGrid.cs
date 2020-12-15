@@ -112,18 +112,20 @@ namespace MusicApp.Control
             Controls.Add(panel);
         }
 
-        public void LoadAlbum(Album album)
+        public async void LoadAlbum(Album album)
         {
-            Album = album; 
+            Album = album;
+            var coverTask = Picture.SelectPictureById(album.CoverId);
 
             try
             {
-                using (MemoryStream s = new MemoryStream(album.Cover.Data))
+                using (MemoryStream s = new MemoryStream((await coverTask).Data))
                 {
                     cover.Image = Image.FromStream(s, true, true);
                 }
             }
             catch { }
+
             albumName.Text = album.Title;
             artistName.Text = album.Artist.Name;
         }

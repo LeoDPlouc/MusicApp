@@ -268,7 +268,7 @@ namespace MusicApp
 
         private async void Albumgrid_AlbumControlClicked(object sender, AlbumControlEventArgs e)
         {
-            var songAlbumTask = MusicDataBase.SelectSongAlbum(e.album);
+            var songAlbumTask = e.album.SelectSongsFromAlbum();
 
             InitAlbumSongList();
 
@@ -292,7 +292,7 @@ namespace MusicApp
 
         private async void Artistgrid_ArtistControlClicked(object sender, ArtistControlEventArgs e)
         {
-            var t = MusicDataBase.SelectAlbumArtist(e.artist);
+            var t = Album.SelectAlbumByArtist(e.artist.Name);
 
             InitArtistAlbumList();
 

@@ -48,10 +48,9 @@ namespace MusicApp.DB
             var reader = command.ExecuteReader();
 
             List<Artist> artists = new List<Artist>();
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
                 artists.Add(SqlReaderToArtist(reader));
-                await Task.Delay(1);
             }
 
             reader.Close();

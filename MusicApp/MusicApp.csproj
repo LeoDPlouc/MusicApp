@@ -106,9 +106,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Beans\Album.cs" />
+    <Compile Include="Beans\Album_Controller.cs" />
     <Compile Include="Beans\Artist.cs" />
+    <Compile Include="Beans\Artist_Controller.cs" />
     <Compile Include="Beans\Picture.cs" />
+    <Compile Include="Beans\Picture_Controller.cs" />
     <Compile Include="Beans\Song.cs" />
+    <Compile Include="Beans\Song_Controller.cs" />
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="Control\AlbumGrid.cs">
       <SubType>Component</SubType>

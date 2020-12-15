@@ -49,13 +49,13 @@ namespace MusicApp.DB
 
             command.ExecuteNonQuery();
         }
-        public static async Task<List<Picture>> ListIdPicture()
+        public static async Task<List<Picture>> ListPicture()
         {
             List<Picture> res = new List<Picture>();
 
             SqliteCommand command = new SqliteCommand(LIST_PICTURE_STAT, connection);
             var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) res.Add(ReaderToPicture(reader);
+            while (await reader.ReadAsync()) res.Add(ReaderToPicture(reader));
             reader.Close();
 
             return res;

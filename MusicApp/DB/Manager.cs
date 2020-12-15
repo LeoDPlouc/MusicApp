@@ -21,6 +21,7 @@ namespace MusicApp.DB
         {
             Thread t = new Thread(new ThreadStart(CollectTask));
             t.Start();
+            t.Join();
         }
         public static void Clean()
         {
@@ -30,6 +31,7 @@ namespace MusicApp.DB
 
         private async static void VerifyContentTask()
         {
+
             foreach (Song s in await MusicDataBase.ListSongs())
             {
                 var loadSongTask = FileHandler.LoadSong(s.Path);
@@ -41,7 +43,6 @@ namespace MusicApp.DB
                     song.ComputeHash();
                     song.Save();
                 }
-                await Task.Delay(1);
             }
         }
         private async static void CollectTask()
@@ -50,20 +51,27 @@ namespace MusicApp.DB
 
             foreach (string s in Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories))
             {
-                if (!MusicDataBase.ExistSong(s))
+                if (!await Song.ExistSongByPath(s))
                 {
                     Song song = await FileHandler.LoadSong(s);
-                    MusicDataBase.CreateSong(song);
+                    song.Create();
                 }
-                await Task.Delay(1);
             }
         }
-        private static void CleanPicTask()
+        private async static void CleanPicTask()
         {
-            var ids = MusicDataBase.ListIdPicture();
-            foreach(int id in ids)
+            var picsTask = Picture.SelectAllPictures();
+            var albumsTask = Album.SelectAllAlbum();
+
+            var pics = await picsTask;
+            var albums = await albumsTask;
+            foreach(Picture pic in pics)
             {
-                if (MusicDataBase.CountAlbumWithPic(id) < 1) MusicDataBase.DeletePicture(id);
+                int count = albums.Count((Album a) =>
+                {
+                    return a.CoverId == pic.Id;
+                });
+                if (count < 1) pic.Delete();
             }
         }
     }

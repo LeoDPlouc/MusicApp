@@ -158,7 +158,7 @@ namespace MusicApp.Control
             Song s = r.DataBoundItem as Song;
 
             string artistName = r.Cells[Columns["ArtistName"].Index].Value as string;
-            var searchArtist = await MusicDataBase.SearchArtist(artistName);
+            var searchArtist = await Artist.SearchArtistByName(artistName);
             Artist artist = searchArtist.FirstOrDefault();
             if (artist == null)
             {
@@ -167,12 +167,12 @@ namespace MusicApp.Control
             }
 
             string albumName = r.Cells[Columns["AlbumName"].Index].Value as string;
-            var searchAlbum = await MusicDataBase.SearchAlbumTitle(albumName);
+            var searchAlbum = await Album.SearchAlbumByName(albumName);
             Album album = searchAlbum.FirstOrDefault();
             if (album == null)
             {
-                album = new Album() { Artist = artist, Title = albumName, Cover = s.Cover, Tags = s.Album.Tags, Year = s.Album.Year };
-                album.Id = MusicDataBase.CreateAlbum(album);
+                album = new Album() { Artist = artist, Title = albumName, CoverId = s.CoverId, Tags = s.Album.Tags, Year = s.Album.Year };
+                album.Id = await MusicDataBase.CreateAlbum(album);
             }
 
             s.Album = album;

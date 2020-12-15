@@ -34,12 +34,12 @@ namespace MusicApp.DB
             if (!dbExist) Initialize();
             Update();
 
-            Manager.VerifyContent();
             Manager.Collect();
+
+            Manager.VerifyContent();
             Manager.Clean();
         }
-        
-        
+
         static void Initialize()
         {
             SqliteCommand command = new SqliteCommand(CREATE_ARTIST_TABLE_STAT, connection);
