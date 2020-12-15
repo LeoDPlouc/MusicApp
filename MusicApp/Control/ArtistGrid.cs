@@ -109,13 +109,13 @@ namespace MusicApp.Control
 
         public async void LoadArtist(Artist artist)
         {
-            Task<List<Album>> albumsT = MusicDataBase.SelectAlbumArtist(artist);
+            List<Album> albums = await artist.SelectAlbumFromArtist();
             Artist = artist;
+            var coverTask = Picture.SelectPictureById(albums.First().CoverId);
 
             try
             {
-                List<Album> albums = await albumsT;
-                using (MemoryStream s = new MemoryStream(albums.First().Cover.Data))
+                using (MemoryStream s = new MemoryStream((await coverTask).Data))
                 {
                     cover.Image = Image.FromStream(s, true, true);
                 }

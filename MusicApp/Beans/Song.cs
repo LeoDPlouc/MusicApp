@@ -12,7 +12,7 @@ using TagLib;
 
 namespace MusicApp.Beans
 {
-    public class Song
+    public partial class Song
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -22,19 +22,8 @@ namespace MusicApp.Beans
         public bool Heart { get; set; }
         public Artist Artist { get; set; }
         public Album Album { get; set; }
-        public Picture Cover { get; set; }
+        public int CoverId { get; set; }
         public string Path { get; set; }
-
         public string Hash { get; set; }
-
-        public void ComputeHash()
-        {
-            Hash = FileHandler.HashFromFile(Path);
-        }
-        public void Save()
-        {
-            MusicDataBase.UpdateSong(this);
-            FileHandler.SaveSong(this);
-        }
     }
 }

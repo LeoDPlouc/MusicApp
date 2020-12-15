@@ -28,7 +28,7 @@ namespace MusicApp.Processing
             {
                 Album = await albumTask,
                 Artist = artist,
-                Cover = cover,
+                CoverId = cover.Id,
                 Duration = f.Length,
                 Heart = false,
                 Like = false,
@@ -41,27 +41,24 @@ namespace MusicApp.Processing
         {
             byte[] data = file.Tag.Pictures.First().Data.Data;
 
-            var coverTask = MusicDataBase.SelectPicture(data);
+            var coverTask = Picture.SelectPictureByData(data);
 
-            Beans.Picture cover;
-            List<Beans.Picture> pictures = await coverTask;
-            if (pictures.Count == 0)
+            Beans.Picture cover = await coverTask;
+            if (cover == null)
             {
                 cover = new Beans.Picture { Data = data };
                 cover.Id = MusicDataBase.CreatePicture(cover);
             }
-            else cover = pictures.First();
 
             return cover;
         }
         private async static Task<Artist> LoadArtist(TagLib.File file)
         {
             string name = file.Tag.FirstAlbumArtist;
-            var artistTask = MusicDataBase.SelectArtist(name);
+            var artistTask = Artist.SelectArtistByName(name);
 
-            Artist artist;
-            List<Artist> artists = await artistTask;
-            if (artists.Count == 0)
+            Artist artist = await artistTask;
+            if (artist == null)
             {
                 artist = new Artist
                 {
@@ -69,32 +66,25 @@ namespace MusicApp.Processing
                 };
                 artist.Id = MusicDataBase.CreateArtist(artist);
             }
-            else artist = artists.First();
 
             return artist;
         }
         private async static Task<Album> LoadAlbum(TagLib.File file, Artist artist, Beans.Picture cover)
         {
             string title = file.Tag.Album;
-            var albumTask = MusicDataBase.SelectAlbum(title);
-
-            Album album;
-            var albumResult = await albumTask;
-            List<Album> albums =albumResult.FindAll(x => x.Artist.Name == artist.Name);
-            if (albums.Count == 0)
+            Album album = await Album.SelectAlbumByTitleAndByArtistName(title, artist.Name);
+            if (album == null)
             {
                 album = new Album
                 {
                     Artist = artist,
-                    Cover = cover,
+                    CoverId = cover.Id,
                     Tags = file.Tag.Genres,
                     Title = title,
                     Year = (int)file.Tag.Year
                 };
-                album.Id = MusicDataBase.CreateAlbum(album);
+                album.Create();
             }
-            else album = albums.First();
-
             return album;
         }
 
@@ -107,13 +97,13 @@ namespace MusicApp.Processing
                 return Encoding.UTF8.GetString(h.ComputeHash(data));
             }
         }
-        public static void SaveSong(Song song)
+        public static async void SaveSong(Song song)
         {
             TagLib.File f = TagLib.File.Create(song.Path);
 
             f.Tag.Album = song.Album.Title;
             f.Tag.AlbumArtists = new string[] { song.Artist.Name };
-            f.Tag.Pictures = new TagLib.Picture[] { new TagLib.Picture(new TagLib.ByteVector(song.Cover.Data)) };
+            f.Tag.Pictures = new TagLib.Picture[] { new TagLib.Picture(new TagLib.ByteVector((await Picture.SelectPictureById(song.CoverId)).Data)) };
             f.Tag.Track = (uint)song.N;
             f.Tag.Title = song.Title;
 

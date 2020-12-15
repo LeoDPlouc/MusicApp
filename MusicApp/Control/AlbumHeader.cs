@@ -26,12 +26,14 @@ namespace MusicApp.Control
             Init();
         }
 
-        public void LoadAlbum(Album album)
+        public async void LoadAlbum(Album album)
         {
-            Album = album; 
+            Album = album;
+            var coverTask = Picture.SelectPictureById(album.CoverId);
+
             try
             {
-                using (MemoryStream s = new MemoryStream(album.Cover.Data))
+                using (MemoryStream s = new MemoryStream((await coverTask).Data))
                 {
                     Cover.Image = Image.FromStream(s, true, true);
                 }

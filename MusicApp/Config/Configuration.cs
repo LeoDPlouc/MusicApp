@@ -23,23 +23,19 @@ namespace MusicApp.Config
 
         public static void Init()
         {
-            if(!File.Exists(CONFIG_FILE))
-            {
+            if (File.Exists(CONFIG_FILE)) return;
+            JObject json =
+                new JObject(
+                    new JProperty(FLD_CONFIG,
+                        new JObject(
+                            new JProperty(FLD_CONFIG_VERSION))),
+                    new JProperty(FLD_DATABASE,
+                        new JObject(
+                            new JProperty(FLD_DATABASE_VERSION))));
 
-                JObject json =
-                    new JObject(
-                        new JProperty(FLD_CONFIG,
-                            new JObject(
-                                new JProperty(FLD_CONFIG_VERSION))),
-                        new JProperty(FLD_DATABASE,
-                            new JObject(
-                                new JProperty(FLD_DATABASE_VERSION))));
-
-                SaveConfig(json);
-                WriteDBVersion();
-                WriteConfigVersion();
-            }
-
+            SaveConfig(json);
+            WriteDBVersion();
+            WriteConfigVersion();
         }
         public static string ReadConfigVersion()
         {
@@ -91,10 +87,6 @@ namespace MusicApp.Config
             writer.Write(json.ToString());
             writer.Flush();
             writer.Close();
-        }
-        private static JsonTextReader GetReader()
-        {
-            return new JsonTextReader(new StreamReader(CONFIG_FILE));
         }
     }
 }

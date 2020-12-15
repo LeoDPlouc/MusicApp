@@ -10,23 +10,13 @@ using MusicApp.Processing;
 
 namespace MusicApp.Beans
 {
-    public class Album
+    public partial class Album
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public Artist Artist { get; set; }
         public string[] Tags { get; set; }
-        public Picture Cover { get; set; }
+        public int CoverId { get; set; }
         public int Year { get; set; }
-
-        public async void Save()
-        {
-            MusicDataBase.UpdateAlbum(this);
-
-            foreach (Song s in await MusicDataBase.SelectSongAlbum(this))
-            {
-                FileHandler.SaveSong(s);
-            }
-        }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MusicApp.Beans
 {
-    public class Artist
+    public partial class Artist
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -17,7 +17,7 @@ namespace MusicApp.Beans
         {
             MusicDataBase.UpdateArtist(this);
 
-            foreach(Album a in await MusicDataBase.SelectAlbumArtist(this))
+            foreach(Album a in await SelectAlbumFromArtist())
             {
                 a.Save();
             }

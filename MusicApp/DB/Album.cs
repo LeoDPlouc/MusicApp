@@ -14,6 +14,7 @@ namespace MusicApp.DB
         const string CREATE_ALBUM_STAT = "insert into album(title, artist_id, tags, pic_id, year) values (@title, @artist_id, @tags, @pic_id, @year);";
         const string UPDATE_ALBUM_STAT = "update album set title = @title, artist_id = @artistid, tags = @tags, pic_id = @picid, year = @picid where id = @id;";
         const string DELETE_ALBUM_STAT = "delete from album where id = @id";
+        const string LIST_ALBUM_STAT = "select * from album;";
         const string SELECT_ALBUM_LAST_ID_STAT = "select max(id) from album;";
 
         public async static Task<int> CreateAlbum(Album album)
@@ -26,7 +27,7 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("title", album.Title));
             command.Parameters.Add(new SqliteParameter("artist_id", album.Artist.Id));
             command.Parameters.Add(new SqliteParameter("tags", t));
-            command.Parameters.Add(new SqliteParameter("pic_id", album.Cover.Id));
+            command.Parameters.Add(new SqliteParameter("pic_id", album.CoverId));
             command.Parameters.Add(new SqliteParameter("year", album.Year));
 
             await command.ExecuteNonQueryAsync();
@@ -50,7 +51,7 @@ namespace MusicApp.DB
             command.Parameters.Add(new SqliteParameter("@title", album.Title));
             command.Parameters.Add(new SqliteParameter("@artistid", album.Artist.Id));
             command.Parameters.Add(new SqliteParameter("@tags", t));
-            command.Parameters.Add(new SqliteParameter("@picid", album.Cover.Id));
+            command.Parameters.Add(new SqliteParameter("@picid", album.CoverId));
             command.Parameters.Add(new SqliteParameter("@id", album.Id));
 
             command.ExecuteNonQueryAsync();
@@ -79,18 +80,15 @@ namespace MusicApp.DB
 
         private async static Task<Album> ReaderToAlbum(SqliteDataReader reader)
         {
-            var coverTask = SelectPicture(reader.GetInt32(4));
-            var artistTask = SelectArtist(reader.GetInt32(2));
 
-            var artist = await artistTask;
-            var cover = await coverTask;
+            var artist = await Artist.SelectArtistById(reader.GetInt32(2));
 
             return new Album
             {
-                Artist = artist.First(),
-                Cover =  cover.First(),
+                Artist = artist,
                 Id = reader.GetInt32(0),
                 Tags = reader.GetString(3).Split(';'),
+                CoverId = reader.GetInt32(4),
                 Title = reader.GetString(1),
                 Year = reader.GetInt32(5)
             };

@@ -13,17 +13,17 @@ namespace MusicApp.Processing
         public async static Task<List<Song>> SearchSong(string arg)
         {
             if (string.IsNullOrEmpty(arg)) return await MusicDataBase.ListSongs();
-            else return await MusicDataBase.SearchSongTitle(arg);
+            else return await Song.SearchSongByName(arg);
         }
         public async static Task<List<Album>> SearchAlbum(string arg)
         {
             if (string.IsNullOrEmpty(arg)) return await MusicDataBase.ListAlbum();
-            else return await MusicDataBase.SearchAlbumTitle(arg);
+            else return await Album.SearchAlbumByName(arg);
         }
         public async static Task<List<Artist>> SearchArtist(string arg)
         {
             if (string.IsNullOrEmpty(arg)) return await MusicDataBase.ListArtist();
-            else return await MusicDataBase.SearchArtist(arg);
+            else return await Artist.SearchArtistByName(arg);
         }
     }
 }

@@ -18,15 +18,9 @@ namespace MusicApp.DB
             switch(v)
             {
                 case "1.0":
-                    Update1_2();
                     break;
             }
             Configuration.WriteDBVersion();
-        }
-
-        private static void Update1_2()
-        {
-            return;
         }
     }
 }
