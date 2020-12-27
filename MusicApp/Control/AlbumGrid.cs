@@ -46,7 +46,7 @@ namespace MusicApp.Control
             AlbumControl ac = (AlbumControl)sender;
             AlbumControlClicked?.Invoke(this, new AlbumControlEventArgs()
             {
-                album = ac.Album
+                Album = ac.Album
             });
         }
 
@@ -126,7 +126,7 @@ namespace MusicApp.Control
             catch { }
 
             albumName.Text = album.Title;
-            //artistName.Text = album.Artist.Name;
+            artistName.Text = album.Artist;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -139,6 +139,6 @@ namespace MusicApp.Control
 
     public class AlbumControlEventArgs : EventArgs
     {
-        public Album album { get; set; }
+        public Album Album { get; set; }
     }
 }

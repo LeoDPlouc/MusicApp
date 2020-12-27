@@ -28,12 +28,11 @@ namespace MusicApp.Control
 
         public void LoadAlbum(Album album)
         {
-            /*Album = album;
-            var coverTask = Picture.SelectPictureById(album.CoverId);
+            Album = album;
 
             try
             {
-                using (MemoryStream s = new MemoryStream((await coverTask).Data))
+                using (MemoryStream s = new MemoryStream(Album.Cover.Data))
                 {
                     Cover.Image = Image.FromStream(s, true, true);
                 }
@@ -41,7 +40,7 @@ namespace MusicApp.Control
             catch { }
 
             AlbumName.Text = Album.Title;
-            ArtistName.Text = Album.Artist.Name;*/
+            ArtistName.Text = Album.Artist;
         }
 
         private void Init()

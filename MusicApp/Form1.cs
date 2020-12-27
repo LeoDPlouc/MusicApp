@@ -271,8 +271,8 @@ namespace MusicApp
         {
             InitAlbumSongList();
 
-            songlist.Load(e.album.Songs);
-            albumHeader.LoadAlbum(e.album);
+            songlist.Load(e.Album.Songs);
+            albumHeader.LoadAlbum(e.Album);
         }
 
         protected void InitArtistGrid(List<Artist> artists)
