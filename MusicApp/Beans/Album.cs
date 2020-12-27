@@ -12,11 +12,11 @@ namespace MusicApp.Beans
 {
     public partial class Album
     {
-        public int Id { get; set; }
+        public Album() => Songs = new List<Song>();
         public string Title { get; set; }
-        public Artist Artist { get; set; }
-        public string[] Tags { get; set; }
-        public int CoverId { get; set; }
-        public int Year { get; set; }
+        public string Artist { get; set; }
+        public List<Song> Songs { get; set; }
+
+        public Picture Cover { get => Songs.First().Cover; }
     }
 }

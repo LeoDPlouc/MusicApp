@@ -26,9 +26,9 @@ namespace MusicApp.Control
             Init();
         }
 
-        public async void LoadAlbum(Album album)
+        public void LoadAlbum(Album album)
         {
-            Album = album;
+            /*Album = album;
             var coverTask = Picture.SelectPictureById(album.CoverId);
 
             try
@@ -41,7 +41,7 @@ namespace MusicApp.Control
             catch { }
 
             AlbumName.Text = Album.Title;
-            ArtistName.Text = Album.Artist.Name;
+            ArtistName.Text = Album.Artist.Name;*/
         }
 
         private void Init()
@@ -61,7 +61,7 @@ namespace MusicApp.Control
 
         private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem.Text == "Edit")
+            /*if (e.ClickedItem.Text == "Edit")
             {
                 Label newTitleLabel = new Label() { Text = "New Album Title", AutoSize = true, Margin = new Padding(0, 6, 0, 0) };
                 TextBox NewTitle = new TextBox() { Width = 100 };
@@ -79,7 +79,7 @@ namespace MusicApp.Control
                 Album.Title = AlbumName.Text;
 
                 Album.Save();
-            }
+            }*/
         }
 
         protected override void OnPaint(PaintEventArgs e)

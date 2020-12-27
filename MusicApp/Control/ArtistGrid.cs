@@ -51,14 +51,13 @@ namespace MusicApp.Control
             });
         }
 
-        public async void LoadArtist(IEnumerable<Artist> artists)
+        public void LoadArtist(IEnumerable<Artist> artists)
         {
             SuspendLayout();
             artistlist.Clear();
             foreach (Artist a in artists)
             {
                 artistlist.Add(a);
-                await Task.Delay(1);
             }
             ResumeLayout();
             Invalidate(true);
@@ -107,15 +106,14 @@ namespace MusicApp.Control
             Controls.Add(panel);
         }
 
-        public async void LoadArtist(Artist artist)
+        public void LoadArtist(Artist artist)
         {
-            List<Album> albums = await artist.SelectAlbumFromArtist();
+            List<Album> albums = artist.Albums;
             Artist = artist;
-            var coverTask = Picture.SelectPictureById(albums.First().CoverId);
 
             try
             {
-                using (MemoryStream s = new MemoryStream((await coverTask).Data))
+                using (MemoryStream s = new MemoryStream(albums.First().Cover.Data))
                 {
                     cover.Image = Image.FromStream(s, true, true);
                 }

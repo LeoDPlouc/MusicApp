@@ -1,4 +1,5 @@
-﻿using MusicApp.DB;
+﻿using MusicApp.Beans;
+using MusicApp.DB;
 using MusicApp.Processing;
 using System;
 using System.Collections.Generic;
@@ -11,44 +12,53 @@ namespace MusicApp.Beans
 {
     public partial class Song
     {
-        public async static Task<List<Song>> ListAllSongs()
+        public static List<Song> Songs { get; set; }
+        public static void CollectSongs()
         {
-            return await MusicDataBase.ListSongs();
+            if (Songs == null) Songs = new List<Song>();
+
+            Songs.Clear();
+            foreach (string path in FileHandler.ListAllSongPath()) Songs.Add(FileHandler.LoadSong(path));
+
+            Beans.Album.FetchAlbums();
         }
-        public async static Task<List<Song>> SearchSongByName(string query)
+
+        public static List<Song> SearchByTitle(string arg)
         {
-            var songsTask = ListAllSongs();
+            Regex pattern = new Regex(arg);
 
-            Regex re = new Regex(query);
-
-            var songs = await songsTask;
-            return songs.FindAll((Song s) =>
+            return Songs.FindAll((Song s) =>
             {
-                return re.IsMatch(s.Title);
+                return pattern.IsMatch(s.Title);
             });
         }
-        public async static Task<bool> ExistSongByPath(string path)
+        public static List<Song> SearchByAlbum(string arg)
         {
-            var songs = await ListAllSongs();
-            return songs.Exists((Song s) =>
+            Regex pattern = new Regex(arg);
+
+            return Songs.FindAll((Song s) =>
             {
-                return s.Path == path;
+                return pattern.IsMatch(s.Album);
+            });
+        }
+        public static List<Song> SearchByArtist(string arg)
+        {
+            Regex pattern = new Regex(arg);
+
+            return Songs.FindAll((Song s) =>
+            {
+                return pattern.IsMatch(s.Artist);
             });
         }
 
         public void Create()
         {
-            MusicDataBase.CreateSong(this);
+            MusicDataBase.CreateSong(Path, Like, Heart);
         }
         public void Save()
         {
             MusicDataBase.UpdateSong(this);
             FileHandler.SaveSong(this);
-        }
-
-        public void ComputeHash()
-        {
-            Hash = FileHandler.HashFromFile(Path);
         }
     }
 }

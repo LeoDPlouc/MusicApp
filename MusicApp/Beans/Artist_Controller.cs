@@ -1,4 +1,5 @@
 ﻿using MusicApp.DB;
+using MusicApp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,49 +9,37 @@ using System.Threading.Tasks;
 
 namespace MusicApp.Beans
 {
-    partial class Artist
+    public partial class Artist
     {
-        public async static Task<List<Artist>> ListAllArtists()
+        public static List<Artist> Artists;
+
+        public static void FetchArtists()
         {
-            return await MusicDataBase.ListArtist();
-        }
-        public async static Task<Artist> SelectArtistById(int id)
-        {
-            var artists = await ListAllArtists();
-            return artists.Find((Artist a) =>
+            if (Artists == null) Artists = new List<Artist>();
+            foreach (Album alb in Album.Albums)
             {
-                return a.Id == id;
-            });
-        }
-        public async static Task<Artist> SelectArtistByName(string name)
-        {
-            var artists = await ListAllArtists();
-            return artists.Find((Artist a) =>
-            {
-                return a.Name == name;
-            });
-        }
-        public async static Task<List<Artist>> SearchArtistByName(string query)
-        {
-            var artistsTask = ListAllArtists();
+                var artist = Artists.Find((Artist art) =>
+                {
+                    return alb.Artist == art.Name;
+                });
 
-            Regex re = new Regex(query);
+                if (artist == null)
+                {
+                    artist = new Artist() { Name = alb.Artist };
+                    Artists.Add(artist);
+                }
 
-            var artists = await artistsTask;
-
-            return artists.FindAll((Artist a) =>
-            {
-                return re.IsMatch(a.Name);
-            });
-
+                artist.Albums.Add(alb);
+            }
         }
 
-        public async Task<List<Album>> SelectAlbumFromArtist()
+        public static List<Artist> SearchByName(string arg)
         {
-            var albums = await Album.SelectAllAlbum();
-            return albums.FindAll((Album a) =>
+            Regex pattern = new Regex(arg);
+
+            return Artists.FindAll((Artist a) =>
             {
-                return a.Artist.Id == Id;
+                return pattern.IsMatch(a.Name);
             });
         }
     }

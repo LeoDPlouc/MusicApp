@@ -44,7 +44,7 @@ namespace MusicApp.Control
 
         private void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem.Text == "Edit")
+            /*if (e.ClickedItem.Text == "Edit")
             {
                 Label newTitleLabel = new Label() { Text = "New Artist Name", AutoSize = true, Margin = new Padding(0, 6, 0, 0) };
                 TextBox NewTitle = new TextBox() { Width = 100 };
@@ -62,7 +62,7 @@ namespace MusicApp.Control
                 Artist.Name = ArtistName.Text;
 
                 Artist.Save();
-            }
+            }*/
         }
 
         protected override void OnPaint(PaintEventArgs e)

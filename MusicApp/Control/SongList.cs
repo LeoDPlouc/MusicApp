@@ -40,20 +40,14 @@ namespace MusicApp.Control
 
         private void SongList_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-            if (Columns["ArtistName"] == null) Columns.Add("ArtistName", "Artist");
-            if (Columns["AlbumName"] == null) Columns.Add("AlbumName", "Album");
-            if (Columns["HeartControl"] == null) Columns.Add("HeartControl", "Heart");
+            if (Columns["HeartControl"] == null) Columns.Add("HeartControl", "HeartControl");
 
             Columns["N"].Visible = Type == SongListType.Album;
 
-            Columns["Id"].Visible = false;
-            Columns["Artist"].Visible = false;
-            Columns["Album"].Visible = false;
             Columns["Path"].Visible = false;
             Columns["Cover"].Visible = false;
             Columns["Heart"].Visible = false;
             Columns["Like"].Visible = false;
-            Columns["Hash"].Visible = false;
 
             Columns["N"].DisplayIndex = 0;
 
@@ -61,9 +55,6 @@ namespace MusicApp.Control
             {
                 Song s = (Song)r.DataBoundItem;
                 Color sColor = s.Like ? (s.Heart ? Color.DarkRed : Color.MediumPurple) : Color.White;
-
-                r.Cells["ArtistName"].Value = s.Artist.Name;
-                r.Cells["AlbumName"].Value = s.Album.Title;
 
                 r.Cells["HeartControl"].Value = "♥";
                 r.Cells["HeartControl"].Style = new DataGridViewCellStyle() { ForeColor = sColor, SelectionForeColor = sColor};
@@ -152,35 +143,11 @@ namespace MusicApp.Control
             if (CurrentCell != null) e.Cancel = false;
         }
 
-        private async void SongList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void SongList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             DataGridViewRow r = Rows[e.RowIndex];
             Song s = r.DataBoundItem as Song;
-
-            string artistName = r.Cells[Columns["ArtistName"].Index].Value as string;
-            var searchArtist = await Artist.SearchArtistByName(artistName);
-            Artist artist = searchArtist.FirstOrDefault();
-            if (artist == null)
-            {
-                artist = new Artist { Name = artistName };
-                artist.Id = MusicDataBase.CreateArtist(artist);
-            }
-
-            string albumName = r.Cells[Columns["AlbumName"].Index].Value as string;
-            var searchAlbum = await Album.SearchAlbumByName(albumName);
-            Album album = searchAlbum.FirstOrDefault();
-            if (album == null)
-            {
-                album = new Album() { Artist = artist, Title = albumName, CoverId = s.CoverId, Tags = s.Album.Tags, Year = s.Album.Year };
-                album.Id = await MusicDataBase.CreateAlbum(album);
-            }
-
-            s.Album = album;
-            s.Artist = artist;
-
             s.Save();
-
-            CurrentCell = null;
         }
 
         private void SongList_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)

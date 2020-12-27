@@ -107,10 +107,9 @@
   <ItemGroup>
     <Compile Include="Beans\Album.cs" />
     <Compile Include="Beans\Album_Controller.cs" />
-    <Compile Include="Beans\Artist.cs" />
     <Compile Include="Beans\Artist_Controller.cs" />
+    <Compile Include="Beans\Artist.cs" />
     <Compile Include="Beans\Picture.cs" />
-    <Compile Include="Beans\Picture_Controller.cs" />
     <Compile Include="Beans\Song.cs" />
     <Compile Include="Beans\Song_Controller.cs" />
     <Compile Include="Config\Configuration.cs" />
@@ -180,13 +179,8 @@
     <Compile Include="Control\SongList.Designer.cs">
       <DependentUpon>SongList.cs</DependentUpon>
     </Compile>
-    <Compile Include="DB\Album.cs" />
-    <Compile Include="DB\Artist.cs" />
-    <Compile Include="DB\Manager.cs" />
     <Compile Include="DB\MusicDataBase.cs" />
-    <Compile Include="DB\Picture.cs" />
     <Compile Include="DB\Song.cs" />
-    <Compile Include="DB\Update.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,7 +188,6 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Processing\FileHandler.cs" />
-    <Compile Include="Processing\Listing.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
