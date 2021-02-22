@@ -1,5 +1,4 @@
 ﻿using LibVLCSharp.Shared;
-using MusicApp.DB;
 using MusicApp.Processing;
 using System;
 using System.Collections.Generic;
@@ -23,5 +22,6 @@ namespace MusicApp.Beans
         public string Album { get; set; }
         public Picture Cover { get => FileHandler.LoadCover(Path); }
         public string Path { get; set; }
+        public string AcousticId = "aaaaa";//{ get; set; }
     }
 }

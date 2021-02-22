@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Drawing;
-using MusicApp.DB;
 using MusicApp.Processing;
 
 namespace MusicApp.Beans

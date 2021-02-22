@@ -6,20 +6,18 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MusicApp.DB;
 
 namespace MusicApp.Config
 {
     class Configuration
     {
         public const string CONFIG_VERSION = "1.0";
+        public const string CONFIG_HOST = "Host1";
 
         const string CONFIG_FILE = "config";
 
         const string FLD_CONFIG = "config";
         const string FLD_CONFIG_VERSION = "version";
-        const string FLD_DATABASE = "database";
-        const string FLD_DATABASE_VERSION = "version";
 
         public static void Init()
         {
@@ -28,13 +26,10 @@ namespace MusicApp.Config
                 new JObject(
                     new JProperty(FLD_CONFIG,
                         new JObject(
-                            new JProperty(FLD_CONFIG_VERSION))),
-                    new JProperty(FLD_DATABASE,
-                        new JObject(
-                            new JProperty(FLD_DATABASE_VERSION))));
+                            new JProperty(FLD_CONFIG_VERSION)))
+                    );
 
             SaveConfig(json);
-            WriteDBVersion();
             WriteConfigVersion();
         }
         public static string ReadConfigVersion()
@@ -53,25 +48,6 @@ namespace MusicApp.Config
         {
             JObject config = GetConfig();
             config[FLD_CONFIG][FLD_CONFIG_VERSION] = version;
-            SaveConfig(config);
-        }
-
-        public static string ReadDBVersion()
-        {
-            JObject config = GetConfig();
-            return (string) config[FLD_DATABASE][FLD_DATABASE_VERSION];
-        }
-
-        public static void WriteDBVersion()
-        {
-            JObject config = GetConfig();
-            config[FLD_DATABASE][FLD_DATABASE_VERSION] = MusicDataBase.DB_VERSION;
-            SaveConfig(config);
-        }
-        public static void WriteDBVersion(string version)
-        {
-            JObject config = GetConfig();
-            config[FLD_DATABASE][FLD_DATABASE_VERSION] = version;
             SaveConfig(config);
         }
 

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MusicApp.Beans;
 using System.IO;
-using MusicApp.DB;
 
 namespace MusicApp.Control
 {

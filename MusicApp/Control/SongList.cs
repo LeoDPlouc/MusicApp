@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MusicApp.Processing;
 using MusicApp.Beans;
-using MusicApp.DB;
 using System.Globalization;
 
 namespace MusicApp.Control

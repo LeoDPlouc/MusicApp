@@ -1,5 +1,4 @@
-﻿using MusicApp.DB;
-using MusicApp.Processing;
+﻿using MusicApp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;

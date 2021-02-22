@@ -12,7 +12,6 @@ using System.IO;
 using LibVLCSharp.Shared;
 using LibVLCSharp.Forms.Shared;
 using MusicApp.Control;
-using MusicApp.DB;
 using MusicApp.Processing;
 using MusicApp.Config;
 
@@ -42,7 +41,6 @@ namespace MusicApp
             InitializeComponent();
 
             InitConfig();
-            InitDB();
 
             Song.CollectSongs();
 
@@ -198,10 +196,6 @@ namespace MusicApp
         protected void InitConfig()
         {
             Configuration.Init();
-        }
-        protected void InitDB()
-        {
-            MusicDataBase.Start();
         }
         protected  void InitSongList()
         {

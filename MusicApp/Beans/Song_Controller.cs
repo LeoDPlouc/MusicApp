@@ -1,5 +1,5 @@
 ﻿using MusicApp.Beans;
-using MusicApp.DB;
+using MusicApp.MusicServerController;
 using MusicApp.Processing;
 using System;
 using System.Collections.Generic;
@@ -13,12 +13,12 @@ namespace MusicApp.Beans
     public partial class Song
     {
         public static List<Song> Songs { get; set; }
-        public static void CollectSongs()
+        public static async void CollectSongs()
         {
             if (Songs == null) Songs = new List<Song>();
 
             Songs.Clear();
-            foreach (string path in FileHandler.ListAllSongPath()) Songs.Add(FileHandler.LoadSong(path));
+            foreach (string path in FileHandler.ListAllSongPath()) Songs.Add(await FileHandler.LoadSong(path));
 
             Beans.Album.FetchAlbums();
         }
@@ -50,14 +50,9 @@ namespace MusicApp.Beans
                 return pattern.IsMatch(s.Artist);
             });
         }
-
-        public void Create()
-        {
-            MusicDataBase.CreateSong(Path, Like, Heart);
-        }
         public void Save()
         {
-            MusicDataBase.UpdateSong(this);
+            MusicServer.SaveSong(this);
             FileHandler.SaveSong(this);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using MusicApp.Beans;
-using MusicApp.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+using MusicApp.MusicServerController;
 
 namespace MusicApp.Processing
 {
@@ -16,19 +16,19 @@ namespace MusicApp.Processing
         {
             return Directory.GetFiles(@"C:\Users\Leo\Desktop\musictest", "*.mp3", SearchOption.AllDirectories).ToList();
         }
-        public static Song LoadSong(string path)
+        public static async Task<Song> LoadSong(string path)
         {
             TagLib.File f = TagLib.File.Create(path);
 
-            var songInfo = MusicDataBase.SelectSong(path);
+            var songInfo = await MusicServer.GetSongInfo("aaaaa");
 
             return new Song
             {
                 Album = f.Tag.Album,
                 Artist = f.Tag.FirstAlbumArtist,
                 Duration = f.Length,
-                Heart = songInfo == null ? false : songInfo.Item3,
-                Like = songInfo == null ? false : songInfo.Item2,
+                Heart = songInfo.Heart,
+                Like = songInfo.Like,
                 N = (int)f.Tag.Track,
                 Path = path,
                 Title = f.Tag.Title
