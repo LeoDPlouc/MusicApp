@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 using MusicApp.MusicServerController;
+using AcoustID;
+using NAudio;
 
 namespace MusicApp.Processing
 {
@@ -20,7 +22,8 @@ namespace MusicApp.Processing
         {
             TagLib.File f = TagLib.File.Create(path);
 
-            var songInfo = await MusicServer.GetSongInfo("aaaaa");
+            string acousticId = GetAcousticId(path);
+            var songInfo = await MusicServer.GetSongInfo(acousticId);
 
             return new Song
             {
@@ -31,7 +34,8 @@ namespace MusicApp.Processing
                 Like = songInfo.Like,
                 N = (int)f.Tag.Track,
                 Path = path,
-                Title = f.Tag.Title
+                Title = f.Tag.Title,
+                AcousticId = acousticId
             };
         }
         public static void SaveSong(Song song)
@@ -51,6 +55,22 @@ namespace MusicApp.Processing
         {
             TagLib.File f = TagLib.File.Create(path);
             return new Picture() { Data = f.Tag.Pictures.First().Data.Data };
+        }
+        private static string GetAcousticId(string path)
+        {
+            NAudio.Wave.AudioFileReader reader = new NAudio.Wave.AudioFileReader(path);
+            byte[] buffer = new byte[reader.Length];
+            reader.Read(buffer, 0, buffer.Length);
+            short[] data = buffer.Select<byte, short>((byte b) =>
+            {
+                return Convert.ToInt16(b);
+            }).ToArray();
+
+            ChromaContext context = new ChromaContext();
+            context.Start(reader.WaveFormat.SampleRate, reader.WaveFormat.Channels);
+            context.Feed(data, data.Length);
+            context.Finish();
+            return context.GetFingerprint();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace MusicApp.Beans
     public partial class Song
     {
         public static List<Song> Songs { get; set; }
-        public static async void CollectSongs()
+        public static async Task CollectSongs()
         {
             if (Songs == null) Songs = new List<Song>();
 
