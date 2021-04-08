@@ -22,8 +22,8 @@ namespace MusicApp.Processing
         {
             TagLib.File f = TagLib.File.Create(path);
 
-            string acousticId = GetAcousticId(path);
-            var songInfo = await MusicServer.GetSongInfo(acousticId);
+            string acousticIdHash = GetAcousticId(path, out string acousticId);
+            var songInfo = await MusicServer.GetSongInfo(acousticIdHash);
 
             return new Song
             {
@@ -35,7 +35,8 @@ namespace MusicApp.Processing
                 N = (int)f.Tag.Track,
                 Path = path,
                 Title = f.Tag.Title,
-                AcousticId = acousticId
+                AcousticId = acousticId,
+                AcousticIdHash = acousticIdHash,
             };
         }
         public static void SaveSong(Song song)
@@ -56,7 +57,7 @@ namespace MusicApp.Processing
             TagLib.File f = TagLib.File.Create(path);
             return new Picture() { Data = f.Tag.Pictures.First().Data.Data };
         }
-        private static string GetAcousticId(string path)
+        private static string GetAcousticId(string path, out string fingerprint)
         {
             NAudio.Wave.AudioFileReader reader = new NAudio.Wave.AudioFileReader(path);
             byte[] buffer = new byte[reader.Length];
@@ -70,7 +71,9 @@ namespace MusicApp.Processing
             context.Start(reader.WaveFormat.SampleRate, reader.WaveFormat.Channels);
             context.Feed(data, data.Length);
             context.Finish();
-            return context.GetFingerprint();
+
+            fingerprint = context.GetFingerprint();
+            return context.GetFingerprintHash().ToString();
         }
     }
 }

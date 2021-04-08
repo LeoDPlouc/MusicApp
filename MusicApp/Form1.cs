@@ -42,7 +42,7 @@ namespace MusicApp
 
             InitConfig();
 
-            Song.CollectSongs();
+            Song.CollectSongs().Wait();
 
             InitForm();
             InitPlayer();

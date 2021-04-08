@@ -23,5 +23,6 @@ namespace MusicApp.Beans
         public Picture Cover { get => FileHandler.LoadCover(Path); }
         public string Path { get; set; }
         public string AcousticId { get; set; }
+        public string AcousticIdHash { get; set; }
     }
 }

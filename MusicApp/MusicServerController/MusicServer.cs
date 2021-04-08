@@ -28,20 +28,13 @@ namespace MusicApp.MusicServerController
             string json = SongInfoToJson(info);
 
             HttpClient client = new HttpClient();
-            var content = new StringContent(json);
-            await client.PostAsync("http://127.0.0.1:8000/song/", content);
+            await client.PostAsync("http://127.0.0.1:8000/song/", new StringContent(json));
         }
 
         public static async Task<SongInfo> GetSongInfo(string acousticId)
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage res = await client.GetAsync("http://127.0.0.1:8000/song/?acousticId=" + acousticId);
-            if (res.StatusCode == System.Net.HttpStatusCode.NotFound)
-                return new SongInfo()
-                {
-                    Heart = false,
-                    Like = false
-                };
+            HttpResponseMessage res = await client.GetAsync("http://127.0.0.1:8000/song/?acousticId=" + acousticId, HttpCompletionOption.ResponseContentRead);
             string json = await res.Content.ReadAsStringAsync();
             return JsonToSongInfo(json);
         }
