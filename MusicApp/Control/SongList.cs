@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MusicApp.Processing;
+using MusicLib.Processing;
 using MusicApp.Beans;
 using System.Globalization;
 
@@ -60,7 +60,7 @@ namespace MusicApp.Control
             }
         }
 
-        private void Song_List_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private async void Song_List_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
 
@@ -77,7 +77,7 @@ namespace MusicApp.Control
                 }
                 else if (!s.Like && !s.Heart) s.Like = true;
 
-                s.Save();
+                await s.Save();
                 SongList_DataBindingComplete(null, null);
 
                 return;
@@ -142,11 +142,11 @@ namespace MusicApp.Control
             if (CurrentCell != null) e.Cancel = false;
         }
 
-        private void SongList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private async void SongList_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             DataGridViewRow r = Rows[e.RowIndex];
             Song s = r.DataBoundItem as Song;
-            s.Save();
+            await s.Save();
         }
 
         private void SongList_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)

@@ -1,18 +1,9 @@
 ﻿using MusicApp.Beans;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using LibVLCSharp.Shared;
-using LibVLCSharp.Forms.Shared;
 using MusicApp.Control;
-using MusicApp.Processing;
 using MusicApp.Config;
 
 namespace MusicApp

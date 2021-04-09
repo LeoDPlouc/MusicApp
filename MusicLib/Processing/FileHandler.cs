@@ -1,18 +1,15 @@
-﻿using MusicApp.Beans;
+﻿using MusicLib.Beans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
 using System.IO;
-using MusicApp.MusicServerController;
 using AcoustID;
-using NAudio;
+using static MusicLib.Beans.Song;
 
-namespace MusicApp.Processing
+namespace MusicLib.Processing
 {
-    class FileHandler
+    public class FileHandler
     {
         public static List<string> ListAllSongPath()
         {
@@ -23,7 +20,7 @@ namespace MusicApp.Processing
             TagLib.File f = TagLib.File.Create(path);
 
             string acousticIdHash = GetAcousticId(path, out string acousticId);
-            var songInfo = await MusicServer.GetSongInfo(acousticIdHash);
+            var songInfo = await Server.Client.GetSongInfo(acousticId, "127.0.0.1");
 
             return new Song
             {
@@ -45,19 +42,24 @@ namespace MusicApp.Processing
 
             f.Tag.Album = song.Title;
             f.Tag.AlbumArtists = new string[] { song.Artist };
-            f.Tag.Pictures = new TagLib.Picture[] { new TagLib.Picture(new TagLib.ByteVector(song.Cover.Data)) };
+            f.Tag.Pictures = new TagLib.Picture[] { new TagLib.Picture(new TagLib.ByteVector(song.GetCover)) };
             f.Tag.Track = (uint)song.N;
             f.Tag.Title = song.Title;
 
             f.Save();
         }
 
-        public static Picture LoadCover(string path)
+        public static byte[] LoadCover(string path)
         {
             TagLib.File f = TagLib.File.Create(path);
-            return new Picture() { Data = f.Tag.Pictures.First().Data.Data };
+            return f.Tag.Pictures.First().Data.Data;
         }
-        private static string GetAcousticId(string path, out string fingerprint)
+        public static void CheckDirectory(string path)
+        {
+            if (!File.Exists(path))
+                Directory.CreateDirectory(path);
+        }
+        public static string GetAcousticId(string path, out string fingerprint)
         {
             NAudio.Wave.AudioFileReader reader = new NAudio.Wave.AudioFileReader(path);
             byte[] buffer = new byte[reader.Length];

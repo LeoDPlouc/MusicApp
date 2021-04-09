@@ -21,12 +21,6 @@ namespace MusicServer.Beans
         public string Path { get; set; }
         public string Host { get; set; }
         public string AcousticId { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("Title : {0}, Album : {1}, Artist : {2}, Like : {3}, Heart : {4}, Path : {5}, Host : {6}, AcousticId : {7}",
-                Title, Album, Artist, Like, Heart, Path, Host, AcousticId);
-        }
         public async Task Save()
         {
             using(var fs = File.Create("SongData/" + AcousticId))

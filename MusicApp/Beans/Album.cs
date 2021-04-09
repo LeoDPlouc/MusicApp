@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.Drawing;
-using MusicApp.Processing;
+using MusicLib.Processing;
 
 namespace MusicApp.Beans
 {
@@ -16,6 +16,6 @@ namespace MusicApp.Beans
         public string Artist { get; set; }
         public List<Song> Songs { get; set; }
 
-        public Picture Cover { get => Songs.First().Cover; }
+        public byte[] Cover { get => Songs.First().GetCover; }
     }
 }

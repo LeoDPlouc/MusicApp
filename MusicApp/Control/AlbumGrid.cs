@@ -118,7 +118,7 @@ namespace MusicApp.Control
 
             try
             {
-                using (MemoryStream s = new MemoryStream(Album.Cover.Data))
+                using (MemoryStream s = new MemoryStream(Album.Cover))
                 {
                     cover.Image = Image.FromStream(s, true, true);
                 }
