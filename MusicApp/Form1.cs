@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using MusicApp.Control;
-using MusicApp.Config;
 
 namespace MusicApp
 {
@@ -30,8 +29,6 @@ namespace MusicApp
         public Form1()
         {
             InitializeComponent();
-
-            InitConfig();
 
             Song.CollectSongs().Wait();
 
@@ -182,11 +179,6 @@ namespace MusicApp
         {
             playlist.Visible = ((Playlist_Button)sender).On;
             Invalidate();
-        }
-
-        protected void InitConfig()
-        {
-            Configuration.Init();
         }
         protected  void InitSongList()
         {

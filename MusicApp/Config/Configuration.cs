@@ -6,63 +6,73 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using YamlDotNet.Serialization;
 
 namespace MusicApp.Config
 {
     class Configuration
     {
-        public const string CONFIG_VERSION = "1.0";
-        public const string CONFIG_HOST = "Host1";
+        private static string CONFIG = ".config";
 
-        const string CONFIG_FILE = "config";
+        public static string PARAM_SERVER_ENABLED = "PARAM_SERVER_ENABLED";
+        public static string PARAM_LIBRARY_PATHS = "PARAM_LIBRARY_PATHS";
 
-        const string FLD_CONFIG = "config";
-        const string FLD_CONFIG_VERSION = "version";
+        private static Dictionary<string, object> config;
 
-        public static void Init()
+        private static void SaveConfig(Dictionary<string, object> config)
         {
-            if (File.Exists(CONFIG_FILE)) return;
-            JObject json =
-                new JObject(
-                    new JProperty(FLD_CONFIG,
-                        new JObject(
-                            new JProperty(FLD_CONFIG_VERSION)))
-                    );
-
-            SaveConfig(json);
-            WriteConfigVersion();
-        }
-        public static string ReadConfigVersion()
-        {
-            JObject config = GetConfig();
-            return (string)config[FLD_CONFIG][FLD_CONFIG_VERSION];
+            Serializer serializer = new Serializer();
+            string yaml = serializer.Serialize(config);
+            File.WriteAllText(CONFIG, yaml);
         }
 
-        public static void WriteConfigVersion()
+        private static Dictionary<string, object> GetConfig()
         {
-            JObject config = GetConfig();
-            config[FLD_CONFIG][FLD_CONFIG_VERSION] = CONFIG_VERSION;
-            SaveConfig(config);
-        }
-        public static void WriteConfigVersion(string version)
-        {
-            JObject config = GetConfig();
-            config[FLD_CONFIG][FLD_CONFIG_VERSION] = version;
-            SaveConfig(config);
+            if (File.Exists(CONFIG))
+            {
+                Deserializer deserializer = new Deserializer();
+                string yaml = File.ReadAllText(CONFIG);
+                return (Dictionary<string, object>)deserializer.Deserialize(yaml, typeof(Dictionary<string, object>));
+            }
+            return new Dictionary<string, object>();
         }
 
-        private static JObject GetConfig()
+        public static bool ServerEnabled
         {
-            string json = File.ReadAllText(CONFIG_FILE);
-            return JObject.Parse(json);
+            get
+            {
+                var config = GetConfig();
+                var res = config[PARAM_SERVER_ENABLED];
+
+                if (res is null)
+                    return false;
+                return (bool)res;
+            }
+            set
+            {
+                var config = GetConfig();
+                config[PARAM_SERVER_ENABLED] = value;
+                SaveConfig(config);
+            }
         }
 
-        private static void SaveConfig(JObject json)
+        public static string[] LibraryPaths
         {
-            StreamWriter writer = File.CreateText(CONFIG_FILE);
-            writer.Write(json.ToString());
-            writer.Flush();
-            writer.Close();
+            get
+            {
+                var config = GetConfig();
+                var res = config[PARAM_LIBRARY_PATHS];
+
+                if (res is null)
+                    return new string[] { System.Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) };
+                return (string[])res;
+            }
+            set
+            {
+                var config = GetConfig();
+                config[PARAM_LIBRARY_PATHS] = value;
+                SaveConfig(config);
+            }
         }
     }
 }
