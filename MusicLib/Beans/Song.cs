@@ -1,12 +1,6 @@
 ﻿using MusicLib.Processing;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MusicLib.Beans
 {
@@ -22,10 +16,9 @@ namespace MusicLib.Beans
         public string Album { get; set; }
         public string Path { get; set; }
         public string AcousticId { get; set; }
-        public string AcousticIdHash { get; set; }
 
 
-        public Byte[] GetCover => FileHandler.LoadCover(Path);
+        public Byte[] GetCover() => FileHandler.LoadCover(Path);
         public SongInfo GetSongInfo()
         {
             return new SongInfo

@@ -2,14 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using MusicLib.Processing;
 using MusicApp.Beans;
-using System.Globalization;
 
 namespace MusicApp.Control
 {
@@ -44,9 +38,9 @@ namespace MusicApp.Control
             Columns["N"].Visible = Type == SongListType.Album;
 
             Columns["Path"].Visible = false;
-            Columns["Cover"].Visible = false;
             Columns["Heart"].Visible = false;
             Columns["Like"].Visible = false;
+            Columns["AcousticId"].Visible = false;
 
             Columns["N"].DisplayIndex = 0;
 

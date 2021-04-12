@@ -14,10 +14,8 @@ namespace MusicApp.Config
     {
         private static string CONFIG = ".config";
 
-        public static string PARAM_SERVER_ENABLED = "PARAM_SERVER_ENABLED";
-        public static string PARAM_LIBRARY_PATHS = "PARAM_LIBRARY_PATHS";
-
-        private static Dictionary<string, object> config;
+        private static string PARAM_SERVER_ENABLED = "PARAM_SERVER_ENABLED";
+        private static string PARAM_LIBRARY_PATHS = "PARAM_LIBRARY_PATHS";
 
         private static void SaveConfig(Dictionary<string, object> config)
         {
@@ -42,11 +40,11 @@ namespace MusicApp.Config
             get
             {
                 var config = GetConfig();
-                var res = config[PARAM_SERVER_ENABLED];
+                
 
-                if (res is null)
-                    return false;
-                return (bool)res;
+                if (config.TryGetValue(PARAM_SERVER_ENABLED, out object res))
+                    return (bool)res;
+                return false;
             }
             set
             {
@@ -61,11 +59,10 @@ namespace MusicApp.Config
             get
             {
                 var config = GetConfig();
-                var res = config[PARAM_LIBRARY_PATHS];
 
-                if (res is null)
-                    return new string[] { System.Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) };
-                return (string[])res;
+                if (config.TryGetValue(PARAM_LIBRARY_PATHS, out object res))
+                    return (string[])res;
+                return new string[] { System.Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) };
             }
             set
             {

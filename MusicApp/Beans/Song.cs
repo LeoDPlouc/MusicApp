@@ -1,6 +1,7 @@
-﻿using MusicLib.Processing;
+﻿using MusicApp.Config;
+using MusicLib.Files;
+using MusicLib.Processing;
 using MusicLib.Server;
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,15 +12,16 @@ namespace MusicApp.Beans
     {
 
         public static List<Song> Songs { get; set; }
-        public static async Task CollectSongs()
+        public static void CollectSongs()
         {
             if (Songs == null) Songs = new List<Song>();
 
             Songs.Clear();
             foreach (string path in FileHandler.ListAllSongPath())
             {
-                Song song = await FileHandler.LoadSong(path) as Song;
-                Songs.Add(song);
+                Song song = new Song();
+                FileHandler.LoadSong(path, Configuration.ServerEnabled, song);
+                Songs.Add(song as Song);
             }
 
             Beans.Album.FetchAlbums();
@@ -55,7 +57,24 @@ namespace MusicApp.Beans
         public async Task Save()
         {
             FileHandler.SaveSong(this);
-            await Client.SendSongInfo(this.GetSongInfo(), "127.0.0.1");
+
+            if (Configuration.ServerEnabled)
+                await Client.SendSongInfo(GetSongInfo(), "127.0.0.1");
+            else
+                await InfoFiles.Save(GetSongInfo());
+        }
+
+        public async Task Load()
+        {
+            SongInfo songInfo;
+            if (Configuration.ServerEnabled)
+                songInfo = await Client.GetSongInfo(AcousticId, "127.0.0.1");
+            else
+                songInfo = InfoFiles.Load(AcousticId);
+
+            Heart = songInfo.Heart;
+            Like = songInfo.Like;
+
         }
     }
 }

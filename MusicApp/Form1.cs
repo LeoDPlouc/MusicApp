@@ -30,7 +30,7 @@ namespace MusicApp
         {
             InitializeComponent();
 
-            Song.CollectSongs().Wait();
+            Song.CollectSongs();
 
             InitForm();
             InitPlayer();

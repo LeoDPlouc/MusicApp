@@ -16,7 +16,7 @@ namespace MusicApp.Beans
         public string Title { get; set; }
         public string Artist { get; set; }
         public List<Song> Songs { get; set; }
-        public byte[] Cover { get => Songs.First().GetCover; }
+        public byte[] Cover { get => Songs.First().GetCover(); }
 
         public static List<Album> Albums { get; set; }
 
@@ -25,6 +25,8 @@ namespace MusicApp.Beans
             if (Albums == null) Albums = new List<Album>();
             foreach (Song s in Song.Songs)
             {
+                if (s is null)
+                    Console.Clear();
                 var album = Albums.Find((Album a) =>
                 {
                     return a.Title == s.Album;
