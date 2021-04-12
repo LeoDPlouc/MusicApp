@@ -12,7 +12,7 @@ namespace MusicApp.Beans
     {
 
         public static List<Song> Songs { get; set; }
-        public static void CollectSongs()
+        public static async Task CollectSongs()
         {
             if (Songs == null) Songs = new List<Song>();
 
@@ -20,7 +20,7 @@ namespace MusicApp.Beans
             foreach (string path in FileHandler.ListAllSongPath())
             {
                 Song song = new Song();
-                FileHandler.LoadSong(path, song);
+                await FileHandler.LoadSong(path, Configuration.ServerEnabled, song);
                 Songs.Add(song);
             }
 
@@ -60,21 +60,8 @@ namespace MusicApp.Beans
 
             if (Configuration.ServerEnabled)
                 await Client.SendSongInfo(GetSongInfo(), "127.0.0.1");
-            //else
-                //await InfoFiles.Save(GetSongInfo());
-        }
-
-        public async Task Load()
-        {
-            SongInfo songInfo;
-            if (Configuration.ServerEnabled)
-                songInfo = await Client.GetSongInfo(AcousticId, "127.0.0.1");
             else
-                songInfo = InfoFiles.Load(AcousticId);
-
-            Heart = songInfo.Heart;
-            Like = songInfo.Like;
-
+                await InfoFiles.Save(GetSongInfo());
         }
     }
 }

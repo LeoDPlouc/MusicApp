@@ -8,6 +8,12 @@ using System.Text;
 using TagLib;
 using TagLib.Id3v2;
 using File = System.IO.File;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using static MusicLib.Beans.Song;
+using MusicLib.Server;
+using MusicLib.Files;
 
 namespace MusicLib.Processing
 {
@@ -19,13 +25,20 @@ namespace MusicLib.Processing
         {
             return Directory.GetFiles(@"C:\Users\Leo\Desktop\musictest", "*.mp3", SearchOption.AllDirectories).ToList();
         }
-        public static Song LoadSong(string path)
+        public static async Task<Song> LoadSong(string path, bool serverEnabled)
         {
             TagLib.File f = TagLib.File.Create(path);
 
             string acousticId = GetCustomTag(f, ACOUSTICID_TAG);
             if (acousticId is null)
                 acousticId = ComputeAcousticId(path);
+
+            SongInfo songInfo;
+            if (serverEnabled)
+                songInfo = await Client.GetSongInfo(acousticId, "127.0.0.1");
+            else
+                songInfo = InfoFiles.Load(acousticId);
+
 
             return new Song
             {
@@ -36,11 +49,13 @@ namespace MusicLib.Processing
                 Path = path,
                 Title = f.Tag.Title,
                 AcousticId = acousticId,
+                Heart = songInfo.Heart,
+                Like = songInfo.Like
             };
         }
-        public static void LoadSong(string path, Song song)
+        public static async Task LoadSong(string path, bool serverEnabled, Song song)
         {
-            Song s = LoadSong(path);
+            Song s = await LoadSong(path, serverEnabled);
 
             song.Album = s.Album;
             song.Artist = s.Artist;
@@ -49,6 +64,8 @@ namespace MusicLib.Processing
             song.Path = s.Path;
             song.Title = s.Title;
             song.AcousticId = s.AcousticId;
+            song.Heart = s.Heart;
+            song.Like = s.Like;
         }
         public static void SaveSong(Song song)
         {
@@ -62,7 +79,18 @@ namespace MusicLib.Processing
 
             SetCustomTag(f, ACOUSTICID_TAG, song.AcousticId);
 
-            f.Save();
+            while(true)
+            {
+                try
+                {
+                    f.Save();
+                    break;
+                }
+                catch
+                {
+                    Thread.Sleep(50);
+                }
+            }
         }
 
         public static byte[] LoadCover(string path)

@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Security.Cryptography;
 using static MusicLib.Beans.Song;
 
 namespace MusicLib.Files
@@ -18,18 +19,40 @@ namespace MusicLib.Files
         {
             FileHandler.CheckDirectory(PATH);
 
+            string hash = ComputeHash(songInfo.AcousticId);
+
             string json = songInfo.Serialize();
-            using (var fs = File.Create(PATH + songInfo.AcousticId))
+            using (var fs = File.Create(PATH + hash))
             {
-                byte[] buffer = Encoding.UTF8.GetBytes(json);
+                byte[] buffer = Encoding.Unicode.GetBytes(json);
                 await fs.WriteAsync(buffer, 0, buffer.Length);
             }
         }
 
         public static SongInfo Load(string AcousticID)
         {
-            string json = File.ReadAllText(PATH + AcousticID);
-            return SongInfo.Deserialize(json);
+            string hash = ComputeHash(AcousticID);
+            string fullPath = PATH + hash;
+
+            if (File.Exists(fullPath))
+            {
+                string json = File.ReadAllText(fullPath, Encoding.Unicode);
+                return SongInfo.Deserialize(json);
+            }
+
+            return new SongInfo
+            {
+                AcousticId = AcousticID,
+                Heart = false,
+                Like = false
+            };
+        }
+
+        private static string ComputeHash(string acousticId)
+        {
+            byte[] buffer = Encoding.Unicode.GetBytes(acousticId);
+            byte[] hashByte = MD5CryptoServiceProvider.Create().ComputeHash(buffer);
+            return BitConverter.ToString(hashByte);
         }
     }
 }

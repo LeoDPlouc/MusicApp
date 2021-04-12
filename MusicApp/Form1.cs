@@ -30,8 +30,7 @@ namespace MusicApp
         {
             InitializeComponent();
 
-            Song.CollectSongs();
-            Song.Songs.ForEach(async (Song s) => await s.Save());
+            Song.CollectSongs().Wait();
 
             InitForm();
             InitPlayer();
