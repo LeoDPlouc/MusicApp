@@ -20,8 +20,8 @@ namespace MusicApp.Beans
             foreach (string path in FileHandler.ListAllSongPath())
             {
                 Song song = new Song();
-                FileHandler.LoadSong(path, Configuration.ServerEnabled, song);
-                Songs.Add(song as Song);
+                FileHandler.LoadSong(path, song);
+                Songs.Add(song);
             }
 
             Beans.Album.FetchAlbums();
@@ -60,8 +60,8 @@ namespace MusicApp.Beans
 
             if (Configuration.ServerEnabled)
                 await Client.SendSongInfo(GetSongInfo(), "127.0.0.1");
-            else
-                await InfoFiles.Save(GetSongInfo());
+            //else
+                //await InfoFiles.Save(GetSongInfo());
         }
 
         public async Task Load()

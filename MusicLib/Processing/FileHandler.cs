@@ -2,50 +2,53 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.IO;
 using AcoustID;
-using static MusicLib.Beans.Song;
-using MusicLib.Files;
+using System.Text;
+using TagLib;
+using TagLib.Id3v2;
+using File = System.IO.File;
 
 namespace MusicLib.Processing
 {
     public class FileHandler
     {
+        private const string ACOUSTICID_TAG = "AcousticId";
+
         public static List<string> ListAllSongPath()
         {
             return Directory.GetFiles(@"C:\Users\Leo\Desktop\musictest", "*.mp3", SearchOption.AllDirectories).ToList();
         }
-        public static Song LoadSong(string path, bool serverEnabled)
+        public static Song LoadSong(string path)
         {
             TagLib.File f = TagLib.File.Create(path);
 
-            string acousticId = GetAcousticId(path);
+            string acousticId = GetCustomTag(f, ACOUSTICID_TAG);
+            if (acousticId is null)
+                acousticId = ComputeAcousticId(path);
 
             return new Song
             {
                 Album = f.Tag.Album,
                 Artist = f.Tag.FirstAlbumArtist,
-                Duration = f.Length,
+                Duration = f.Properties.Duration.TotalMinutes,
                 N = (int)f.Tag.Track,
                 Path = path,
                 Title = f.Tag.Title,
                 AcousticId = acousticId,
             };
         }
-        public static void LoadSong(string path, bool serverEnabled, Song song)
+        public static void LoadSong(string path, Song song)
         {
-            TagLib.File f = TagLib.File.Create(path);
+            Song s = LoadSong(path);
 
-            string acousticId = GetAcousticId(path);
-
-            song.Album = f.Tag.Album;
-            song.Artist = f.Tag.FirstAlbumArtist;
-            song.Duration = f.Length;
-            song.N = (int)f.Tag.Track;
-            song.Path = path;
-            song.Title = f.Tag.Title;
-            song.AcousticId = acousticId;
+            song.Album = s.Album;
+            song.Artist = s.Artist;
+            song.Duration = s.Duration;
+            song.N = s.N;
+            song.Path = s.Path;
+            song.Title = s.Title;
+            song.AcousticId = s.AcousticId;
         }
         public static void SaveSong(Song song)
         {
@@ -53,9 +56,11 @@ namespace MusicLib.Processing
 
             f.Tag.Album = song.Title;
             f.Tag.AlbumArtists = new string[] { song.Artist };
-            f.Tag.Pictures = new TagLib.Picture[] { new TagLib.Picture(new TagLib.ByteVector(song.GetCover())) };
+            f.Tag.Pictures = new Picture[] { new Picture(new ByteVector(song.GetCover())) };
             f.Tag.Track = (uint)song.N;
             f.Tag.Title = song.Title;
+
+            SetCustomTag(f, ACOUSTICID_TAG, song.AcousticId);
 
             f.Save();
         }
@@ -83,18 +88,21 @@ namespace MusicLib.Processing
             }
             return true;
         }
-        public static string GetAcousticId(string path)
+
+        private static string GetCustomTag(TagLib.File file, string tagName)
         {
-            string acousticId = AcousticIdFiles.Get(path);
-
-            if (acousticId is null)
-            {
-                acousticId = ComputeAcousticId(path);
-                AcousticIdFiles.Set(path, acousticId);
-            }
-            return acousticId;
+            var tag = (TagLib.Id3v2.Tag)file.GetTag(TagTypes.Id3v2);
+            PrivateFrame frame = PrivateFrame.Get(tag, tagName, false);
+            if (frame is null)
+                return null;
+            return Encoding.Unicode.GetString(frame.PrivateData.Data);
         }
-
+        private static void SetCustomTag(TagLib.File file, string tagName, string value)
+        {
+            var tag = (TagLib.Id3v2.Tag)file.GetTag(TagTypes.Id3v2);
+            PrivateFrame frame = PrivateFrame.Get(tag, tagName, true);
+            frame.PrivateData = Encoding.Unicode.GetBytes(value);
+        }
         private static string ComputeAcousticId(string path)
         {
             NAudio.Wave.AudioFileReader reader = new NAudio.Wave.AudioFileReader(path);

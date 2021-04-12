@@ -9,7 +9,7 @@ namespace MusicLib.Beans
     {
         public string Title { get; set; }
         public int N { get; set; }
-        public long Duration { get; set; }
+        public double Duration { get; set; }
         public bool Like { get; set; }
         public bool Heart { get; set; }
         public string Artist { get; set; }
