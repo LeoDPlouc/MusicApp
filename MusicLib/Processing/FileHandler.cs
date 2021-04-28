@@ -21,9 +21,9 @@ namespace MusicLib.Processing
     {
         private const string ACOUSTICID_TAG = "AcousticId";
 
-        public static List<string> ListAllSongPath()
+        public static List<string> ListAllSongPath(string path)
         {
-            return Directory.GetFiles(@"C:\Users\Leo\Desktop\musictest", "*.mp3", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories).ToList();
         }
         public static async Task<Song> LoadSong(string path, bool serverEnabled)
         {

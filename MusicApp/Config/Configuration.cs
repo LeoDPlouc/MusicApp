@@ -40,10 +40,10 @@ namespace MusicApp.Config
             get
             {
                 var config = GetConfig();
-                
+
 
                 if (config.TryGetValue(PARAM_SERVER_ENABLED, out object res))
-                    return (bool)res;
+                    return Boolean.Parse((string)res);
                 return false;
             }
             set
@@ -54,15 +54,15 @@ namespace MusicApp.Config
             }
         }
 
-        public static string[] LibraryPaths
+        public static string LibraryPath
         {
             get
             {
                 var config = GetConfig();
 
                 if (config.TryGetValue(PARAM_LIBRARY_PATHS, out object res))
-                    return (string[])res;
-                return new string[] { System.Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) };
+                    return (string)res;
+                return null;
             }
             set
             {

@@ -13,29 +13,29 @@ namespace MusicApp
         const int playerHeight = 60;
         const int playlistWidth = 300;
         const int tabHeight = 30;
+        const int tabWidth = 70;
         const int headerHeight = 200;
+        const int searchWidth = 300;
+        readonly Point middlePanelLocation = new Point(0, tabHeight);
         #endregion
 
         #region UI Parts
         Player player;
-
         SongList songlist;
-
         Playlist playlist;
-
         AlbumGrid albumgrid;
-
         ArtistGrid artistgrid;
-
-        FlowLayoutPanel tabPanel;
-        Label songtab;
-        Label albumtab;
-        Label artisttab;
-
-        TextBox search;
-
         AlbumHeader albumHeader;
         ArtistHeader artistHeader;
+        ConfigControl configControl;
+
+        FlowLayoutPanel tabPanel;
+        Label songTab;
+        Label albumTab;
+        Label artistTab;
+        Label configTab;
+
+        TextBox search;
         #endregion
 
         #region Form Logic
@@ -43,6 +43,7 @@ namespace MusicApp
         {
             InitializeComponent();
 
+            //Fetch all the songs
             Song.CollectSongs().Wait();
 
             InitForm();
@@ -60,7 +61,7 @@ namespace MusicApp
         }
         private void Form1_Resize(object sender, EventArgs e)
         {
-            Invalidate();
+            Invalidate(true);
         }
         #endregion
 
@@ -69,6 +70,7 @@ namespace MusicApp
         {
             ClearMiddlePannel();
 
+            //Init the songlist if it isnt already
             if(songlist == null)
             {
                 songlist = new SongList();
@@ -82,6 +84,7 @@ namespace MusicApp
         }
         private void SongList_SongDoubleClicked(object sender, SongEventArgs e)
         {
+            //Change the position in the playlist and play the song
             playlist.Position = e.pos;
             playlist.Load(songlist.songlist);
 
@@ -98,19 +101,29 @@ namespace MusicApp
                 Height = tabHeight
             };
 
-            songtab = new Label() { Text = "Song", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = 60, ForeColor = Color.Purple };
-            artisttab = new Label() { Text = "Artist", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = 60, ForeColor = Color.Purple };
-            albumtab = new Label() { Text = "Album", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = 60, ForeColor = Color.Purple };
+            //init the tabs
+            songTab = new Label() { Text = "Song", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
+            artistTab = new Label() { Text = "Artist", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
+            albumTab = new Label() { Text = "Album", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
+            configTab = new Label() { Text = "Configuration", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
 
-            songtab.Click += Songtab_Click;
-            artisttab.Click += Artisttab_Click;
-            albumtab.Click += Albumtab_Click;
+            songTab.Click += Songtab_Click;
+            artistTab.Click += Artisttab_Click;
+            albumTab.Click += Albumtab_Click;
+            configTab.Click += ConfigTab_Click;
 
-            tabPanel.Controls.Add(songtab);
-            tabPanel.Controls.Add(artisttab);
-            tabPanel.Controls.Add(albumtab);
+            tabPanel.Controls.Add(songTab);
+            tabPanel.Controls.Add(artistTab);
+            tabPanel.Controls.Add(albumTab);
+            tabPanel.Controls.Add(configTab);
 
             Controls.Add(tabPanel);
+        }
+
+        private void ConfigTab_Click(object sender, EventArgs e)
+        {
+            InitConfigControl();
+            search.Text = "";
         }
         private void Albumtab_Click(object sender, EventArgs e)
         {
@@ -132,7 +145,7 @@ namespace MusicApp
         #region Search Logic
         protected void InitSearch()
         {
-            search = new TextBox() { Height = tabHeight, Width = 200, ForeColor = Color.Purple };
+            search = new TextBox() { Height = tabHeight, Width = searchWidth, BackColor = Color.FromArgb(50, 50, 50) };
             Controls.Add(search);
 
             search.TextChanged += Search_TextChanged;
@@ -230,6 +243,7 @@ namespace MusicApp
         {
             ClearMiddlePannel();
 
+            //init the album grid if it isnt
             if (albumgrid == null)
             {
                 albumgrid = new AlbumGrid();
@@ -256,6 +270,7 @@ namespace MusicApp
         {
             ClearMiddlePannel();
 
+            //init artistgrid if it isnt
             if(artistgrid == null)
             {
                 artistgrid = new ArtistGrid();
@@ -278,14 +293,26 @@ namespace MusicApp
         }
         #endregion
 
+        #region ConfigControl Logic
+        protected void InitConfigControl()
+        {
+            ClearMiddlePannel();
+            search.Visible = false;
+
+            configControl = new ConfigControl();
+            
+            Controls.Add(configControl);
+
+            Invalidate();
+        }
+        #endregion
 
         protected override void OnPaint(PaintEventArgs e)
         {
             player.Location = new Point(0, DisplayRectangle.Height - playerHeight);
             player.Size = new Size(DisplayRectangle.Width, playerHeight);
 
-            Size middlePanelSize = new Size(DisplayRectangle.Width - (playlist.Visible ? playlistWidth : 0), DisplayRectangle.Height - playerHeight - tabHeight - (albumHeader != null ? headerHeight : 0));
-            Point middlePanelLocation = new Point(0, tabHeight + (albumHeader != null || artistHeader != null ? headerHeight : 0));
+            Size middlePanelSize = new Size(Width, Height - tabHeight - playerHeight);
 
             if (songlist != null) 
             {
@@ -317,31 +344,40 @@ namespace MusicApp
                 artistHeader.Size = new Size(middlePanelSize.Width, headerHeight);
             }
 
-            search.Location = new Point(Width - 250 - (playlist.Visible ? playlistWidth : 0), 0);
+            if(configControl != null)
+            {
+                configControl.Location = middlePanelLocation;
+                configControl.Size = middlePanelSize;
+            }
+
+            search.Location = new Point(Width - searchWidth - (playlist.Visible ? playlistWidth : 0), 0);
+
+            tabPanel.Width = Width - searchWidth - (playlist.Visible ? playlistWidth : 0);
 
             playlist.Location = new Point(DisplayRectangle.Width - playlistWidth, 0);
             playlist.Size = new Size(playlistWidth, DisplayRectangle.Height - playerHeight);
 
         }
         private void ClearMiddlePannel()
-        {/*
-            albumgrid?.Dispose();
-            artistgrid?.Dispose();
-            songlist?.Dispose();*/
+        {
             albumHeader?.Dispose();
             artistHeader?.Dispose();
+            configControl?.Dispose();
 
             Controls.Remove(albumgrid);
             Controls.Remove(artistgrid);
             Controls.Remove(songlist);
             Controls.Remove(albumHeader);
             Controls.Remove(artistHeader);
-            /*
-            albumgrid = null;
-            artistgrid = null;
-            songlist = null;*/
+            Controls.Remove(configControl);
+
             albumHeader = null;
             artistHeader = null;
+            configControl = null;
+
+            search.Visible = true;
+
+            Invalidate();
         }
     }
 }

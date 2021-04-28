@@ -17,7 +17,7 @@ namespace MusicApp.Beans
             if (Songs == null) Songs = new List<Song>();
 
             Songs.Clear();
-            foreach (string path in FileHandler.ListAllSongPath())
+            foreach (string path in FileHandler.ListAllSongPath(Configuration.LibraryPath))
             {
                 Song song = new Song();
                 await FileHandler.LoadSong(path, Configuration.ServerEnabled, song);
