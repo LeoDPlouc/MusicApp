@@ -137,7 +137,7 @@ namespace MusicLib.Processing
 
             byte[] buffer = new byte[reader.Length];
             reader.Read(buffer, 0, buffer.Length);
-            short[] data = buffer.Select<byte, short>((byte b) =>
+            short[] data = buffer.Select((byte b) =>
             {
                 return Convert.ToInt16(b);
             }).ToArray();

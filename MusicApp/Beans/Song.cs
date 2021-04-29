@@ -14,9 +14,11 @@ namespace MusicApp.Beans
         public static List<Song> Songs { get; set; }
         public static async Task CollectSongs()
         {
-            if (Songs == null) Songs = new List<Song>();
+            Songs = new List<Song>();
 
-            Songs.Clear();
+            if (string.IsNullOrEmpty(Configuration.LibraryPath))
+                return;
+
             foreach (string path in FileHandler.ListAllSongPath(Configuration.LibraryPath))
             {
                 Song song = new Song();

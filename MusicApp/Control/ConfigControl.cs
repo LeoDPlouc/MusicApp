@@ -1,4 +1,5 @@
-﻿using MusicApp.Config;
+﻿using MusicApp.Beans;
+using MusicApp.Config;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -61,8 +62,11 @@ namespace MusicApp.Control
         {
             FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
             folderBrowser.ShowDialog();
+            string path = folderBrowser.SelectedPath;
 
-            Configuration.LibraryPath = folderBrowser.SelectedPath;
+
+            if (!string.IsNullOrEmpty(path))
+                Configuration.LibraryPath = path;
         }
     }
 }

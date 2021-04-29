@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using MusicApp.Control;
+using MusicApp.Config;
 
 namespace MusicApp
 {
@@ -58,7 +59,19 @@ namespace MusicApp
             BackColor = Color.Black;
 
             Resize += Form1_Resize;
+
+            Configuration.ConfigChanged += Configuration_ConfigChanged;
         }
+
+        private void Configuration_ConfigChanged(object sender, ConfigEventArgs e)
+        {
+            if (e.Config != ConfigEventArgs.Configs.LibraryPath)
+                return;
+
+            Song.CollectSongs().Wait();
+            songlist.Load(Song.Songs);
+        }
+
         private void Form1_Resize(object sender, EventArgs e)
         {
             Invalidate(true);

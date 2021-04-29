@@ -22,11 +22,9 @@ namespace MusicApp.Beans
 
         public static void FetchAlbums()
         {
-            if (Albums == null) Albums = new List<Album>();
+            Albums = new List<Album>();
             foreach (Song s in Song.Songs)
             {
-                if (s is null)
-                    Console.Clear();
                 var album = Albums.Find((Album a) =>
                 {
                     return a.Title == s.Album;

@@ -13,7 +13,7 @@ namespace MusicApp.Beans
 
         public static void FetchArtists()
         {
-            if (Artists == null) Artists = new List<Artist>();
+            Artists = new List<Artist>();
             foreach (Album alb in Album.Albums)
             {
                 var artist = Artists.Find((Artist art) =>

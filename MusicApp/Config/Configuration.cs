@@ -12,11 +12,14 @@ namespace MusicApp.Config
 {
     class Configuration
     {
-        private static string CONFIG = ".config";
+        #region Constants
+        const string CONFIG = ".config";
 
-        private static string PARAM_SERVER_ENABLED = "PARAM_SERVER_ENABLED";
-        private static string PARAM_LIBRARY_PATHS = "PARAM_LIBRARY_PATHS";
+        const string PARAM_SERVER_ENABLED = "PARAM_SERVER_ENABLED";
+        const string PARAM_LIBRARY_PATHS = "PARAM_LIBRARY_PATHS";
+        #endregion
 
+        #region Serialization Functions
         private static void SaveConfig(Dictionary<string, object> config)
         {
             Serializer serializer = new Serializer();
@@ -34,7 +37,9 @@ namespace MusicApp.Config
             }
             return new Dictionary<string, object>();
         }
+        #endregion
 
+        #region Config Properties
         public static bool ServerEnabled
         {
             get
@@ -43,7 +48,7 @@ namespace MusicApp.Config
 
 
                 if (config.TryGetValue(PARAM_SERVER_ENABLED, out object res))
-                    return Boolean.Parse((string)res);
+                    return bool.Parse((string)res);
                 return false;
             }
             set
@@ -51,9 +56,10 @@ namespace MusicApp.Config
                 var config = GetConfig();
                 config[PARAM_SERVER_ENABLED] = value;
                 SaveConfig(config);
+
+                ConfigChanged.Invoke(null, new ConfigEventArgs() { Config = ConfigEventArgs.Configs.Serverenabled, Arg = value });
             }
         }
-
         public static string LibraryPath
         {
             get
@@ -69,7 +75,24 @@ namespace MusicApp.Config
                 var config = GetConfig();
                 config[PARAM_LIBRARY_PATHS] = value;
                 SaveConfig(config);
+
+                ConfigChanged.Invoke(null, new ConfigEventArgs() { Config = ConfigEventArgs.Configs.LibraryPath, Arg = value });
             }
         }
+        #endregion
+
+        public static event EventHandler<ConfigEventArgs> ConfigChanged;
+    }
+
+    class ConfigEventArgs : EventArgs
+    {
+        public enum Configs
+        {
+            Serverenabled,
+            LibraryPath
+        }
+
+        public Configs Config { get; set; }
+        public object Arg { get; set; }
     }
 }

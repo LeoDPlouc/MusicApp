@@ -51,7 +51,7 @@ namespace MusicLib.Files
         private static string ComputeHash(string acousticId)
         {
             byte[] buffer = Encoding.Unicode.GetBytes(acousticId);
-            byte[] hashByte = MD5CryptoServiceProvider.Create().ComputeHash(buffer);
+            byte[] hashByte = MD5.Create().ComputeHash(buffer);
             return BitConverter.ToString(hashByte);
         }
     }
