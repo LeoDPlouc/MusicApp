@@ -45,7 +45,7 @@ namespace MusicApp
             InitializeComponent();
 
             //Fetch all the songs
-            Song.CollectSongs().Wait();
+            Song.CollectSongs();
 
             InitForm();
             InitPlayer();
@@ -68,7 +68,7 @@ namespace MusicApp
             if (e.Config != ConfigEventArgs.Configs.LibraryPath)
                 return;
 
-            Song.CollectSongs().Wait();
+            Song.CollectSongs();
             songlist.Load(Song.Songs);
         }
 

@@ -3,7 +3,9 @@ using MusicLib.Files;
 using MusicLib.Processing;
 using MusicLib.Server;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MusicApp.Beans
@@ -12,19 +14,29 @@ namespace MusicApp.Beans
     {
 
         public static List<Song> Songs { get; set; }
-        public static async Task CollectSongs()
+        public static void CollectSongs()
         {
             Songs = new List<Song>();
 
-            if (string.IsNullOrEmpty(Configuration.LibraryPath))
+            string libraryPath = Configuration.LibraryPath;
+            if (string.IsNullOrEmpty(libraryPath) || !Directory.Exists(libraryPath))
                 return;
 
-            foreach (string path in FileHandler.ListAllSongPath(Configuration.LibraryPath))
+            Thread t = new Thread(async () =>
             {
-                Song song = new Song();
-                await FileHandler.LoadSong(path, Configuration.ServerEnabled, song);
-                Songs.Add(song);
-            }
+
+                foreach (string path in FileHandler.ListAllSongPath(Configuration.LibraryPath))
+                {
+                    Song song = new Song();
+                    await FileHandler.LoadSong(path, Configuration.ServerEnabled, song);
+                    Songs.Add(song);
+                }
+            });
+
+            t.Start();
+            t.Join();
+
+            Songs.ForEach(async (Song song) => await song.Save());
 
             Beans.Album.FetchAlbums();
         }

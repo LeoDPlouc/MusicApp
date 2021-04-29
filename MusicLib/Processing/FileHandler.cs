@@ -71,7 +71,7 @@ namespace MusicLib.Processing
         {
             TagLib.File f = TagLib.File.Create(song.Path);
 
-            f.Tag.Album = song.Title;
+            f.Tag.Album = song.Album;
             f.Tag.AlbumArtists = new string[] { song.Artist };
             f.Tag.Pictures = new Picture[] { new Picture(new ByteVector(song.GetCover())) };
             f.Tag.Track = (uint)song.N;
