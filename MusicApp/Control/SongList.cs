@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using MusicApp.Beans;
+using MusicApp.Parts;
 
 namespace MusicApp.Control
 {
@@ -11,7 +12,7 @@ namespace MusicApp.Control
     {
         public BindingList<Song> songlist;
 
-        public event EventHandler<SongEventArgs> SongDoubleClicked;
+        public event EventHandler SongDoubleClicked;
 
         public SongListType Type;
         public enum SongListType
@@ -77,11 +78,9 @@ namespace MusicApp.Control
                 return;
             }
 
-            SongDoubleClicked?.Invoke(this, new SongEventArgs()
-            {
-                song = s,
-                pos = e.RowIndex
-            });
+            Playlist.SetCurrentSong(s);
+
+            SongDoubleClicked?.Invoke(this, new EventArgs());
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -160,11 +159,5 @@ namespace MusicApp.Control
                 c.InitializeEditingControl(c.RowIndex, "", c.Style);
             }
         }
-    }
-
-    public class SongEventArgs : EventArgs
-    {
-        public Song song { get; set; }
-        public int pos { get; set; }
     }
 }

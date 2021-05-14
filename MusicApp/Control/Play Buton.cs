@@ -42,7 +42,24 @@ namespace MusicApp.Control
 
         public void ForceChangeState()
         {
-            if (!play) OnMouseClick(new MouseEventArgs(MouseButtons.Right, 0, MousePosition.X, MousePosition.Y, 0));
+            play = !play;
+            Invalidate();
+
+            OnStateChange(new PlayButtonEventArgs { State = play ? PlayButtonEventArgs.States.Play : PlayButtonEventArgs.States.Pause });
+        }
+        public void ForcePlay()
+        {
+            play = true;
+            Invalidate();
+
+            OnStateChange(new PlayButtonEventArgs { State = PlayButtonEventArgs.States.Play });
+        }
+        public void ForcePause()
+        {
+            play = false;
+            Invalidate();
+
+            OnStateChange(new PlayButtonEventArgs { State = PlayButtonEventArgs.States.Pause });
         }
 
         private void Play_Button_MouseLeave(object sender, EventArgs e)
@@ -59,10 +76,7 @@ namespace MusicApp.Control
 
         private void Play_Button_MouseClick(object sender, MouseEventArgs e)
         {
-            play = !play;
-            Invalidate();
-
-            OnStateChange(new PlayButtonEventArgs { State = play ? PlayButtonEventArgs.States.Play : PlayButtonEventArgs.States.Pause });
+            ForceChangeState();
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
@@ -72,8 +86,8 @@ namespace MusicApp.Control
             var g = pevent.Graphics;
             g.Clear(Color.Transparent);
 
-            if (play) drawPause(g);
-            else drawPlay(g);
+            if (play) DrawPause(g);
+            else DrawPlay(g);
             
         }
         protected void OnStateChange(PlayButtonEventArgs e)
@@ -81,7 +95,7 @@ namespace MusicApp.Control
             StateChanged?.Invoke(this, e);
         }
 
-        private void drawPlay(Graphics g)
+        private void DrawPlay(Graphics g)
         {
             var points = new Point[]
             {
@@ -93,7 +107,7 @@ namespace MusicApp.Control
             if (hover) g.FillPolygon(brush, points);
             else g.DrawPolygon(pen, points);
         }
-        private void drawPause(Graphics g)
+        private void DrawPause(Graphics g)
         {
             var r1 = new Rectangle(0, 0, DisplayRectangle.Width / 3 - 1, DisplayRectangle.Height - 1);
             var r2 = new Rectangle(2 * DisplayRectangle.Width / 3, 0, DisplayRectangle.Width / 3 - 1, DisplayRectangle.Height - 1);

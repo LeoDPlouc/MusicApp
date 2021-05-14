@@ -1,0 +1,119 @@
+﻿using LibVLCSharp.Shared;
+using MusicApp.Beans;
+using NAudio.Wave;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace MusicApp.Parts
+{
+    class Player
+    {
+        #region Private Members
+        private static WaveOutEvent outputDevice;
+        private static AudioFileReader audioFile;
+        private static Timer t;
+        private static float lastProgress;
+        #endregion
+
+        #region Events
+        public static event EventHandler SongFinished;
+        public static event EventHandler ProgressChanged;
+        public static event EventHandler SongAdded;
+        public static event EventHandler PlayerPlayed;
+        public static event EventHandler PlayerPaused;
+
+        protected static void OnSongFinish(EventArgs e)
+        {
+            SongFinished?.Invoke(null, e);
+        }
+        protected static void OnProgressChanged(EventArgs e)
+        {
+            ProgressChanged?.Invoke(null, e);
+        }
+        protected static void OnSongAdded(EventArgs e)
+        {
+            SongAdded?.Invoke(null, e);
+        }
+        protected void OnPlayerPlayed(EventArgs e)
+        {
+            PlayerPlayed?.Invoke(this, e);
+        }
+        protected void OnPlayerPaused(EventArgs e)
+        {
+            PlayerPaused?.Invoke(this, e);
+        }
+        #endregion
+
+        public static void InitPlayer()
+        {
+            outputDevice = new WaveOutEvent();
+
+            Playlist.SongChanged += Player_SongChanged;
+
+            t = new Timer(_ => ProcessProgress(), null, 0, 300);
+        }
+
+        private static void ProcessProgress()
+        {
+            if (Progress == lastProgress)
+                return;
+
+            lastProgress = Progress;
+
+            OnProgressChanged(new EventArgs());
+
+            if (Progress == 1)
+                OnSongFinish(new EventArgs());
+        }
+
+        private static void Player_SongChanged(object sender, EventArgs e)
+        {
+            LoadSong(Playlist.CurrentSong);
+        }
+
+        public static void LoadSong(Song song)
+        {
+            CurrentSong = song;
+            audioFile?.Dispose();
+            audioFile = new AudioFileReader(song.Path);
+            outputDevice.Stop();
+            outputDevice.Init(audioFile);
+            outputDevice.Play();
+        }
+
+        public static Song CurrentSong { get; private set; }
+        public static float Progress 
+        {
+            get
+            {
+                if (audioFile == null)
+                    return 0;
+                try
+                {
+                    return audioFile.Position / (float)audioFile.Length;
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+            set 
+            {
+                if(audioFile != null)
+                    audioFile.Position = (long)(value * audioFile.Length);
+            }
+        }
+        public static int Volume
+        {
+            get => (int)outputDevice.Volume * 100;
+            set => outputDevice.Volume = value / 100.0f;
+        }
+
+        public static void Play() => outputDevice.Play();
+        public static void Pause() => outputDevice.Pause();
+    }
+}

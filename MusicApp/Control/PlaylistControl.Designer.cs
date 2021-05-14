@@ -1,6 +1,6 @@
 ﻿namespace MusicApp.Control
 {
-    partial class Playlist
+    partial class PlaylistControl
     {
         /// <summary> 
         /// Variable nécessaire au concepteur.

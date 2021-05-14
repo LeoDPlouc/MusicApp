@@ -5,29 +5,27 @@ using System.Drawing;
 using System.Windows.Forms;
 using MusicApp.Control;
 using MusicApp.Config;
+using MusicApp.Parts;
 
 namespace MusicApp
 {
     public partial class Form1 : Form
     {
         #region Constants
-        const int playerHeight = 60;
-        const int playlistWidth = 300;
         const int tabHeight = 30;
         const int tabWidth = 70;
-        const int headerHeight = 200;
         const int searchWidth = 300;
         readonly Point middlePanelLocation = new Point(0, tabHeight);
         #endregion
 
         #region UI Parts
-        Player player;
+        PlayerControl playerControl;
         SongList songlist;
-        Playlist playlist;
+        PlaylistControl playlistControl;
         AlbumGrid albumgrid;
         ArtistGrid artistgrid;
-        AlbumHeader albumHeader;
-        ArtistHeader artistHeader;
+        AlbumPresentation albumPresentation;
+        ArtistPresentation artistPresentation;
         ConfigControl configControl;
 
         FlowLayoutPanel tabPanel;
@@ -95,13 +93,13 @@ namespace MusicApp
             Invalidate();
             songlist.Invalidate(true);
         }
-        private void SongList_SongDoubleClicked(object sender, SongEventArgs e)
+        //TODO mettre cette fonction dans le control
+        private void SongList_SongDoubleClicked(object sender, EventArgs e)
         {
             //Change the position in the playlist and play the song
-            playlist.Position = e.pos;
-            playlist.Load(songlist.songlist);
+            Playlist.Load(songlist.songlist);
 
-            player.ForcePlay();
+            playerControl.ForceButtonPlay();
         }
         #endregion
 
@@ -178,46 +176,39 @@ namespace MusicApp
         #region Player Logic
         protected void InitPlayer()
         {
-            player = new Player();
+            Player.InitPlayer();
 
-            Controls.Add(player);
+            playerControl = new PlayerControl();
 
-            player.SongFinished += Player_SongFinished;
-            player.PlaylistButtonClicked += Player_PlaylistButtonClicked;
-            player.NextButtonClicked += Player_NextButtonClicked;
+            Controls.Add(playerControl);
+
+            playerControl.PlaylistButtonClicked += Player_PlaylistButtonClicked;
+            playerControl.NextButtonClicked += Player_NextButtonClicked;
         }
         private void Player_NextButtonClicked(object sender, EventArgs e)
         {
-            player.AddMedia(playlist.Next().Path);
-            player.ForcePlay();
+            Player.LoadSong(Playlist.Next());
+            playerControl.ForceButtonPlay();
         }
         private void Player_PlaylistButtonClicked(object sender, EventArgs e)
         {
-            playlist.Visible = ((Playlist_Button)sender).On;
+            playlistControl.Visible = ((Playlist_Button)sender).On;
             Invalidate();
         }
-        private void Playlist_PlaylistChanged(object sender, SongEventArgs e)
+        private void Playlist_PlaylistChanged(object sender, EventArgs e)
         {
-            player.AddMedia(e.song.Path);
-        }
-        private void Player_SongFinished(object sender, EventArgs e)
-        {
-            player.AddMedia(playlist.Next().Path);
+            Player.LoadSong(Playlist.CurrentSong);
         }
         #endregion
 
-        #region AlbumSongList Logic
-        protected void InitAlbumSongList()
+        #region AlbumPresentation Logic
+        protected void InitAlbumPresenttion()
         {
             ClearMiddlePannel();
 
-            songlist = new SongList();
-            albumHeader = new AlbumHeader();
+            albumPresentation = new AlbumPresentation();
 
-            Controls.Add(songlist);
-            Controls.Add(albumHeader);
-
-            songlist.SongDoubleClicked += SongList_SongDoubleClicked;
+            Controls.Add(albumPresentation);
 
             Invalidate();
         }
@@ -228,13 +219,9 @@ namespace MusicApp
         {
             ClearMiddlePannel();
 
-            albumgrid = new AlbumGrid();
-            artistHeader = new ArtistHeader();
+            artistPresentation = new ArtistPresentation();
 
-            Controls.Add(albumgrid);
-            Controls.Add(artistHeader);
-
-            albumgrid.AlbumControlClicked += Albumgrid_AlbumControlClicked;
+            Controls.Add(artistPresentation);
 
             Invalidate();
         }
@@ -243,11 +230,13 @@ namespace MusicApp
         #region PlayList Logic
         protected void InitPlaylist()
         {
-            playlist = new Playlist() { Visible = false };
+            Playlist.InitPlaylist();
 
-            Controls.Add(playlist);
+            playlistControl = new PlaylistControl() { Visible = false };
 
-            playlist.PlaylistChanged += Playlist_PlaylistChanged;
+            Controls.Add(playlistControl);
+
+            Playlist.PlaylistChanged += Playlist_PlaylistChanged;
         }
         #endregion
 
@@ -271,10 +260,9 @@ namespace MusicApp
         }
         private void Albumgrid_AlbumControlClicked(object sender, AlbumControlEventArgs e)
         {
-            InitAlbumSongList();
+            InitAlbumPresenttion();
 
-            songlist.Load(e.Album.Songs);
-            albumHeader.LoadAlbum(e.Album);
+            albumPresentation.LoadAlbum(e.Album);
         }
         #endregion
 
@@ -301,8 +289,7 @@ namespace MusicApp
         {
             InitArtistAlbumList();
 
-            albumgrid.LoadAlbum(e.artist.Albums);
-            artistHeader.LoadArtist(e.artist);
+            artistPresentation.LoadArtist(e.Artist);
         }
         #endregion
 
@@ -322,10 +309,16 @@ namespace MusicApp
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            player.Location = new Point(0, DisplayRectangle.Height - playerHeight);
-            player.Size = new Size(DisplayRectangle.Width, playerHeight);
+            base.OnPaint(e);
 
-            Size middlePanelSize = new Size(Width, Height - tabHeight - playerHeight);
+            search.Location = new Point(DisplayRectangle.Width - searchWidth, 0);
+
+            tabPanel.Width = Width - searchWidth - playlistControl.Width;
+
+            Size middlePanelSize = new Size(DisplayRectangle.Width, DisplayRectangle.Height - tabHeight - playerControl.DisplayRectangle.Height);
+
+            playlistControl.Location = new Point(DisplayRectangle.Width - playlistControl.DisplayRectangle.Width, middlePanelLocation.Y);
+            playlistControl.Height = middlePanelSize.Height;
 
             if (songlist != null) 
             {
@@ -345,16 +338,16 @@ namespace MusicApp
                 artistgrid.Size = middlePanelSize;
             }
 
-            if (albumHeader != null)
+            if (albumPresentation != null)
             {
-                albumHeader.Location = new Point(0, tabHeight);
-                albumHeader.Size = new Size(middlePanelSize.Width, headerHeight);
+                albumPresentation.Location = middlePanelLocation;
+                albumPresentation.Size = middlePanelSize;
             }
 
-            if (artistHeader != null)
+            if (artistPresentation != null)
             {
-                artistHeader.Location = new Point(0, tabHeight);
-                artistHeader.Size = new Size(middlePanelSize.Width, headerHeight);
+                artistPresentation.Location = middlePanelLocation;
+                artistPresentation.Size = middlePanelSize;
             }
 
             if(configControl != null)
@@ -362,30 +355,22 @@ namespace MusicApp
                 configControl.Location = middlePanelLocation;
                 configControl.Size = middlePanelSize;
             }
-
-            search.Location = new Point(Width - searchWidth - (playlist.Visible ? playlistWidth : 0), 0);
-
-            tabPanel.Width = Width - searchWidth - (playlist.Visible ? playlistWidth : 0);
-
-            playlist.Location = new Point(DisplayRectangle.Width - playlistWidth, 0);
-            playlist.Size = new Size(playlistWidth, DisplayRectangle.Height - playerHeight);
-
         }
         private void ClearMiddlePannel()
         {
-            albumHeader?.Dispose();
-            artistHeader?.Dispose();
+            albumPresentation?.Dispose();
+            artistPresentation?.Dispose();
             configControl?.Dispose();
 
             Controls.Remove(albumgrid);
             Controls.Remove(artistgrid);
             Controls.Remove(songlist);
-            Controls.Remove(albumHeader);
-            Controls.Remove(artistHeader);
+            Controls.Remove(albumPresentation);
+            Controls.Remove(artistPresentation);
             Controls.Remove(configControl);
 
-            albumHeader = null;
-            artistHeader = null;
+            albumPresentation = null;
+            artistPresentation = null;
             configControl = null;
 
             search.Visible = true;

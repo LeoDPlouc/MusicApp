@@ -14,7 +14,10 @@ namespace MusicApp.Control
 {
     public partial class ArtistGrid : FlowLayoutPanel
     {
+        #region Private Members
         public BindingList<Artist> artistlist;
+        #endregion
+
         public ArtistGrid()
         {
             InitializeComponent();
@@ -23,31 +26,6 @@ namespace MusicApp.Control
             artistlist.ListChanged += Artistlist_ListChanged;
 
             Init();
-        }
-
-        public event EventHandler<ArtistControlEventArgs> ArtistControlClicked;
-
-        private void Artistlist_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            Controls.Clear();
-
-            foreach (Artist a in artistlist)
-            {
-                var ac = new ArtistControl();
-                ac.LoadArtist(a);
-                Controls.Add(ac);
-
-                ac.DoubleClick += Ac_DoubleClick;
-            }
-        }
-
-        private void Ac_DoubleClick(object sender, EventArgs e)
-        {
-            ArtistControl ac = (ArtistControl)sender;
-            ArtistControlClicked?.Invoke(this, new ArtistControlEventArgs()
-            {
-                artist = ac.Artist
-            });
         }
 
         public void LoadArtist(IEnumerable<Artist> artists)
@@ -70,6 +48,36 @@ namespace MusicApp.Control
             Resize += AlbumGrid_Resize;
         }
 
+        #region Event Handlers
+        public event EventHandler<ArtistControlEventArgs> ArtistControlClicked;
+        #endregion
+
+        private void Artistlist_ListChanged(object sender, ListChangedEventArgs e)
+        {
+            Controls.Clear();
+
+            foreach (Artist a in artistlist)
+            {
+                var ac = new ArtistControl();
+                ac.LoadArtist(a);
+                Controls.Add(ac);
+
+                ac.DoubleClick += Ac_DoubleClick;
+            }
+        }
+
+        private void Ac_DoubleClick(object sender, EventArgs e)
+        {
+            ArtistControl ac = (ArtistControl)sender;
+            ArtistControlClicked?.Invoke(this, new ArtistControlEventArgs()
+            {
+                Artist = ac.Artist
+            });
+        }
+
+        
+
+
         private void AlbumGrid_Resize(object sender, EventArgs e)
         {
             SuspendLayout();
@@ -78,6 +86,7 @@ namespace MusicApp.Control
             int w = DisplayRectangle.Width / colCount - 2 * Margin.All;
             foreach (ArtistControl a in Controls) a.Width = w;
             ResumeLayout();
+            Invalidate(true);
         }
     }
     public class ArtistControl : UserControl
@@ -130,6 +139,6 @@ namespace MusicApp.Control
     }
     public class ArtistControlEventArgs : EventArgs
     {
-        public Artist artist { get; set; }
+        public Artist Artist { get; set; }
     }
 }
