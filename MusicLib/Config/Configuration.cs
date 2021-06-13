@@ -10,7 +10,7 @@ using YamlDotNet.Serialization;
 
 namespace MusicApp.Config
 {
-    class Configuration
+    public class Configuration
     {
         #region Constants
         const string CONFIG = ".config";
@@ -84,7 +84,7 @@ namespace MusicApp.Config
         public static event EventHandler<ConfigEventArgs> ConfigChanged;
     }
 
-    class ConfigEventArgs : EventArgs
+    public class ConfigEventArgs : EventArgs
     {
         public enum Configs
         {

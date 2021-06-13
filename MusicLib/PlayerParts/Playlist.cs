@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MusicApp.Parts
 {
-    class Playlist
+    public class Playlist
     {
         /// <summary>
         /// Initialise the Playlist

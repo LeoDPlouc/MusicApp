@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace MusicApp.Parts
 {
-    class Player
+    public class Player
     {
         #region Private Members
         private static WaveOutEvent outputDevice;
