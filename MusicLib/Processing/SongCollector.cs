@@ -16,10 +16,6 @@ namespace MusicLib.Processing
 
         public static void Start(string path, bool serverEnabled)
         {
-            SongCollection.Init();
-            AlbumCollection.Init();
-            ArtistCollection.Init();
-
             collector = new Thread(DoWork);
             collector.Start(new object[]
             {
@@ -43,6 +39,7 @@ namespace MusicLib.Processing
 
         private static async Task Collect(string path, bool serverEnabled)
         {
+            SongCollection songs = SongCollection.GetInstance();
             string[] paths = FileHandler.ListAllSongPath(path);
 
             foreach(string p in paths)
@@ -59,13 +56,13 @@ namespace MusicLib.Processing
                 }
 
                 if (song != null)
-                    SongCollection.Songs.Add(song);
+                    songs.Add(song);
             }
         }
 
         private static async Task<Song> LoadSong(string path, bool serverEnabled)
         {
-            if (SongCollection.Songs.Any(s => s.Path == path))
+            if (SongCollection.GetInstance().Any(s => s.Path == path))
                 return null;
 
             Song song = FileHandler.LoadSong(path);

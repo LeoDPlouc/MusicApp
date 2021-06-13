@@ -72,7 +72,7 @@ namespace MusicApp
             if (e.Config != ConfigEventArgs.Configs.LibraryPath)
                 return;
 
-            SongCollection.Songs.Clear();
+            SongCollection.GetInstance().Clear();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace MusicApp
             if(songlist == null)
             {
                 songlist = new SongList();
-                songlist.Load(SongCollection.Songs);
+                songlist.Load(SongCollection.GetInstance());
             }
 
             Controls.Add(songlist);
@@ -134,12 +134,12 @@ namespace MusicApp
         }
         private void Albumtab_Click(object sender, EventArgs e)
         {
-            InitAlbumGrid(AlbumCollection.Albums);
+            InitAlbumGrid(AlbumCollection.GetInstance());
             search.Text = "";
         }
         private void Artisttab_Click(object sender, EventArgs e)
         {
-            InitArtistGrid(ArtistCollection.Artists);
+            InitArtistGrid(ArtistCollection.GetInstance());
             search.Text = "";
         }
         private void Songtab_Click(object sender, EventArgs e)
@@ -161,9 +161,9 @@ namespace MusicApp
         {
             string text = ((TextBox)sender).Text;
 
-            songlist?.Load(SongCollection.SearchByTitle(text));
-            albumgrid?.LoadAlbum(AlbumCollection.SearchByTitle(text));
-            artistgrid?.LoadArtist(ArtistCollection.SearchByName(text));
+            songlist?.Load(SongCollection.GetInstance().SearchByTitle(text));
+            albumgrid?.LoadAlbum(AlbumCollection.GetInstance().SearchByTitle(text));
+            artistgrid?.LoadArtist(ArtistCollection.GetInstance().SearchByName(text));
 
             Invalidate();
         }
@@ -231,7 +231,7 @@ namespace MusicApp
         #endregion
 
         #region AlbumGrid Logic
-        protected void InitAlbumGrid(List<Album> albums)
+        protected void InitAlbumGrid(IEnumerable<Album> albums)
         {
             ClearMiddlePannel();
 
@@ -257,7 +257,7 @@ namespace MusicApp
         #endregion
 
         #region ArtistGrid Logic
-        protected void InitArtistGrid(List<Artist> artists)
+        protected void InitArtistGrid(IEnumerable<Artist> artists)
         {
             ClearMiddlePannel();
 
