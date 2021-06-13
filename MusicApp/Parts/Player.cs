@@ -1,12 +1,7 @@
-﻿using LibVLCSharp.Shared;
-using MusicApp.Beans;
+﻿using MusicLib.Objects;
 using NAudio.Wave;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MusicApp.Parts
 {
@@ -15,8 +10,8 @@ namespace MusicApp.Parts
         #region Private Members
         private static WaveOutEvent outputDevice;
         private static AudioFileReader audioFile;
-        private static Timer t;
         private static float lastProgress;
+        private static Timer t;
         #endregion
 
         #region Events

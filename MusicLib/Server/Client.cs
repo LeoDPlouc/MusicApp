@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MusicLib.Objects;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using static MusicLib.Beans.Song;
+using static MusicLib.Objects.Song;
 
 namespace MusicLib.Server
 {

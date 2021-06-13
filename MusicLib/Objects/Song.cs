@@ -1,8 +1,11 @@
-﻿using MusicLib.Processing;
+﻿using MusicLib.Files;
+using MusicLib.Processing;
+using MusicLib.Server;
 using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 
-namespace MusicLib.Beans
+namespace MusicLib.Objects
 {
     [Serializable]
     public partial class Song
@@ -28,6 +31,15 @@ namespace MusicLib.Beans
                 Heart = this.Heart
             };
         }
+        public async Task Save(bool serverEnabled)
+        {
+            FileHandler.SaveSong(this);
+
+            if (serverEnabled)
+                await Client.SendSongInfo(GetSongInfo(), "127.0.0.1");
+            else
+                await InfoFiles.Save(GetSongInfo());
+        }
 
         public string Serialize()
         {
@@ -36,23 +48,6 @@ namespace MusicLib.Beans
         public static Song Deserialize(string json)
         {
             return JsonSerializer.Deserialize<Song>(json);
-        }
-
-        [Serializable]
-        public struct SongInfo
-        {
-            public bool Like { get; set; }
-            public bool Heart { get; set; }
-            public string AcousticId { get; set; }
-            public string Host { get; set; }
-            public string Serialize()
-            {
-                return JsonSerializer.Serialize<SongInfo>(this);
-            }
-            public static SongInfo Deserialize(string json)
-            {
-                return JsonSerializer.Deserialize<SongInfo>(json);
-            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using MusicLib.Processing;
-using MusicLib.Beans;
+using MusicLib.Objects;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Security.Cryptography;
-using static MusicLib.Beans.Song;
+using static MusicLib.Objects.Song;
 
 namespace MusicLib.Files
 {

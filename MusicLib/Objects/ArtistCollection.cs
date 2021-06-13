@@ -1,20 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MusicApp.Beans
+namespace MusicLib.Objects
 {
-    public class Artist
+    public class ArtistCollection
     {
-        public Artist() => Albums = new List<Album>();
-        public string Name { get; set; }
-        public List<Album> Albums;
-
         public static List<Artist> Artists;
 
         public static void FetchArtists()
         {
             Artists = new List<Artist>();
-            foreach (Album alb in Album.Albums)
+            foreach (Album alb in AlbumCollection.Albums)
             {
                 var artist = Artists.Find((Artist art) =>
                 {
@@ -29,6 +27,12 @@ namespace MusicApp.Beans
 
                 artist.Albums.Add(alb);
             }
+        }
+
+        internal static void Init()
+        {
+            if (Artists == null)
+                Artists = new List<Artist>();
         }
 
         public static List<Artist> SearchByName(string arg)

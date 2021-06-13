@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Net.Http;
-using static MusicLib.Beans.Song;
+using static MusicLib.Objects.Song;
 
 namespace MusicLib.Server
 {

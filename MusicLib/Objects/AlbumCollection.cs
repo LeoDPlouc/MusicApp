@@ -1,23 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MusicApp.Beans
+namespace MusicLib.Objects
 {
-    public class Album
+    public class AlbumCollection
     {
-        public Album() => Songs = new List<Song>();
-        public string Title { get; set; }
-        public string Artist { get; set; }
-        public List<Song> Songs { get; set; }
-        public byte[] Cover { get => Songs.First().GetCover(); }
-
         public static List<Album> Albums { get; set; }
 
         public static void FetchAlbums()
         {
             Albums = new List<Album>();
-            foreach (Song s in Song.Songs)
+            foreach (Song s in SongCollection.Songs)
             {
                 var album = Albums.Find((Album a) =>
                 {
@@ -33,7 +28,13 @@ namespace MusicApp.Beans
                 album.Songs.Add(s);
             }
 
-            Beans.Artist.FetchArtists();
+            ArtistCollection.FetchArtists();
+        }
+
+        internal static void Init()
+        {
+            if (Albums == null)
+                Albums = new List<Album>();
         }
 
         public static List<Album> SearchByTitle(string arg)
@@ -45,5 +46,6 @@ namespace MusicApp.Beans
                 return pattern.IsMatch(a.Title);
             });
         }
+
     }
 }

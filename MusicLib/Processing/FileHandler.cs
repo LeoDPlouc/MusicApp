@@ -1,19 +1,14 @@
-﻿using MusicLib.Beans;
-using System;
-using System.Collections.Generic;
+﻿using MusicLib.Objects;
 using System.Linq;
 using System.IO;
-using AcoustID;
 using System.Text;
 using TagLib;
 using TagLib.Id3v2;
 using File = System.IO.File;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
-using static MusicLib.Beans.Song;
-using MusicLib.Server;
-using MusicLib.Files;
+using FFMpegCore;
+using FFMpegCore.Enums;
 
 namespace MusicLib.Processing
 {
@@ -21,26 +16,17 @@ namespace MusicLib.Processing
     {
         private const string ACOUSTICID_TAG = "AcousticId";
 
-        public static List<string> ListAllSongPath(string path)
+        public static string[] ListAllSongPath(string path)
         {
-            return Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(path, "*.mp3", SearchOption.AllDirectories);
         }
-        public static async Task<Song> LoadSong(string path, bool serverEnabled)
+        public static Song LoadSong(string path)
         {
             TagLib.File f = TagLib.File.Create(path);
 
             string acousticId = GetCustomTag(f, ACOUSTICID_TAG);
-            if (acousticId is null)
-                acousticId = ComputeAcousticId(path);
 
-            SongInfo songInfo;
-            if (serverEnabled)
-                songInfo = await Client.GetSongInfo(acousticId, "127.0.0.1");
-            else
-                songInfo = InfoFiles.Load(acousticId);
-
-
-            return new Song
+            Song song =  new Song
             {
                 Album = f.Tag.Album,
                 Artist = f.Tag.FirstAlbumArtist,
@@ -48,24 +34,11 @@ namespace MusicLib.Processing
                 N = (int)f.Tag.Track,
                 Path = path,
                 Title = f.Tag.Title,
-                AcousticId = acousticId,
-                Heart = songInfo.Heart,
-                Like = songInfo.Like
+                AcousticId = acousticId
             };
-        }
-        public static async Task LoadSong(string path, bool serverEnabled, Song song)
-        {
-            Song s = await LoadSong(path, serverEnabled);
 
-            song.Album = s.Album;
-            song.Artist = s.Artist;
-            song.Duration = s.Duration;
-            song.N = s.N;
-            song.Path = s.Path;
-            song.Title = s.Title;
-            song.AcousticId = s.AcousticId;
-            song.Heart = s.Heart;
-            song.Like = s.Like;
+            f.Dispose();
+            return song;
         }
         public static void SaveSong(Song song)
         {
@@ -79,7 +52,8 @@ namespace MusicLib.Processing
 
             SetCustomTag(f, ACOUSTICID_TAG, song.AcousticId);
 
-            while(true)
+            int i = 0;
+            while(i < 1000)
             {
                 try
                 {
@@ -88,15 +62,24 @@ namespace MusicLib.Processing
                 }
                 catch
                 {
+                    i++;
                     Thread.Sleep(50);
                 }
             }
+            f.Dispose();
         }
 
         public static byte[] LoadCover(string path)
         {
             TagLib.File f = TagLib.File.Create(path);
-            return f.Tag.Pictures.First().Data.Data;
+            IPicture[] pics = f.Tag.Pictures;
+
+            byte[] data = new byte[0];
+            if (pics.Length > 0)
+             data = pics.First().Data.Data;
+
+            f.Dispose();
+            return data;
         }
         public static bool CheckDirectory(string path)
         {
@@ -117,6 +100,24 @@ namespace MusicLib.Processing
             return true;
         }
 
+        public static void ConvertToMP3(string path)
+        {
+            GlobalFFOptions.Configure(new FFOptions()
+            {
+                BinaryFolder = Path.Combine(Directory.GetCurrentDirectory(), "ffmpeg")
+            });
+
+            string pathTemp = Path.ChangeExtension(path, ".temp.mp3");
+
+            FFMpegArguments
+                .FromFileInput(path)
+                .OutputToFile(pathTemp)
+                .ProcessSynchronously();
+
+            File.Delete(path);
+            File.Move(pathTemp, path);
+        }
+
         private static string GetCustomTag(TagLib.File file, string tagName)
         {
             var tag = (TagLib.Id3v2.Tag)file.GetTag(TagTypes.Id3v2);
@@ -130,24 +131,6 @@ namespace MusicLib.Processing
             var tag = (TagLib.Id3v2.Tag)file.GetTag(TagTypes.Id3v2);
             PrivateFrame frame = PrivateFrame.Get(tag, tagName, true);
             frame.PrivateData = Encoding.Unicode.GetBytes(value);
-        }
-        private static string ComputeAcousticId(string path)
-        {
-            NAudio.Wave.AudioFileReader reader = new NAudio.Wave.AudioFileReader(path);
-
-            byte[] buffer = new byte[reader.Length];
-            reader.Read(buffer, 0, buffer.Length);
-            short[] data = buffer.Select((byte b) =>
-            {
-                return Convert.ToInt16(b);
-            }).ToArray();
-
-            ChromaContext context = new ChromaContext();
-            context.Start(reader.WaveFormat.SampleRate, reader.WaveFormat.Channels);
-            context.Feed(data, data.Length);
-            context.Finish();
-
-            return context.GetFingerprint();
         }
     }
 }

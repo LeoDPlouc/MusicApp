@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using LibVLCSharp.Shared;
 using MusicApp.Parts;
 
 namespace MusicApp.Control
@@ -67,10 +66,7 @@ namespace MusicApp.Control
 
         private void PlayerControl_SongAdded(object sender, EventArgs e)
         {
-            if (play.State == PlayButtonEventArgs.States.Play)
-            {
-                Player.Play();
-            }
+            play.ForcePlay();
         }
 
         private void ProgressBar_SliderValueChanged(object sender, EventArgs e)

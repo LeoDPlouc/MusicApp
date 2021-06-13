@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using MusicApp.Beans;
+using MusicApp.Config;
 using MusicApp.Parts;
+using MusicLib.Objects;
 
 namespace MusicApp.Control
 {
@@ -12,7 +12,6 @@ namespace MusicApp.Control
     {
         public BindingList<Song> songlist;
 
-        public event EventHandler SongDoubleClicked;
 
         public SongListType Type;
         public enum SongListType
@@ -72,15 +71,13 @@ namespace MusicApp.Control
                 }
                 else if (!s.Like && !s.Heart) s.Like = true;
 
-                await s.Save();
+                await s.Save(Configuration.ServerEnabled);
                 SongList_DataBindingComplete(null, null);
 
                 return;
             }
 
-            Playlist.SetCurrentSong(s);
-
-            SongDoubleClicked?.Invoke(this, new EventArgs());
+            Playlist.SetCurrentSong(s, songlist);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -139,7 +136,7 @@ namespace MusicApp.Control
         {
             DataGridViewRow r = Rows[e.RowIndex];
             Song s = r.DataBoundItem as Song;
-            await s.Save();
+            await s.Save(Configuration.ServerEnabled);
         }
 
         private void SongList_CellContextMenuStripNeeded(object sender, DataGridViewCellContextMenuStripNeededEventArgs e)

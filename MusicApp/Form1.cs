@@ -1,11 +1,12 @@
-﻿using MusicApp.Beans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using MusicApp.Control;
 using MusicApp.Config;
 using MusicApp.Parts;
+using MusicLib.Processing;
+using MusicLib.Objects;
 
 namespace MusicApp
 {
@@ -43,7 +44,8 @@ namespace MusicApp
             InitializeComponent();
 
             //Fetch all the songs
-            Song.CollectSongs();
+            string libraryPath = Configuration.LibraryPath;
+            SongCollector.Start(libraryPath, false);
 
             InitForm();
             InitPlayer();
@@ -59,15 +61,18 @@ namespace MusicApp
             Resize += Form1_Resize;
 
             Configuration.ConfigChanged += Configuration_ConfigChanged;
+
+            FormClosing += Form1_FormClosing;
         }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e) => SongCollector.Stop();
 
         private void Configuration_ConfigChanged(object sender, ConfigEventArgs e)
         {
             if (e.Config != ConfigEventArgs.Configs.LibraryPath)
                 return;
 
-            Song.CollectSongs();
-            songlist.Load(Song.Songs);
+            SongCollection.Songs.Clear();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -85,21 +90,12 @@ namespace MusicApp
             if(songlist == null)
             {
                 songlist = new SongList();
-                songlist.SongDoubleClicked += SongList_SongDoubleClicked;
-                songlist.Load(Song.Songs);
+                songlist.Load(SongCollection.Songs);
             }
 
             Controls.Add(songlist);
             Invalidate();
             songlist.Invalidate(true);
-        }
-        //TODO mettre cette fonction dans le control
-        private void SongList_SongDoubleClicked(object sender, EventArgs e)
-        {
-            //Change the position in the playlist and play the song
-            Playlist.Load(songlist.songlist);
-
-            playerControl.ForceButtonPlay();
         }
         #endregion
 
@@ -138,12 +134,12 @@ namespace MusicApp
         }
         private void Albumtab_Click(object sender, EventArgs e)
         {
-            InitAlbumGrid(Album.Albums);
+            InitAlbumGrid(AlbumCollection.Albums);
             search.Text = "";
         }
         private void Artisttab_Click(object sender, EventArgs e)
         {
-            InitArtistGrid(Artist.Artists);
+            InitArtistGrid(ArtistCollection.Artists);
             search.Text = "";
         }
         private void Songtab_Click(object sender, EventArgs e)
@@ -165,9 +161,9 @@ namespace MusicApp
         {
             string text = ((TextBox)sender).Text;
 
-            songlist?.Load(Song.SearchByTitle(text));
-            albumgrid?.LoadAlbum(Album.SearchByTitle(text));
-            artistgrid?.LoadArtist(Artist.SearchByName(text));
+            songlist?.Load(SongCollection.SearchByTitle(text));
+            albumgrid?.LoadAlbum(AlbumCollection.SearchByTitle(text));
+            artistgrid?.LoadArtist(ArtistCollection.SearchByName(text));
 
             Invalidate();
         }
@@ -194,10 +190,6 @@ namespace MusicApp
         {
             playlistControl.Visible = ((Playlist_Button)sender).On;
             Invalidate();
-        }
-        private void Playlist_PlaylistChanged(object sender, EventArgs e)
-        {
-            Player.LoadSong(Playlist.CurrentSong);
         }
         #endregion
 
@@ -235,8 +227,6 @@ namespace MusicApp
             playlistControl = new PlaylistControl() { Visible = false };
 
             Controls.Add(playlistControl);
-
-            Playlist.PlaylistChanged += Playlist_PlaylistChanged;
         }
         #endregion
 

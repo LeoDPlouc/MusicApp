@@ -1,32 +1,33 @@
-﻿using MusicApp.Beans;
+﻿using MusicLib.Objects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MusicApp.Parts
 {
     class Playlist
     {
+        /// <summary>
+        /// Initialise the Playlist
+        /// </summary>
         public static void InitPlaylist()
         {
-            songList = new List<Song>();
+            SongList = new List<Song>();
 
             Player.SongFinished += Playlist_SongFinished;
         }
-
+        /// <summary>
+        /// Go to the next song when the current song is over
+        /// </summary>
         private static void Playlist_SongFinished(object sender, EventArgs e)
         {
             CurrentSong = Next();
         }
 
-        #region Private Members
-        private static List<Song> songList;
-        #endregion
-
         #region Public Members
-        public static List<Song> SongList { get => songList; }
+        /// <summary>
+        /// The list of the songs currently in the Playlist
+        /// </summary>
+        public static List<Song> SongList { get; private set; }
         public static Song CurrentSong { get; private set; }
         #endregion
 
@@ -34,12 +35,15 @@ namespace MusicApp.Parts
         public static event EventHandler PlaylistChanged;
         public static event EventHandler SongChanged;
         /// <summary>
-        /// Raise a new PlaylistChanged envent
+        /// Raise an event when the songlist is changed
         /// </summary>
         protected static void OnPlaylistChanged()
         {
             PlaylistChanged?.Invoke(null, new EventArgs());
         }
+        /// <summary>
+        /// Raise an event when the current song changes
+        /// </summary>
         protected static void OnSongChanged()
         {
             SongChanged?.Invoke(null, new EventArgs());
@@ -48,41 +52,59 @@ namespace MusicApp.Parts
 
         #region Public Functions
         /// <summary>
-        /// Load the collection of songs as the playlist's songs
-        /// </summary>
-        /// <param name="songs">A collection of songs to load</param>
-        public static void Load(IEnumerable<Song> songs)
-        {
-            songList.Clear();
-            foreach (Song s in songs) songList.Add(s);
-
-            OnPlaylistChanged();
-        }
-        /// <summary>
-        /// Load the song as the playlist's song
-        /// </summary>
-        /// <param name="songs">A song to load</param>
-        public void Load(Song song)
-        {
-            songList.Clear();
-            songList.Add(song);
-
-            OnPlaylistChanged();
-        }
-        /// <summary>
         /// Go to the next song
         /// </summary>
         /// <returns>The next song</returns>
         public static Song Next()
         {
-            CurrentSong = songList[GetPosition() + 1];
+            CurrentSong = SongList[GetPosition() + 1];
 
             OnSongChanged();
 
             return CurrentSong;
         }
-        public static int GetPosition() => songList.FindIndex((Song s) => s == CurrentSong);
-        public static void SetCurrentSong(Song song) => CurrentSong = song;
+        /// <summary>
+        /// Get the position of the current song in the songlist
+        /// </summary>
+        /// <returns>The index of the song</returns>
+        public static int GetPosition() => SongList.FindIndex((Song s) => s == CurrentSong);
+        /// <summary>
+        /// Change the current song if the new song is in the songlist
+        /// </summary>
+        /// <param name="song">The new song</param>
+        public static void SetCurrentSong(Song song)
+        {
+            if (SongList.Contains(song))
+                CurrentSong = song;
+
+            OnSongChanged();
+        }
+        /// <summary>
+        /// Change the current song if the new song is in the songlist
+        /// If it's not load the new songlist then change the current song
+        /// </summary>
+        /// <param name="song">The new song</param>
+        public static void SetCurrentSong(Song song, IEnumerable<Song> songlist)
+        {
+            Load(songlist);
+                
+            CurrentSong = song;
+            OnSongChanged();
+        }
+        #endregion
+
+        #region Private Functions
+        /// <summary>
+        /// Load the collection of songs as the playlist's songs
+        /// </summary>
+        /// <param name="songs">A collection of songs to load</param>
+        private static void Load(IEnumerable<Song> songs)
+        {
+            SongList.Clear();
+            foreach (Song s in songs) SongList.Add(s);
+
+            OnPlaylistChanged();
+        }
         #endregion
     }
 }
