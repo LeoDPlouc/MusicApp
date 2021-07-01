@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore MusicLibTest
+      run: dotnet build --no-restore MusicLibTest/MusicLibTest.csproj
     - name: Test
-      run: dotnet test --no-build --verbosity normal MusicLibTest
+      run: dotnet test --no-build --verbosity normal MusicLibTest/MusicLibTest.csproj
