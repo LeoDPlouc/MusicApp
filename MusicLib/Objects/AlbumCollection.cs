@@ -12,9 +12,9 @@ namespace MusicLib.Objects
 
         private List<Album> localCollection;
 
-        public int Count => throw new NotImplementedException();
+        public int Count => localCollection.Count;
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => false;
 
         public event EventHandler<AlbumCollectionEventArgs> CollectionChanged;
         public void OnCollectionChanged(AlbumCollectionEventArgs.ChangeType type, Album albumChanged) => CollectionChanged?.Invoke(this, new AlbumCollectionEventArgs { ChangeTypeArg = type, ChangedAlbum = albumChanged });
