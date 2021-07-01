@@ -63,9 +63,14 @@ namespace MusicLib
         private void ConfigTab_Click(object sender, EventArgs e)
         {
             SuspendLayout();
-            InitConfigControl();
-            ResumeLayout();
             search.Text = "";
+
+            ClearMiddlePannel();
+
+            InitConfigControl();
+            configControl.BringToFront();
+            
+            ResumeLayout();
         }
         private void Albumtab_Click(object sender, EventArgs e)
         {
@@ -203,7 +208,13 @@ namespace MusicLib
             ClearMiddlePannel();
             search.Visible = false;
 
-            configControl = new ConfigControl();
+            configControl = new ConfigControl()
+            {
+                Size = songlist.Size,
+                Location = songlist.Location,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
+            };
+
             
             Controls.Add(configControl);
 
@@ -224,6 +235,9 @@ namespace MusicLib
 
             albumPresentation?.Dispose();
             albumPresentation = null;
+
+            configControl?.Dispose();
+            configControl = null;
         }
     }
 }
