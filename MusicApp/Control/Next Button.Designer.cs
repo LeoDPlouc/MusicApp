@@ -28,8 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Next_Button
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.Name = "Next_Button";
+            this.MouseEnter += new System.EventHandler(this.Play_Button_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.Play_Button_MouseLeave);
+            this.ResumeLayout(false);
+
         }
 
         #endregion

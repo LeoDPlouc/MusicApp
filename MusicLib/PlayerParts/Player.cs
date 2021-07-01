@@ -21,26 +21,11 @@ namespace MusicApp.Parts
         public static event EventHandler PlayerPlayed;
         public static event EventHandler PlayerPaused;
 
-        protected static void OnSongFinish(EventArgs e)
-        {
-            SongFinished?.Invoke(null, e);
-        }
-        protected static void OnProgressChanged(EventArgs e)
-        {
-            ProgressChanged?.Invoke(null, e);
-        }
-        protected static void OnSongAdded(EventArgs e)
-        {
-            SongAdded?.Invoke(null, e);
-        }
-        protected void OnPlayerPlayed(EventArgs e)
-        {
-            PlayerPlayed?.Invoke(this, e);
-        }
-        protected void OnPlayerPaused(EventArgs e)
-        {
-            PlayerPaused?.Invoke(this, e);
-        }
+        protected static void OnSongFinish() => SongFinished?.Invoke(null, new EventArgs());
+        protected static void OnProgressChanged() => ProgressChanged?.Invoke(null, new EventArgs());
+        protected static void OnSongAdded() => SongAdded?.Invoke(null, new EventArgs());
+        protected static void OnPlayerPlayed() => PlayerPlayed?.Invoke(null, new EventArgs());
+        protected static void OnPlayerPaused() => PlayerPaused?.Invoke(null, new EventArgs());
         #endregion
 
         public static void InitPlayer()
@@ -59,10 +44,10 @@ namespace MusicApp.Parts
 
             lastProgress = Progress;
 
-            OnProgressChanged(new EventArgs());
+            OnProgressChanged();
 
             if (Progress == 1)
-                OnSongFinish(new EventArgs());
+                OnSongFinish();
         }
 
         private static void Player_SongChanged(object sender, EventArgs e)
@@ -78,6 +63,7 @@ namespace MusicApp.Parts
             outputDevice.Stop();
             outputDevice.Init(audioFile);
             outputDevice.Play();
+            OnPlayerPlayed();
         }
 
         public static Song CurrentSong { get; private set; }
@@ -108,7 +94,15 @@ namespace MusicApp.Parts
             set => outputDevice.Volume = value / 100.0f;
         }
 
-        public static void Play() => outputDevice.Play();
-        public static void Pause() => outputDevice.Pause();
+        public static void Play()
+        {
+            outputDevice.Play();
+            OnPlayerPlayed();
+        }
+        public static void Pause()
+        {
+            outputDevice.Pause();
+            OnPlayerPaused();
+        }
     }
 }

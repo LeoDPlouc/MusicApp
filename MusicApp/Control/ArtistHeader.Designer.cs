@@ -28,10 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.artistName = new System.Windows.Forms.Label();
+            this.SuspendLayout();
+            // 
+            // artistName
+            // 
+            this.artistName.AutoSize = true;
+            this.artistName.ForeColor = System.Drawing.Color.Purple;
+            this.artistName.Location = new System.Drawing.Point(200, 0);
+            this.artistName.Name = "artistName";
+            this.artistName.Size = new System.Drawing.Size(65, 13);
+            this.artistName.TabIndex = 0;
+            this.artistName.Text = "artist\'s name";
+            this.artistName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ArtistHeader
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.artistName);
+            this.Name = "ArtistHeader";
+            this.Size = new System.Drawing.Size(1200, 200);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Label artistName;
     }
 }

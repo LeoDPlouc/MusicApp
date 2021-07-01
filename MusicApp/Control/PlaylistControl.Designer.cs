@@ -28,9 +28,30 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.songList = new MusicApp.Control.SongList();
+            this.SuspendLayout();
+            // 
+            // songList
+            // 
+            this.songList.AutoScroll = true;
+            this.songList.BackColor = System.Drawing.Color.Transparent;
+            this.songList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.songList.Location = new System.Drawing.Point(0, 0);
+            this.songList.Name = "songList";
+            this.songList.Size = new System.Drawing.Size(300, 483);
+            this.songList.TabIndex = 0;
+            // 
+            // PlaylistControl
+            // 
+            this.Controls.Add(this.songList);
+            this.Name = "PlaylistControl";
+            this.Size = new System.Drawing.Size(300, 483);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private SongList songList;
     }
 }

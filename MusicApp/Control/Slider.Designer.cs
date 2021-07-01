@@ -28,8 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Slider
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Name = "Slider";
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Slider_MouseDown);
+            this.ResumeLayout(false);
+
         }
 
         #endregion

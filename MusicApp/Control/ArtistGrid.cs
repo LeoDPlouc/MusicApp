@@ -9,59 +9,91 @@ using MusicLib.Objects;
 
 namespace MusicApp.Control
 {
-    public partial class ArtistGrid : FlowLayoutPanel
+    public partial class ArtistGrid : UserControl
     {
-        #region Private Members
-        public BindingList<Artist> artistlist;
-        #endregion
-
-        public ArtistGrid()
+        private ArtistCollection source;
+        public ArtistCollection Source
         {
-            InitializeComponent();
-
-            artistlist = new BindingList<Artist>();
-            artistlist.ListChanged += Artistlist_ListChanged;
-
-            Init();
+            set
+            {
+                source = value;
+                source.CollectionChanged += source_CollectionChanged;
+                LoadArtists();
+            }
         }
+        private string query;
 
-        public void LoadArtist(IEnumerable<Artist> artists)
+        public ArtistGrid() => InitializeComponent();
+
+        public void ChangeQuery(string query)
+        {
+            this.query = query;
+            LoadArtists();
+        }
+        private void LoadArtists()
+        {
+            IEnumerable<Artist> artistList = source;
+            if (!string.IsNullOrEmpty(query))
+            {
+                artistList = source.SearchByName(query);
+            }
+
+            SuspendLayout();
+            panel.Controls.Clear();
+
+            foreach (Artist a in artistList)
+                AddArtistControl(a);
+
+            ResumeLayout();
+        }
+        private void UpdateArtist(ArtistCollectionEventArgs.ChangeType type, Artist changedArtist)
         {
             SuspendLayout();
-            artistlist.Clear();
-            foreach (Artist a in artists)
+            switch (type)
             {
-                artistlist.Add(a);
+                case ArtistCollectionEventArgs.ChangeType.Add:
+                    AddArtistControl(changedArtist);
+                    break;
+
+                case ArtistCollectionEventArgs.ChangeType.Clear:
+                    foreach (System.Windows.Forms.Control ctrl in panel.Controls)
+                        CleanArtistControls(ctrl);
+                    LoadArtists();
+                    break;
+                case ArtistCollectionEventArgs.ChangeType.Remove:
+                    System.Windows.Forms.Control[] ctrls = new System.Windows.Forms.Control[panel.Controls.Count];
+                    panel.Controls.CopyTo(ctrls, 0);
+                    List<System.Windows.Forms.Control> controllist = new List<System.Windows.Forms.Control>(ctrls);
+                    CleanArtistControls(controllist.Find((System.Windows.Forms.Control control) =>
+                    {
+                        ArtistControl artistControl = control as ArtistControl;
+                        return artistControl.Artist == changedArtist;
+                    }));
+                    break;
             }
             ResumeLayout();
-            Invalidate(true);
         }
-
-        private void Init()
+        private void AddArtistControl(Artist artist)
         {
-            DoubleBuffered = true;
-            AutoScroll = true;
+            var ac = new ArtistControl();
+            ac.LoadArtist(artist);
+            panel.Controls.Add(ac);
 
-            Resize += AlbumGrid_Resize;
+            ac.DoubleClick += Ac_DoubleClick;
         }
+        private void CleanArtistControls(System.Windows.Forms.Control control)
+        {
+            control.Dispose();
+            panel.Controls.Remove(control);
+        }
+
+        delegate void UpdateArtistsDelegate(ArtistCollectionEventArgs.ChangeType type, Artist changedArtist);
+        private void source_CollectionChanged(object sender, ArtistCollectionEventArgs e) => Invoke(new UpdateArtistsDelegate(UpdateArtist), e.ChangeTypeArg, e.ChangedArtist);
+
 
         #region Event Handlers
         public event EventHandler<ArtistControlEventArgs> ArtistControlClicked;
         #endregion
-
-        private void Artistlist_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            Controls.Clear();
-
-            foreach (Artist a in artistlist)
-            {
-                var ac = new ArtistControl();
-                ac.LoadArtist(a);
-                Controls.Add(ac);
-
-                ac.DoubleClick += Ac_DoubleClick;
-            }
-        }
 
         private void Ac_DoubleClick(object sender, EventArgs e)
         {
@@ -70,68 +102,6 @@ namespace MusicApp.Control
             {
                 Artist = ac.Artist
             });
-        }
-
-        
-
-
-        private void AlbumGrid_Resize(object sender, EventArgs e)
-        {
-            SuspendLayout();
-            int colCount = DisplayRectangle.Width / 200;
-            if (colCount == 0) colCount = 1;
-            int w = DisplayRectangle.Width / colCount - 2 * Margin.All;
-            foreach (ArtistControl a in Controls) a.Width = w;
-            ResumeLayout();
-            Invalidate(true);
-        }
-    }
-    public class ArtistControl : UserControl
-    {
-        private FlowLayoutPanel panel;
-        private PictureBox cover;
-        private Label artistName;
-
-        public Artist Artist { get; set; }
-
-        public ArtistControl()
-        {
-            panel = new FlowLayoutPanel() { FlowDirection = FlowDirection.TopDown, AutoSize = true, AutoScroll = false };
-            cover = new PictureBox() { SizeMode = PictureBoxSizeMode.StretchImage };
-            artistName = new Label() { Anchor = AnchorStyles.None, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.Purple };
-
-            DoubleBuffered = true;
-
-            panel.DoubleClick += (sender, e) => OnDoubleClick(e);
-            cover.DoubleClick += (sender, e) => OnDoubleClick(e);
-            artistName.DoubleClick += (sender, e) => OnDoubleClick(e);
-
-            panel.Controls.Add(cover);
-            panel.Controls.Add(artistName);
-            Controls.Add(panel);
-        }
-
-        public void LoadArtist(Artist artist)
-        {
-            List<Album> albums = artist.Albums;
-            Artist = artist;
-
-            try
-            {
-                using (MemoryStream s = new MemoryStream(albums.First().Cover))
-                {
-                    cover.Image = Image.FromStream(s, true, true);
-                }
-            }
-            catch { }
-            artistName.Text = artist.Name;
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            cover.ClientSize = new Size(Width, Width);
-            Height = Width + 50;
         }
     }
     public class ArtistControlEventArgs : EventArgs

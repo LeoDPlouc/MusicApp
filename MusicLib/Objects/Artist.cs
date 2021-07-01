@@ -6,8 +6,8 @@ namespace MusicLib.Objects
 {
     public class Artist
     {
-        public Artist() => Albums = new List<Album>();
+        public Artist() => Albums = new AlbumCollection(new Album[0]);
         public string Name { get; set; }
-        public List<Album> Albums;
+        public AlbumCollection Albums;
     }
 }

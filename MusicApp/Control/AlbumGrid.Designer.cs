@@ -28,9 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.panel = new System.Windows.Forms.FlowLayoutPanel();
+            this.SuspendLayout();
+            // 
+            // panel
+            // 
+            this.panel.AutoScroll = true;
+            this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel.Location = new System.Drawing.Point(0, 0);
+            this.panel.Margin = new System.Windows.Forms.Padding(0);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(1200, 500);
+            this.panel.TabIndex = 0;
+            // 
+            // AlbumGrid
+            // 
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.panel);
+            this.Name = "AlbumGrid";
+            this.Size = new System.Drawing.Size(1200, 500);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.FlowLayoutPanel panel;
     }
 }

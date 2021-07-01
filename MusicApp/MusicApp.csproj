@@ -162,8 +162,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Control\AlbumControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\AlbumControl.Designer.cs">
+      <DependentUpon>AlbumControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Control\AlbumGrid.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Control\AlbumGrid.Designer.cs">
       <DependentUpon>AlbumGrid.cs</DependentUpon>
@@ -180,8 +186,14 @@
     <Compile Include="Control\AlbumPresentation.Designer.cs">
       <DependentUpon>AlbumPresentation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Control\ArtistControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\ArtistControl.Designer.cs">
+      <DependentUpon>ArtistControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Control\ArtistGrid.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Control\ArtistGrid.Designer.cs">
       <DependentUpon>ArtistGrid.cs</DependentUpon>
@@ -229,7 +241,7 @@
       <DependentUpon>Playlist Button.cs</DependentUpon>
     </Compile>
     <Compile Include="Control\PlaylistControl.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Control\PlaylistControl.Designer.cs">
       <DependentUpon>PlaylistControl.cs</DependentUpon>
@@ -240,8 +252,14 @@
     <Compile Include="Control\Slider.Designer.cs">
       <DependentUpon>Slider.cs</DependentUpon>
     </Compile>
+    <Compile Include="Control\SongControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Control\SongControl.Designer.cs">
+      <DependentUpon>SongControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Control\SongList.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Control\SongList.Designer.cs">
       <DependentUpon>SongList.cs</DependentUpon>
@@ -254,6 +272,57 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Control\AlbumControl.resx">
+      <DependentUpon>AlbumControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\AlbumGrid.resx">
+      <DependentUpon>AlbumGrid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\AlbumHeader.resx">
+      <DependentUpon>AlbumHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\AlbumPresentation.resx">
+      <DependentUpon>AlbumPresentation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\ArtistControl.resx">
+      <DependentUpon>ArtistControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\ArtistGrid.resx">
+      <DependentUpon>ArtistGrid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\ArtistHeader.resx">
+      <DependentUpon>ArtistHeader.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\ArtistPresentation.resx">
+      <DependentUpon>ArtistPresentation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\ConfigControl.resx">
+      <DependentUpon>ConfigControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\Next Button.resx">
+      <DependentUpon>Next Button.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\Play Buton.resx">
+      <DependentUpon>Play Buton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\PlayerControl.resx">
+      <DependentUpon>PlayerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\Playlist Button.resx">
+      <DependentUpon>Playlist Button.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\PlaylistControl.resx">
+      <DependentUpon>PlaylistControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\Slider.resx">
+      <DependentUpon>Slider.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\SongControl.resx">
+      <DependentUpon>SongControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Control\SongList.resx">
+      <DependentUpon>SongList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

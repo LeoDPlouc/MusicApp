@@ -7,10 +7,10 @@ namespace MusicLib.Objects
 {
     public class Album
     {
-        public Album() => Songs = new List<Song>();
+        public Album() => Songs = new SongCollection(new Song[0]);
         public string Title { get; set; }
         public string Artist { get; set; }
-        public List<Song> Songs { get; set; }
+        public SongCollection Songs { get; set; }
         public byte[] Cover { get => Songs.First().GetCover(); }
     }
 }

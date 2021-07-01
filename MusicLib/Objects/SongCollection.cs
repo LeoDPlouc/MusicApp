@@ -8,32 +8,33 @@ namespace MusicLib.Objects
 {
     public class SongCollection : IEnumerable<Song>, ICollection<Song>
     {
-        private static List<Song> songs;
-        private static SongCollection instance;
+        private static SongCollection mainCollection;
 
-        public int Count => songs.Count;
+        private List<Song> localCollection;
+
+        public int Count => localCollection.Count;
         public bool IsReadOnly => false;
 
-        public event EventHandler CollectionChanged;
-        public void OnCollectionChanged() => CollectionChanged?.Invoke(this, new EventArgs());
-
-        private SongCollection()
+        public event EventHandler<SongCollectionEventArgs> CollectionChanged;
+        public void OnCollectionChanged(SongCollectionEventArgs.ChangeType type, Song changedSong) => CollectionChanged?.Invoke(this, new SongCollectionEventArgs { ChangedSong = changedSong, ChangeTypeArg = type });
+        public SongCollection(IEnumerable<Song> songsSource)
         {
-            if (songs == null)
-                songs = new List<Song>();
+            localCollection = new List<Song>();
+            foreach (Song s in songsSource)
+                localCollection.Add(s);
         }
-        public static SongCollection GetInstance()
+        public static SongCollection GetMainCollection()
         {
-            if (instance is null)
-                instance = new SongCollection();
-            return instance;
+            if (mainCollection is null)
+                mainCollection = new SongCollection(new Song[0]);
+            return mainCollection;
         }
 
         public List<Song> SearchByTitle(string arg)
         {
             Regex pattern = new Regex(arg);
 
-            return songs.FindAll((Song s) =>
+            return localCollection.FindAll((Song s) =>
             {
                 return pattern.IsMatch(s.Title);
             });
@@ -42,7 +43,7 @@ namespace MusicLib.Objects
         {
             Regex pattern = new Regex(arg);
 
-            return songs.FindAll((Song s) =>
+            return localCollection.FindAll((Song s) =>
             {
                 return pattern.IsMatch(s.Album);
             });
@@ -51,32 +52,51 @@ namespace MusicLib.Objects
         {
             Regex pattern = new Regex(arg);
 
-            return songs.FindAll((Song s) =>
+            return localCollection.FindAll((Song s) =>
             {
                 return pattern.IsMatch(s.Artist);
             });
         }
 
-        public IEnumerator<Song> GetEnumerator() => songs.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => songs.GetEnumerator();
+        public IEnumerator<Song> GetEnumerator() => localCollection.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => localCollection.GetEnumerator();
 
         public void Add(Song item)
         {
-            songs.Add(item);
-            OnCollectionChanged();
+            if(item != null)
+            {
+                localCollection.Add(item);
+                OnCollectionChanged(SongCollectionEventArgs.ChangeType.Add, item);
+            }
+            if (this == mainCollection)
+                AlbumCollection.FetchAlbums();
         }
         public void Clear()
         {
-            songs.Clear();
-            OnCollectionChanged();
+            localCollection.Clear();
+            OnCollectionChanged(SongCollectionEventArgs.ChangeType.Clear, null);
         }
-        public bool Contains(Song item) => songs.Contains(item);
-        public void CopyTo(Song[] array, int arrayIndex) => songs.CopyTo(array, arrayIndex);
+        public bool Contains(Song item) => localCollection.Contains(item);
+        public void CopyTo(Song[] array, int arrayIndex) => localCollection.CopyTo(array, arrayIndex);
         public bool Remove(Song item)
         {
-            bool remove = songs.Remove(item);
-            OnCollectionChanged();
+            bool remove = localCollection.Remove(item);
+            OnCollectionChanged(SongCollectionEventArgs.ChangeType.Remove, item);
             return remove;
         }
+    }
+
+    public class SongCollectionEventArgs : EventArgs
+    {
+        public enum ChangeType
+        {
+            Clear,
+            Remove,
+            Add
+        }
+
+        public ChangeType ChangeTypeArg { get; set; }
+        public Song ChangedSong { get; set; }
+
     }
 }

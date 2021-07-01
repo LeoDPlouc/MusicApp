@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -8,126 +9,88 @@ using MusicLib.Objects;
 
 namespace MusicApp.Control
 {
-    public partial class SongList : DataGridView
+    public partial class SongList : UserControl
     {
-        public BindingList<Song> songlist;
-
-
-        public SongListType Type;
-        public enum SongListType
+        private SongCollection source;
+        public SongCollection Source
         {
-            Main = 0,
-            Album = 1
-        }
-
-        public SongList()
-        {
-            InitializeComponent();
-            Init();
-
-            songlist = new BindingList<Song>();
-            DataSource = songlist;
-
-            DataBindingComplete += SongList_DataBindingComplete;
-        }
-
-        private void SongList_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
-        {
-            if (Columns["HeartControl"] == null) Columns.Add("HeartControl", "HeartControl");
-
-            Columns["N"].Visible = Type == SongListType.Album;
-
-            Columns["Path"].Visible = false;
-            Columns["Heart"].Visible = false;
-            Columns["Like"].Visible = false;
-            Columns["AcousticId"].Visible = false;
-
-            Columns["N"].DisplayIndex = 0;
-
-            foreach(DataGridViewRow r in Rows)
+            set
             {
-                Song s = (Song)r.DataBoundItem;
-                Color sColor = s.Like ? (s.Heart ? Color.DarkRed : Color.MediumPurple) : Color.White;
-
-                r.Cells["HeartControl"].Value = "♥";
-                r.Cells["HeartControl"].Style = new DataGridViewCellStyle() { ForeColor = sColor, SelectionForeColor = sColor};
+                source = value;
+                source.CollectionChanged += Source_CollectionChanged;
+                LoadSongs();
             }
         }
+        private string query;
 
-        private async void Song_List_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        public SongList() => InitializeComponent();
+        public void ChangeQuery(string query)
         {
-            if (e.RowIndex < 0) return;
+            this.query = query;
+            LoadSongs();
+        }
+        private void LoadSongs()
+        {
+            IEnumerable<Song> songsList = source;
+            if (!string.IsNullOrEmpty(query))
+                songsList = source.SearchByTitle(query);
 
-            DataGridViewRow row = Rows[e.RowIndex];
-            Song s = (Song)row.DataBoundItem;
+            SuspendLayout();
+            foreach (Song song in songsList)
+                AddSongControls(song);
+            ResumeLayout();
 
-            if(row.Cells[e.ColumnIndex].OwningColumn.Name == "HeartControl")
+            Invalidate(true);
+        }
+        private void UpdateSong(SongCollectionEventArgs.ChangeType type, Song changedSong)
+        {
+            SuspendLayout();
+            System.Windows.Forms.Control[] ctrls;
+            switch (type)
             {
-                if (s.Like && !s.Heart) s.Heart = true;
-                else if (s.Like && s.Heart)
-                {
-                    s.Like = false;
-                    s.Like = false;
-                }
-                else if (!s.Like && !s.Heart) s.Like = true;
+                case SongCollectionEventArgs.ChangeType.Add:
+                    AddSongControls(changedSong);
+                    break;
 
-                await s.Save(Configuration.ServerEnabled);
-                SongList_DataBindingComplete(null, null);
-
-                return;
+                case SongCollectionEventArgs.ChangeType.Clear:
+                    foreach (System.Windows.Forms.Control ctrl in panel.Controls)
+                        CleanSongControls(ctrl);
+                    LoadSongs();
+                    break;
+                case SongCollectionEventArgs.ChangeType.Remove:
+                    ctrls = new System.Windows.Forms.Control[panel.Controls.Count];
+                    panel.Controls.CopyTo(ctrls, 0);
+                    List<System.Windows.Forms.Control> controllist = new List<System.Windows.Forms.Control>(ctrls);
+                    CleanSongControls(controllist.Find((System.Windows.Forms.Control control) =>
+                    {
+                        SongControl songControl = control as SongControl;
+                        return songControl.Song == changedSong;
+                    }));
+                    break;
             }
-
-            Playlist.SetCurrentSong(s, songlist);
+            ResumeLayout();
         }
-
-        protected override void OnPaint(PaintEventArgs e)
+        private void AddSongControls(Song song)
         {
-            AutoResizeColumns();
+            var sc = new SongControl();
+            sc.LoadSong(song);
+            panel.Controls.Add(sc);
 
-            base.OnPaint(e);
+            sc.SongDoubleClicked += Sc_SongDoubleClicked;
         }
-
-        public void Load(IEnumerable<Song> songs)
+        private void CleanSongControls(System.Windows.Forms.Control control)
         {
-            songlist.Clear();
-
-            foreach(Song s in songs) songlist.Add(s);
+            control.Dispose();
+            panel.Controls.Remove(control);
         }
 
-        protected void Init()
-        {
-            SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        private void Sc_SongDoubleClicked(object sender, SongControlEventArgs e) => Playlist.SetCurrentSong(e.Song, source);
 
-            AllowUserToAddRows = false;
-            BackgroundColor = Color.Black;
-            CellBorderStyle = DataGridViewCellBorderStyle.None;
-            DefaultCellStyle = new DataGridViewCellStyle()
-            {
-                BackColor = Color.Black,
-                ForeColor = Color.Purple,
-                SelectionBackColor = Color.Black,
-                SelectionForeColor = Color.Purple
-            };
-            ColumnHeadersVisible = false;
-            RowHeadersVisible = false;
-            ScrollBars = ScrollBars.Vertical;
-            AllowUserToResizeColumns = false;
-            AllowUserToResizeRows = false;
-            GridColor = Color.Purple;
-            EditMode = DataGridViewEditMode.EditProgrammatically;
-            DoubleBuffered = true;
+        delegate void UpdateSongsDelegate(SongCollectionEventArgs.ChangeType type, Song changedSong);
+        private void Source_CollectionChanged(object sender, SongCollectionEventArgs e) => Invoke(new UpdateSongsDelegate(UpdateSong), e.ChangeTypeArg, e.ChangedSong);
 
-            ContextMenuStrip = new ContextMenuStrip();
-            ContextMenuStrip.Items.Add("Edit");
-            ContextMenuStrip.Opening += ContextMenuStrip_Opening;
-            ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
 
-            CellDoubleClick += Song_List_CellDoubleClick;
-            CellContextMenuStripNeeded += SongList_CellContextMenuStripNeeded;
-            CellEndEdit += SongList_CellEndEdit;
-        }
-
-        private void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        /*private void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
             if (CurrentCell != null) e.Cancel = false;
         }
@@ -155,6 +118,60 @@ namespace MusicApp.Control
                 BeginEdit(true);
                 c.InitializeEditingControl(c.RowIndex, "", c.Style);
             }
-        }
+        }*/
     }
+
+    public class SongControlEventArgs : EventArgs
+    {
+        public Song Song { get; set; }
+    }
+
+    /*
+     private void SongList_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            if (Columns["HeartControl"] == null) Columns.Add("HeartControl", "HeartControl");
+
+            Columns["Path"].Visible = false;
+            Columns["Heart"].Visible = false;
+            Columns["Like"].Visible = false;
+            Columns["AcousticId"].Visible = false;
+
+            Columns["N"].DisplayIndex = 0;
+
+            foreach(DataGridViewRow r in Rows)
+            {
+                Song s = (Song)r.DataBoundItem;
+                Color sColor = s.Like ? (s.Heart ? Color.DarkRed : Color.MediumPurple) : Color.White;
+
+                r.Cells["HeartControl"].Value = "♥";
+                r.Cells["HeartControl"].Style = new DataGridViewCellStyle() { ForeColor = sColor, SelectionForeColor = sColor};
+            }
+        }
+
+    private async void Song_List_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            DataGridViewRow row = Rows[e.RowIndex];
+            Song s = (Song)row.DataBoundItem;
+
+            if(row.Cells[e.ColumnIndex].OwningColumn.Name == "HeartControl")
+            {
+                if (s.Like && !s.Heart) s.Heart = true;
+                else if (s.Like && s.Heart)
+                {
+                    s.Like = false;
+                    s.Like = false;
+                }
+                else if (!s.Like && !s.Heart) s.Like = true;
+
+                await s.Save(Configuration.ServerEnabled);
+                SongList_DataBindingComplete(null, null);
+
+                return;
+            }
+
+            Playlist.SetCurrentSong(s, source);
+        }
+     */
 }

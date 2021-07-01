@@ -19,9 +19,6 @@ namespace MusicApp.Control
         public Next_Button()
         {
             InitializeComponent();
-            BackColor = Color.Transparent;
-            MouseEnter += Play_Button_MouseEnter;
-            MouseLeave += Play_Button_MouseLeave;
         }
 
         private void Play_Button_MouseLeave(object sender, EventArgs e)

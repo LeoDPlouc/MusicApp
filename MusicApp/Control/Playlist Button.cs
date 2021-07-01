@@ -23,10 +23,6 @@ namespace MusicApp.Control
             On = false;
 
             InitializeComponent(); 
-            BackColor = Color.Transparent;
-            MouseEnter += Play_Button_MouseEnter;
-            MouseLeave += Play_Button_MouseLeave;
-            Click += Playlist_Button_Click;
         }
 
         private void Playlist_Button_Click(object sender, EventArgs e)

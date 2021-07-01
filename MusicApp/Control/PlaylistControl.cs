@@ -2,15 +2,12 @@
 using System.Drawing;
 using System.Windows.Forms;
 using MusicApp.Parts;
+using MusicLib.Objects;
 
 namespace MusicApp.Control
 {
-    public partial class PlaylistControl : DataGridView
+    public partial class PlaylistControl : UserControl
     {
-        #region Constants
-        const int playlistWidth = 300;
-        #endregion
-
         #region Initialisation Logic
         /// <summary>
         /// Initiate a new instance of PlaylistControl class
@@ -18,41 +15,11 @@ namespace MusicApp.Control
         public PlaylistControl()
         {
             InitializeComponent();
-            Init();
 
             Playlist.PlaylistChanged += Playlist_PlaylistChanged;
             Playlist.SongChanged += Playlist_SongChanged;
 
             Player.SongAdded += Player_SongAdded;
-        }
-        /// <summary>
-        /// Initiate all the graphical logic
-        /// </summary>
-        protected void Init()
-        {
-            Width = playlistWidth;
-
-            SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-            AllowUserToAddRows = false;
-            CellBorderStyle = DataGridViewCellBorderStyle.None;
-            DefaultCellStyle = new DataGridViewCellStyle()
-            {
-
-                BackColor = Color.Black,
-                ForeColor = Color.Purple,
-                SelectionBackColor = Color.Black,
-                SelectionForeColor = Color.Purple
-            };
-            ColumnHeadersVisible = false;
-            RowHeadersVisible = false;
-            ScrollBars = ScrollBars.Vertical;
-            AllowUserToResizeColumns = false;
-            AllowUserToResizeRows = false;
-            GridColor = Color.Purple;
-            EditMode = DataGridViewEditMode.EditProgrammatically;
-            AutoGenerateColumns = true;
-            BackgroundColor = Color.Black;
         }
         #endregion
 
@@ -62,40 +29,34 @@ namespace MusicApp.Control
         /// </summary>
         private void Playlist_SongChanged(object sender, EventArgs e)
         {
-            HighlightCurrentSong();
+            //HighlightCurrentSong();
         }
         /// <summary>
         /// Change the highlighted song when the playing song changed
         /// </summary>
         private void Player_SongAdded(object sender, EventArgs e)
         {
-            HighlightCurrentSong();
+            //HighlightCurrentSong();
         }
         /// <summary>
         /// Reload the songlist when the playlist is changed
         /// </summary>
         private void Playlist_PlaylistChanged(object sender, EventArgs e)
         {
-            DataSource = Playlist.SongList;
-            foreach (DataGridViewColumn c in Columns) c.Visible = false;
-            Columns["title"].Visible = true;
-            Columns["artist"].Visible = true;
+            songList.Source = new SongCollection(Playlist.SongList);
 
-            HighlightCurrentSong();
+            //HighlightCurrentSong();
         }
         #endregion
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-
             BringToFront();
-
-            AutoResizeColumns();
         }
         
         #region Private Functions
-        protected void HighlightCurrentSong()
+        /*protected void HighlightCurrentSong()
         {
             DataGridViewCellStyle style = new DataGridViewCellStyle() { BackColor = Color.FromArgb(10, 10, 10) };
 
@@ -113,7 +74,7 @@ namespace MusicApp.Control
             //Set the cells of the current song to the highlighting style
             Rows[Position].Cells["title"].Style = style;
             Rows[Position].Cells["artist"].Style = style;
-        }
+        }*/
         #endregion
     }
 }

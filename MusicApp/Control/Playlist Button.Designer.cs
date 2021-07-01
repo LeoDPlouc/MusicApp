@@ -28,8 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Playlist_Button
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.Name = "Playlist_Button";
+            this.Click += new System.EventHandler(this.Playlist_Button_Click);
+            this.MouseEnter += new System.EventHandler(this.Play_Button_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.Play_Button_MouseLeave);
+            this.ResumeLayout(false);
+
         }
 
         #endregion

@@ -39,8 +39,10 @@ namespace MusicLib.Processing
 
         private static async Task Collect(string path, bool serverEnabled)
         {
-            SongCollection songs = SongCollection.GetInstance();
+            SongCollection songs = SongCollection.GetMainCollection();
             string[] paths = FileHandler.ListAllSongPath(path);
+
+            int count = 0;
 
             foreach(string p in paths)
             {
@@ -49,20 +51,30 @@ namespace MusicLib.Processing
                 {
                     song = await LoadSong(p, serverEnabled);
                 }
-                catch
+                catch(Exception e)
                 {
                     FileHandler.ConvertToMP3(p);
                     song = await LoadSong(p, serverEnabled);
                 }
 
                 if (song != null)
+                {
                     songs.Add(song);
+                    count++;
+                }
+
+                if (count >= 100)
+                {
+                    AlbumCollection.FetchAlbums();
+                    count = 0;
+                }
             }
+            AlbumCollection.FetchAlbums();
         }
 
         private static async Task<Song> LoadSong(string path, bool serverEnabled)
         {
-            if (SongCollection.GetInstance().Any(s => s.Path == path))
+            if (SongCollection.GetMainCollection().Any(s => s.Path == path))
                 return null;
 
             Song song = FileHandler.LoadSong(path);
@@ -84,32 +96,5 @@ namespace MusicLib.Processing
 
             return song;
         }
-
-        /*public static void CollectSongs()
-        {
-            Songs = new List<Song>();
-
-            string libraryPath = Configuration.LibraryPath;
-            if (string.IsNullOrEmpty(libraryPath) || !Directory.Exists(libraryPath))
-                return;
-
-            Thread t = new Thread(async () =>
-            {
-
-                foreach (string path in FileHandler.ListAllSongPath(Configuration.LibraryPath))
-                {
-                    Song song = new Song();
-                    await FileHandler.LoadSong(path, Configuration.ServerEnabled, song);
-                    Songs.Add(song);
-                }
-            });
-
-            t.Start();
-            t.Join();
-
-            Songs.ForEach(async (Song song) => await song.Save());
-
-            Beans.Album.FetchAlbums();
-        }*/
     }
 }

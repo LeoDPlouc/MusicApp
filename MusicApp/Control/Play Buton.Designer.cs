@@ -28,7 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Play_Button
+            // 
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.UseVisualStyleBackColor = false;
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Play_Button_MouseClick);
+            this.MouseEnter += new System.EventHandler(this.Play_Button_MouseEnter);
+            this.MouseLeave += new System.EventHandler(this.Play_Button_MouseLeave);
+            this.ResumeLayout(false);
+
         }
 
         #endregion

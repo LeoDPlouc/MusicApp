@@ -1,6 +1,7 @@
 ﻿using AcoustID;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -10,22 +11,34 @@ namespace MusicLib.Processing
     {
         public static string ComputeAcousticId(string path)
         {
-            NAudio.Wave.AudioFileReader reader = new NAudio.Wave.AudioFileReader(path);
-
-            byte[] buffer = new byte[reader.Length];
-            reader.Read(buffer, 0, buffer.Length);
-            short[] data = buffer.Select((byte b) =>
+            NAudio.Wave.AudioFileReader reader = null;
+            ChromaContext context;
+            try
             {
-                return Convert.ToInt16(b);
-            }).ToArray();
+                reader = new NAudio.Wave.AudioFileReader(path);
 
-            ChromaContext context = new ChromaContext();
-            context.Start(reader.WaveFormat.SampleRate, reader.WaveFormat.Channels);
-            context.Feed(data, data.Length);
+                context = new ChromaContext();
+                context.Start(reader.WaveFormat.SampleRate, reader.WaveFormat.Channels);
+
+                int count = 0;
+                byte[] buffer = new byte[64];
+                do
+                {
+                    count = reader.Read(buffer, 0, buffer.Length);
+                    context.Feed(buffer.Select((byte b) => Convert.ToInt16(b)).ToArray(), count);
+                }
+                while (count == buffer.Length);
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                reader.Dispose();
+            }
+
             context.Finish();
-
-            reader.Dispose();
-
             return context.GetFingerprint();
         }
     }

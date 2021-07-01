@@ -1,4 +1,5 @@
 ﻿using MusicLib.Objects;
+using System;
 using System.Windows.Forms;
 
 namespace MusicApp.Control
@@ -9,44 +10,18 @@ namespace MusicApp.Control
         const int headerHeight = 200;
         #endregion
 
-        #region UI Parts
-        AlbumGrid albumGrid;
-        FlowLayoutPanel panel;
-        ArtistHeader header;
-        #endregion
+        public event EventHandler<AlbumControlEventArgs> AlbumControlClicked;
         public ArtistPresentation()
         {
             InitializeComponent();
-            Init();
         }
 
         public void LoadArtist(Artist artist)
         {
             header.LoadArtist(artist);
-            albumGrid.LoadAlbum(artist.Albums);
+            albumGrid.Source = artist.Albums;
         }
 
-        private void Init()
-        {
-            panel = new FlowLayoutPanel() { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown };
-
-            header = new ArtistHeader() { Height = headerHeight };
-            albumGrid = new AlbumGrid();
-
-            panel.Controls.Add(header);
-            panel.Controls.Add(albumGrid);
-
-            Controls.Add(panel);
-
-            Invalidate(true);
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            header.Width = Width;
-            albumGrid.Width = Width;
-        }
+        private void albumGrid_AlbumControlClicked(object sender, AlbumControlEventArgs e) => AlbumControlClicked?.Invoke(sender, new AlbumControlEventArgs { Album = e.Album });        
     }
 }

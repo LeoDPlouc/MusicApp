@@ -28,9 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.panel = new System.Windows.Forms.FlowLayoutPanel();
+            this.SuspendLayout();
+            // 
+            // panel
+            // 
+            this.panel.AutoScroll = true;
+            this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.panel.Location = new System.Drawing.Point(0, 0);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(1200, 600);
+            this.panel.TabIndex = 0;
+            this.panel.WrapContents = false;
+            // 
+            // SongList
+            // 
+            this.BackColor = System.Drawing.Color.Transparent;
+            this.Controls.Add(this.panel);
+            this.Name = "SongList";
+            this.Size = new System.Drawing.Size(1200, 600);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.FlowLayoutPanel panel;
     }
 }

@@ -8,44 +8,48 @@ namespace MusicLib.Objects
 {
     public class ArtistCollection : IEnumerable<Artist>, ICollection<Artist>
     {
-        private static List<Artist> artists;
-        private static ArtistCollection instance;
+        private static ArtistCollection mainCollection;
 
-        public int Count => artists.Count;
+        private List<Artist> localCollection;
+
+        public int Count => localCollection.Count;
         public bool IsReadOnly => false;
 
-        public event EventHandler CollectionChanged;
-        public void OnCollectionChanged() => CollectionChanged?.Invoke(this, new EventArgs());
+        public event EventHandler<ArtistCollectionEventArgs> CollectionChanged;
+        public void OnCollectionChanged(ArtistCollectionEventArgs.ChangeType type, Artist artistChanged) => CollectionChanged?.Invoke(this, new ArtistCollectionEventArgs { ChangeTypeArg = type, ChangedArtist = artistChanged });
 
-        private ArtistCollection()
+        public ArtistCollection(IEnumerable<Artist> artistsSource)
         {
-            if (artists == null)
-                artists = new List<Artist>();
+            localCollection = new List<Artist>();
+            foreach (Artist a in artistsSource)
+                localCollection.Add(a);
         }
-        public static ArtistCollection GetInstance()
+        public static ArtistCollection GetMainCollection()
         {
-            if (instance is null)
-                instance = new ArtistCollection();
-            return instance;
+            if (mainCollection is null)
+                mainCollection = new ArtistCollection(new Artist[0]);
+            return mainCollection;
         }
 
         public static void FetchArtists()
         {
-            artists = new List<Artist>();
-            foreach (Album alb in AlbumCollection.GetInstance())
+            GetMainCollection();
+            foreach (Album alb in AlbumCollection.GetMainCollection())
             {
-                var artist = artists.Find((Artist art) =>
-                {
-                    return alb.Artist == art.Name;
-                });
+                var artist = mainCollection.localCollection.Find((Artist art) => alb.Artist == art.Name);
 
                 if (artist == null)
                 {
                     artist = new Artist() { Name = alb.Artist };
-                    artists.Add(artist);
+                    if (!artist.Albums.Contains(alb))
+                        artist.Albums.Add(alb);
+                    mainCollection.Add(artist);
                 }
-
-                artist.Albums.Add(alb);
+                else
+                {
+                    if (!artist.Albums.Contains(alb))
+                        artist.Albums.Add(alb);
+                }
             }
         }
 
@@ -53,32 +57,45 @@ namespace MusicLib.Objects
         {
             Regex pattern = new Regex(arg);
 
-            return artists.FindAll((Artist a) =>
+            return localCollection.FindAll((Artist a) =>
             {
                 return pattern.IsMatch(a.Name);
             });
         }
 
-        public IEnumerator<Artist> GetEnumerator() => artists.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => artists.GetEnumerator();
+        public IEnumerator<Artist> GetEnumerator() => localCollection.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => localCollection.GetEnumerator();
 
         public void Add(Artist item)
         {
-            artists.Add(item);
-            OnCollectionChanged();
+            localCollection.Add(item);
+            OnCollectionChanged(ArtistCollectionEventArgs.ChangeType.Add, item);
         }
         public void Clear()
         {
-            artists.Clear();
-            OnCollectionChanged();
+            localCollection.Clear();
+            OnCollectionChanged(ArtistCollectionEventArgs.ChangeType.Clear, null);
         }
-        public bool Contains(Artist item) => artists.Contains(item);
-        public void CopyTo(Artist[] array, int arrayIndex) => artists.CopyTo(array, arrayIndex);
+        public bool Contains(Artist item) => localCollection.Contains(item);
+        public void CopyTo(Artist[] array, int arrayIndex) => localCollection.CopyTo(array, arrayIndex);
         public bool Remove(Artist item)
         {
-            bool remove = artists.Remove(item);
-            OnCollectionChanged();
+            bool remove = localCollection.Remove(item);
+            OnCollectionChanged(ArtistCollectionEventArgs.ChangeType.Remove, item);
             return remove;
         }
+    }
+    public class ArtistCollectionEventArgs : EventArgs
+    {
+        public enum ChangeType
+        {
+            Clear,
+            Remove,
+            Add
+        }
+
+        public ChangeType ChangeTypeArg { get; set; }
+        public Artist ChangedArtist { get; set; }
+
     }
 }

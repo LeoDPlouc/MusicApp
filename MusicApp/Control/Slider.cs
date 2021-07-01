@@ -18,8 +18,6 @@ namespace MusicApp.Control
         public Slider()
         {
             InitializeComponent();
-
-            MouseDown += Slider_MouseDown;
         }
 
         private void Slider_MouseDown(object sender, MouseEventArgs e)

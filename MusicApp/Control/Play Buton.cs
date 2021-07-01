@@ -28,39 +28,44 @@ namespace MusicApp.Control
             InitializeComponent();
 
             pen = new Pen(Brushes.Purple, 1);
-
-            BackColor = Color.Transparent;
             brush = Brushes.Purple;
 
             play = false;
             hover = false;
-
-            MouseClick += Play_Button_MouseClick;
-            MouseEnter += Play_Button_MouseEnter;
-            MouseLeave += Play_Button_MouseLeave;
         }
 
+        public void ChangeState()
+        {
+            ForceChangeState();
+            OnStateChange(new PlayButtonEventArgs { State = play ? PlayButtonEventArgs.States.Play : PlayButtonEventArgs.States.Pause });
+        }
         public void ForceChangeState()
         {
             play = !play;
             Invalidate();
-
-            OnStateChange(new PlayButtonEventArgs { State = play ? PlayButtonEventArgs.States.Play : PlayButtonEventArgs.States.Pause });
+        }
+        public void Play()
+        {
+            ForcePlay();
+            OnStateChange(new PlayButtonEventArgs { State = PlayButtonEventArgs.States.Play });
         }
         public void ForcePlay()
         {
             play = true;
             Invalidate();
-
-            OnStateChange(new PlayButtonEventArgs { State = PlayButtonEventArgs.States.Play });
+        }
+        public void Pause()
+        {
+            ForcePause();
+            OnStateChange(new PlayButtonEventArgs { State = PlayButtonEventArgs.States.Pause });
         }
         public void ForcePause()
         {
             play = false;
             Invalidate();
-
-            OnStateChange(new PlayButtonEventArgs { State = PlayButtonEventArgs.States.Pause });
         }
+
+
 
         private void Play_Button_MouseLeave(object sender, EventArgs e)
         {
@@ -76,7 +81,7 @@ namespace MusicApp.Control
 
         private void Play_Button_MouseClick(object sender, MouseEventArgs e)
         {
-            ForceChangeState();
+            ChangeState();
         }
 
         protected override void OnPaint(PaintEventArgs pevent)

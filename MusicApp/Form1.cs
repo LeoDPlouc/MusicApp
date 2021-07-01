@@ -7,33 +7,22 @@ using MusicApp.Config;
 using MusicApp.Parts;
 using MusicLib.Processing;
 using MusicLib.Objects;
+using System.Threading;
 
 namespace MusicApp
 {
     public partial class Form1 : Form
     {
         #region Constants
-        const int tabHeight = 30;
-        const int tabWidth = 70;
         const int searchWidth = 300;
+        const int tabHeight = 30;
         readonly Point middlePanelLocation = new Point(0, tabHeight);
         #endregion
 
         #region UI Parts
-        PlayerControl playerControl;
-        SongList songlist;
-        PlaylistControl playlistControl;
-        AlbumGrid albumgrid;
-        ArtistGrid artistgrid;
         AlbumPresentation albumPresentation;
         ArtistPresentation artistPresentation;
         ConfigControl configControl;
-
-        FlowLayoutPanel tabPanel;
-        Label songTab;
-        Label albumTab;
-        Label artistTab;
-        Label configTab;
 
         TextBox search;
         #endregion
@@ -43,26 +32,17 @@ namespace MusicApp
         {
             InitializeComponent();
 
+            songlist.Source = SongCollection.GetMainCollection();
+            albumGrid.Source = AlbumCollection.GetMainCollection();
+            artistGrid.Source = ArtistCollection.GetMainCollection();
+
+            Configuration.ConfigChanged += Configuration_ConfigChanged;
+            InitSearch();
+            Playlist.InitPlaylist();
+
             //Fetch all the songs
             string libraryPath = Configuration.LibraryPath;
             SongCollector.Start(libraryPath, false);
-
-            InitForm();
-            InitPlayer();
-            InitTabs();
-            InitSearch();
-            InitSongList();
-            InitPlaylist();
-        }
-        protected void InitForm()
-        {
-            BackColor = Color.Black;
-
-            Resize += Form1_Resize;
-
-            Configuration.ConfigChanged += Configuration_ConfigChanged;
-
-            FormClosing += Form1_FormClosing;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) => SongCollector.Stop();
@@ -72,80 +52,64 @@ namespace MusicApp
             if (e.Config != ConfigEventArgs.Configs.LibraryPath)
                 return;
 
-            SongCollection.GetInstance().Clear();
-        }
-
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-            Invalidate(true);
-        }
-        #endregion
-
-        #region SongList Logic
-        protected void InitSongList()
-        {
-            ClearMiddlePannel();
-
-            //Init the songlist if it isnt already
-            if(songlist == null)
-            {
-                songlist = new SongList();
-                songlist.Load(SongCollection.GetInstance());
-            }
-
-            Controls.Add(songlist);
-            Invalidate();
-            songlist.Invalidate(true);
+            SongCollector.Stop();
+            SongCollection.GetMainCollection().Clear();
+            SongCollector.Start(Configuration.LibraryPath, Configuration.ServerEnabled);
         }
         #endregion
 
         #region Tabs Logic
-        protected void InitTabs()
-        {
-            tabPanel = new FlowLayoutPanel()
-            {
-                Location = new Point(0, 0),
-                Height = tabHeight
-            };
-
-            //init the tabs
-            songTab = new Label() { Text = "Song", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
-            artistTab = new Label() { Text = "Artist", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
-            albumTab = new Label() { Text = "Album", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
-            configTab = new Label() { Text = "Configuration", TextAlign = ContentAlignment.MiddleCenter, Height = tabHeight, Width = tabWidth, ForeColor = Color.Purple };
-
-            songTab.Click += Songtab_Click;
-            artistTab.Click += Artisttab_Click;
-            albumTab.Click += Albumtab_Click;
-            configTab.Click += ConfigTab_Click;
-
-            tabPanel.Controls.Add(songTab);
-            tabPanel.Controls.Add(artistTab);
-            tabPanel.Controls.Add(albumTab);
-            tabPanel.Controls.Add(configTab);
-
-            Controls.Add(tabPanel);
-        }
 
         private void ConfigTab_Click(object sender, EventArgs e)
         {
+            SuspendLayout();
             InitConfigControl();
+            ResumeLayout();
             search.Text = "";
         }
         private void Albumtab_Click(object sender, EventArgs e)
         {
-            InitAlbumGrid(AlbumCollection.GetInstance());
+            SuspendLayout();
             search.Text = "";
+
+            ClearMiddlePannel();
+
+            albumGrid.Enabled = true;
+            albumGrid.Visible = true;
+
+            albumGrid.BringToFront();
+            ResumeLayout();
+
+            Invalidate(true);
         }
         private void Artisttab_Click(object sender, EventArgs e)
         {
-            InitArtistGrid(ArtistCollection.GetInstance());
+            SuspendLayout();
             search.Text = "";
+
+            ClearMiddlePannel();
+
+            artistGrid.Enabled = true;
+            artistGrid.Visible = true;
+
+            artistGrid.BringToFront();
+            ResumeLayout();
+
+            Invalidate(true);
         }
         private void Songtab_Click(object sender, EventArgs e)
         {
-            InitSongList();
+            SuspendLayout();
             search.Text = "";
+
+            ClearMiddlePannel();
+
+            songlist.Enabled = true;
+            songlist.Visible = true;
+            songlist.BringToFront();
+            ResumeLayout();
+
+            Invalidate(true);
         }
         #endregion
 
@@ -161,36 +125,21 @@ namespace MusicApp
         {
             string text = ((TextBox)sender).Text;
 
-            songlist?.Load(SongCollection.GetInstance().SearchByTitle(text));
-            albumgrid?.LoadAlbum(AlbumCollection.GetInstance().SearchByTitle(text));
-            artistgrid?.LoadArtist(ArtistCollection.GetInstance().SearchByName(text));
+            songlist?.ChangeQuery(text);
+            albumGrid?.ChangeQuery(text);
+            artistGrid?.ChangeQuery(text);
 
             Invalidate();
         }
         #endregion
 
         #region Player Logic
-        protected void InitPlayer()
+        private void playerControl_PlaylistButtonClicked(object sender, PlayListButtonEventArgs e)
         {
-            Player.InitPlayer();
-
-            playerControl = new PlayerControl();
-
-            Controls.Add(playerControl);
-
-            playerControl.PlaylistButtonClicked += Player_PlaylistButtonClicked;
-            playerControl.NextButtonClicked += Player_NextButtonClicked;
+            playlistControl.Visible = e.PlaylistOn;
+            Invalidate(true);
         }
-        private void Player_NextButtonClicked(object sender, EventArgs e)
-        {
-            Player.LoadSong(Playlist.Next());
-            playerControl.ForceButtonPlay();
-        }
-        private void Player_PlaylistButtonClicked(object sender, EventArgs e)
-        {
-            playlistControl.Visible = ((Playlist_Button)sender).On;
-            Invalidate();
-        }
+        private void playerControl_Load(object sender, EventArgs e) => Player.InitPlayer();
         #endregion
 
         #region AlbumPresentation Logic
@@ -198,88 +147,53 @@ namespace MusicApp
         {
             ClearMiddlePannel();
 
-            albumPresentation = new AlbumPresentation();
+            albumPresentation = new AlbumPresentation
+            {
+                Size = songlist.Size,
+                Location = songlist.Location,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
+            };
 
             Controls.Add(albumPresentation);
 
-            Invalidate();
+            Invalidate(true);
         }
         #endregion
 
-        #region ArtistAlbumList Logic
-        protected void InitArtistAlbumList()
+        #region ArtistPresentation Logic
+        protected void InitArtistPresentation()
         {
             ClearMiddlePannel();
 
-            artistPresentation = new ArtistPresentation();
+            artistPresentation = new ArtistPresentation()
+            {
+                Size = songlist.Size,
+                Location = songlist.Location,
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
+            };
+            artistPresentation.AlbumControlClicked += Albumgrid_AlbumControlClicked;
 
             Controls.Add(artistPresentation);
 
-            Invalidate();
-        }
-        #endregion
-
-        #region PlayList Logic
-        protected void InitPlaylist()
-        {
-            Playlist.InitPlaylist();
-
-            playlistControl = new PlaylistControl() { Visible = false };
-
-            Controls.Add(playlistControl);
+            Invalidate(true);
         }
         #endregion
 
         #region AlbumGrid Logic
-        protected void InitAlbumGrid(IEnumerable<Album> albums)
-        {
-            ClearMiddlePannel();
-
-            //init the album grid if it isnt
-            if (albumgrid == null)
-            {
-                albumgrid = new AlbumGrid();
-                albumgrid.LoadAlbum(albums);
-
-                albumgrid.AlbumControlClicked += Albumgrid_AlbumControlClicked;
-            }
-
-            Controls.Add(albumgrid);
-            Invalidate();
-            albumgrid.Invalidate(true);
-        }
         private void Albumgrid_AlbumControlClicked(object sender, AlbumControlEventArgs e)
         {
             InitAlbumPresenttion();
-
             albumPresentation.LoadAlbum(e.Album);
+            albumPresentation.BringToFront();
         }
         #endregion
 
         #region ArtistGrid Logic
-        protected void InitArtistGrid(IEnumerable<Artist> artists)
-        {
-            ClearMiddlePannel();
-
-            //init artistgrid if it isnt
-            if(artistgrid == null)
-            {
-                artistgrid = new ArtistGrid();
-                artistgrid.LoadArtist(artists);
-
-                artistgrid.ArtistControlClicked += Artistgrid_ArtistControlClicked;
-            }
-
-            Controls.Add(artistgrid);
-
-            Invalidate();
-            artistgrid.Invalidate(true);
-        }
         private void Artistgrid_ArtistControlClicked(object sender, ArtistControlEventArgs e)
         {
-            InitArtistAlbumList();
-
+            InitArtistPresentation();
             artistPresentation.LoadArtist(e.Artist);
+            artistPresentation.BringToFront();
         }
         #endregion
 
@@ -297,75 +211,19 @@ namespace MusicApp
         }
         #endregion
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            search.Location = new Point(DisplayRectangle.Width - searchWidth, 0);
-
-            tabPanel.Width = Width - searchWidth - playlistControl.Width;
-
-            Size middlePanelSize = new Size(DisplayRectangle.Width, DisplayRectangle.Height - tabHeight - playerControl.DisplayRectangle.Height);
-
-            playlistControl.Location = new Point(DisplayRectangle.Width - playlistControl.DisplayRectangle.Width, middlePanelLocation.Y);
-            playlistControl.Height = middlePanelSize.Height;
-
-            if (songlist != null) 
-            {
-                songlist.Location = middlePanelLocation;
-                songlist.Size = middlePanelSize;
-            }
-
-            if (albumgrid != null)
-            {
-                albumgrid.Location = middlePanelLocation;
-                albumgrid.Size = middlePanelSize;
-            }
-
-            if (artistgrid != null) 
-            {
-                artistgrid.Location = middlePanelLocation;
-                artistgrid.Size = middlePanelSize;
-            }
-
-            if (albumPresentation != null)
-            {
-                albumPresentation.Location = middlePanelLocation;
-                albumPresentation.Size = middlePanelSize;
-            }
-
-            if (artistPresentation != null)
-            {
-                artistPresentation.Location = middlePanelLocation;
-                artistPresentation.Size = middlePanelSize;
-            }
-
-            if(configControl != null)
-            {
-                configControl.Location = middlePanelLocation;
-                configControl.Size = middlePanelSize;
-            }
-        }
         private void ClearMiddlePannel()
         {
+            songlist.Enabled = false;
+            songlist.Visible = false;
+
+            artistGrid.Enabled = false;
+            artistGrid.Visible = false;
+
+            albumGrid.Enabled = false;
+            artistGrid.Visible = false;
+
             albumPresentation?.Dispose();
-            artistPresentation?.Dispose();
-            configControl?.Dispose();
-
-            Controls.Remove(albumgrid);
-            Controls.Remove(artistgrid);
-            Controls.Remove(songlist);
-            Controls.Remove(albumPresentation);
-            Controls.Remove(artistPresentation);
-            Controls.Remove(configControl);
-
             albumPresentation = null;
-            artistPresentation = null;
-            configControl = null;
-
-            search.Visible = true;
-
-            Invalidate();
         }
     }
 }

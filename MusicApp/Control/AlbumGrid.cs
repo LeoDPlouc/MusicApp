@@ -9,34 +9,97 @@ using MusicLib.Objects;
 
 namespace MusicApp.Control
 {
-    public partial class AlbumGrid : FlowLayoutPanel
+    public partial class AlbumGrid : UserControl
     {
-        public BindingList<Album> albumlist;
-        public AlbumGrid()
+        private AlbumCollection source;
+        public AlbumCollection Source
         {
-            InitializeComponent();
-
-            albumlist = new BindingList<Album>();
-            albumlist.ListChanged += Albumlist_ListChanged;
-
-            Init();
+            set
+            {
+                source = value;
+                source.CollectionChanged += source_CollectionChanged;
+                LoadAlbums();
+            }
         }
+        private string query;
 
         public event EventHandler<AlbumControlEventArgs> AlbumControlClicked;
 
-        private void Albumlist_ListChanged(object sender, ListChangedEventArgs e)
-        {
-            Controls.Clear();
+        public AlbumGrid() => InitializeComponent();
 
-            foreach (Album a in albumlist)
+        public void ChangeQuery(string query)
+        {
+            this.query = query;
+            LoadAlbums();
+        }
+
+        private void LoadAlbums()
+        {
+            IEnumerable<Album> albumList = source;
+            if (!string.IsNullOrEmpty(query))
+            {
+                albumList = source.SearchByTitle(query);
+            }
+
+            SuspendLayout();
+            panel.Controls.Clear();
+
+            foreach (Album a in albumList)
             {
                 var ac = new AlbumControl();
                 ac.LoadAlbum(a);
-                Controls.Add(ac);
+                panel.Controls.Add(ac);
 
                 ac.DoubleClick += Ac_DoubleClick;
             }
+
+            ResumeLayout();
         }
+        private void UpdateAlbum(AlbumCollectionEventArgs.ChangeType type, Album changedAlbum)
+        {
+            SuspendLayout();
+            System.Windows.Forms.Control[] ctrls;
+            switch (type)
+            {
+                case AlbumCollectionEventArgs.ChangeType.Add:
+                    AddAlbumControl(changedAlbum);
+                    break;
+
+                case AlbumCollectionEventArgs.ChangeType.Clear:
+                    foreach (System.Windows.Forms.Control ctrl in panel.Controls)
+                        CleanAlbumControls(ctrl);
+                    LoadAlbums();
+                    break;
+                case AlbumCollectionEventArgs.ChangeType.Remove:
+                    ctrls = new System.Windows.Forms.Control[panel.Controls.Count];
+                    panel.Controls.CopyTo(ctrls, 0);
+                    List<System.Windows.Forms.Control> controllist = new List<System.Windows.Forms.Control>(ctrls);
+                    CleanAlbumControls(controllist.Find((System.Windows.Forms.Control control) =>
+                    {
+                        AlbumControl albumControl = control as AlbumControl;
+                        return albumControl.Album == changedAlbum;
+                    }));
+                    break;
+            }
+            ResumeLayout();
+        }
+        private void AddAlbumControl(Album album)
+        {
+            var ac = new AlbumControl();
+            ac.LoadAlbum(album);
+            panel.Controls.Add(ac);
+
+            ac.DoubleClick += Ac_DoubleClick;
+        }
+        private void CleanAlbumControls(System.Windows.Forms.Control control)
+        {
+            control.Dispose();
+            panel.Controls.Remove(control);
+        }
+
+        delegate void UpdateAlbumsDelegate(AlbumCollectionEventArgs.ChangeType type, Album changedAlbum);
+        private void source_CollectionChanged(object sender, AlbumCollectionEventArgs e) => Invoke(new UpdateAlbumsDelegate(UpdateAlbum), e.ChangeTypeArg, e.ChangedAlbum);
+
 
         private void Ac_DoubleClick(object sender, EventArgs e)
         {
@@ -45,92 +108,6 @@ namespace MusicApp.Control
             {
                 Album = ac.Album
             });
-        }
-
-        public async void LoadAlbum(IEnumerable<Album> albums)
-        {
-            SuspendLayout();
-            albumlist.Clear();
-            foreach (Album a in albums)
-            {
-                albumlist.Add(a);
-                await Task.Delay(1);
-            }
-            ResumeLayout();
-            Invalidate(true);
-        }
-
-        private void Init()
-        {
-            DoubleBuffered = true;
-            AutoScroll = true;
-
-            Resize += AlbumGrid_Resize;
-        }
-
-        private void AlbumGrid_Resize(object sender, EventArgs e)
-        {
-            SuspendLayout();
-            int colCount = DisplayRectangle.Width / 200;
-            if (colCount == 0) colCount = 1;
-            int w = DisplayRectangle.Width / colCount - 2 * Margin.All;
-            foreach (AlbumControl a in Controls) a.Width = w;
-            ResumeLayout();
-            Invalidate(true);
-        }
-    }
-
-    public class AlbumControl : UserControl
-    {
-        private FlowLayoutPanel panel;
-        private PictureBox cover;
-        private Label albumName;
-        private Label artistName;
-
-        public Album Album { get; set; }
-
-        public AlbumControl()
-        {
-            panel = new FlowLayoutPanel() { FlowDirection = FlowDirection.TopDown, AutoSize = true, AutoScroll = false };
-            cover = new PictureBox() { SizeMode = PictureBoxSizeMode.StretchImage };
-            albumName = new Label() { Anchor = AnchorStyles.None, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.Purple };
-            artistName = new Label() { Anchor = AnchorStyles.None, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.Purple };
-
-            panel.DoubleClick += (sender, e) => OnDoubleClick(e);
-            cover.DoubleClick += (sender, e) => OnDoubleClick(e);
-            albumName.DoubleClick += (sender, e) => OnDoubleClick(e);
-            artistName.DoubleClick += (sender, e) => OnDoubleClick(e);
-
-            DoubleBuffered = true;
-
-            panel.Controls.Add(cover);
-            panel.Controls.Add(albumName);
-            panel.Controls.Add(artistName);
-            Controls.Add(panel);
-        }
-
-        public void LoadAlbum(Album album)
-        {
-            Album = album;
-
-            try
-            {
-                using (MemoryStream s = new MemoryStream(Album.Cover))
-                {
-                    cover.Image = Image.FromStream(s, true, true);
-                }
-            }
-            catch { }
-
-            albumName.Text = album.Title;
-            artistName.Text = album.Artist;
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            cover.ClientSize = new Size(Width, Width);
-            Height = Width + 50;
         }
     }
 
