@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MusicApp.Parts
+namespace MusicLib.Parts
 {
     public class Playlist
     {

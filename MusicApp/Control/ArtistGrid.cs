@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using MusicLib.Objects;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class ArtistGrid : UserControl
     {

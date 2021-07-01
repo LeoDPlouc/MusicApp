@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using MusicApp.Control;
-using MusicApp.Config;
-using MusicApp.Parts;
+using MusicLib.Control;
+using MusicLib.Config;
+using MusicLib.Parts;
 using MusicLib.Processing;
 using MusicLib.Objects;
 using System.Threading;
 
-namespace MusicApp
+namespace MusicLib
 {
     public partial class Form1 : Form
     {

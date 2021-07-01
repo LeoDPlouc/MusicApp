@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class Playlist_Button : UserControl
     {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MusicApp.Properties
+namespace MusicLib.Properties
 {
 
 

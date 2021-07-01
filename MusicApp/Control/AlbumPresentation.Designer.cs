@@ -1,5 +1,5 @@
 ﻿
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     partial class AlbumPresentation
     {
@@ -29,8 +29,8 @@ namespace MusicApp.Control
         /// </summary>
         private void InitializeComponent()
         {
-            this.header = new MusicApp.Control.AlbumHeader();
-            this.songList = new MusicApp.Control.SongList();
+            this.header = new MusicLib.Control.AlbumHeader();
+            this.songList = new MusicLib.Control.SongList();
             this.SuspendLayout();
             // 
             // header

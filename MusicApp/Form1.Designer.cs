@@ -1,6 +1,6 @@
-﻿using MusicApp.Control;
+﻿using MusicLib.Control;
 
-namespace MusicApp
+namespace MusicLib
 {
     partial class Form1
     {
@@ -35,11 +35,11 @@ namespace MusicApp
             this.albumTab = new System.Windows.Forms.Label();
             this.artistTab = new System.Windows.Forms.Label();
             this.configTab = new System.Windows.Forms.Label();
-            this.songlist = new MusicApp.Control.SongList();
-            this.playerControl = new MusicApp.Control.PlayerControl();
-            this.artistGrid = new MusicApp.Control.ArtistGrid();
-            this.playlistControl = new MusicApp.Control.PlaylistControl();
-            this.albumGrid = new MusicApp.Control.AlbumGrid();
+            this.songlist = new MusicLib.Control.SongList();
+            this.playerControl = new MusicLib.Control.PlayerControl();
+            this.artistGrid = new MusicLib.Control.ArtistGrid();
+            this.playlistControl = new MusicLib.Control.PlaylistControl();
+            this.albumGrid = new MusicLib.Control.AlbumGrid();
             this.tabPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -134,7 +134,7 @@ namespace MusicApp
             this.artistGrid.Size = new System.Drawing.Size(1179, 434);
             this.artistGrid.TabIndex = 4;
             this.artistGrid.Visible = false;
-            this.artistGrid.ArtistControlClicked += new System.EventHandler<MusicApp.Control.ArtistControlEventArgs>(this.Artistgrid_ArtistControlClicked);
+            this.artistGrid.ArtistControlClicked += new System.EventHandler<MusicLib.Control.ArtistControlEventArgs>(this.Artistgrid_ArtistControlClicked);
             // 
             // playlistControl
             // 
@@ -159,7 +159,7 @@ namespace MusicApp
             this.albumGrid.Size = new System.Drawing.Size(1179, 434);
             this.albumGrid.TabIndex = 5;
             this.albumGrid.Visible = false;
-            this.albumGrid.AlbumControlClicked += new System.EventHandler<MusicApp.Control.AlbumControlEventArgs>(this.Albumgrid_AlbumControlClicked);
+            this.albumGrid.AlbumControlClicked += new System.EventHandler<MusicLib.Control.AlbumControlEventArgs>(this.Albumgrid_AlbumControlClicked);
             // 
             // Form1
             // 

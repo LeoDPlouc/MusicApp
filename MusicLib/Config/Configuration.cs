@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using YamlDotNet.Serialization;
 
-namespace MusicApp.Config
+namespace MusicLib.Config
 {
     public class Configuration
     {

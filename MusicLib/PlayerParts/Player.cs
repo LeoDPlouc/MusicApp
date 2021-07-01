@@ -3,7 +3,7 @@ using NAudio.Wave;
 using System;
 using System.Threading;
 
-namespace MusicApp.Parts
+namespace MusicLib.Parts
 {
     public class Player
     {

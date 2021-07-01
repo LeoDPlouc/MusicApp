@@ -1,4 +1,4 @@
-﻿namespace MusicApp.Control
+﻿namespace MusicLib.Control
 {
     partial class PlayerControl
     {
@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.next = new MusicApp.Control.Next_Button();
-            this.play = new MusicApp.Control.Play_Button();
-            this.playlist = new MusicApp.Control.Playlist_Button();
-            this.volume = new MusicApp.Control.Slider();
-            this.progressBar = new MusicApp.Control.Slider();
+            this.next = new MusicLib.Control.Next_Button();
+            this.play = new MusicLib.Control.Play_Button();
+            this.playlist = new MusicLib.Control.Playlist_Button();
+            this.volume = new MusicLib.Control.Slider();
+            this.progressBar = new MusicLib.Control.Slider();
             this.SuspendLayout();
             // 
             // next
@@ -53,7 +53,7 @@
             this.play.TabIndex = 1;
             this.play.Text = "play_Button1";
             this.play.UseVisualStyleBackColor = false;
-            this.play.StateChanged += new System.EventHandler<MusicApp.Control.PlayButtonEventArgs>(this.Play_StateChanged);
+            this.play.StateChanged += new System.EventHandler<MusicLib.Control.PlayButtonEventArgs>(this.Play_StateChanged);
             // 
             // playlist
             // 

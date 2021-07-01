@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class ArtistPresentation : UserControl
     {

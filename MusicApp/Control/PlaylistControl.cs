@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using MusicApp.Parts;
+using MusicLib.Parts;
 using MusicLib.Objects;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class PlaylistControl : UserControl
     {

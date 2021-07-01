@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using MusicApp.Config;
-using MusicApp.Parts;
+using MusicLib.Config;
+using MusicLib.Parts;
 using MusicLib.Objects;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class SongList : UserControl
     {

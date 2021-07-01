@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using MusicApp.Parts;
+using MusicLib.Parts;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class PlayerControl : UserControl
     {

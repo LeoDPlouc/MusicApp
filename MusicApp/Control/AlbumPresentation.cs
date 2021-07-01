@@ -1,7 +1,7 @@
 ﻿using MusicLib.Objects;
 using System.Windows.Forms;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class AlbumPresentation : UserControl
     {

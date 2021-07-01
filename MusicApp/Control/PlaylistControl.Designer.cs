@@ -1,4 +1,4 @@
-﻿namespace MusicApp.Control
+﻿namespace MusicLib.Control
 {
     partial class PlaylistControl
     {
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.songList = new MusicApp.Control.SongList();
+            this.songList = new MusicLib.Control.SongList();
             this.SuspendLayout();
             // 
             // songList

@@ -1,5 +1,5 @@
 ﻿
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     partial class ArtistPresentation
     {
@@ -29,8 +29,8 @@ namespace MusicApp.Control
         /// </summary>
         private void InitializeComponent()
         {
-            this.header = new MusicApp.Control.ArtistHeader();
-            this.albumGrid = new MusicApp.Control.AlbumGrid();
+            this.header = new MusicLib.Control.ArtistHeader();
+            this.albumGrid = new MusicLib.Control.AlbumGrid();
             this.SuspendLayout();
             // 
             // header
@@ -53,7 +53,7 @@ namespace MusicApp.Control
             this.albumGrid.Name = "albumGrid";
             this.albumGrid.Size = new System.Drawing.Size(1200, 300);
             this.albumGrid.TabIndex = 1;
-            this.albumGrid.AlbumControlClicked += new System.EventHandler<MusicApp.Control.AlbumControlEventArgs>(this.albumGrid_AlbumControlClicked);
+            this.albumGrid.AlbumControlClicked += new System.EventHandler<MusicLib.Control.AlbumControlEventArgs>(this.albumGrid_AlbumControlClicked);
             // 
             // ArtistPresentation
             // 

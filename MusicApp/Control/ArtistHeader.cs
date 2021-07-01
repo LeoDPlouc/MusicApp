@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using MusicLib.Objects;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class ArtistHeader : UserControl
     {

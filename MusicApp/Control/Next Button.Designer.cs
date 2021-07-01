@@ -1,4 +1,4 @@
-﻿namespace MusicApp.Control
+﻿namespace MusicLib.Control
 {
     partial class Next_Button
     {

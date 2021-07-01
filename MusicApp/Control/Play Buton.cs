@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TagLib.Asf;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class Play_Button : Button
     {

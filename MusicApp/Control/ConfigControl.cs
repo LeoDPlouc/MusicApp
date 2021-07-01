@@ -1,9 +1,9 @@
-﻿using MusicApp.Config;
+﻿using MusicLib.Config;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     public partial class ConfigControl : UserControl
     {

@@ -1,5 +1,5 @@
 ﻿
-namespace MusicApp.Control
+namespace MusicLib.Control
 {
     partial class ConfigControl
     {
