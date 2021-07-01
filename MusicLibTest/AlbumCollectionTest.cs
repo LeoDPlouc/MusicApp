@@ -6,7 +6,7 @@ namespace MusicLibTest
     public class AlbumCollectionTest
     {
         [Fact]
-        public void FetchAlbumTest()
+        public void FetchAlbumsTest()
         {
             Song s1 = new Song { Title = "song 1", Album = "album 1" };
             Song s2 = new Song { Title = "song 2", Album = "album 2" };

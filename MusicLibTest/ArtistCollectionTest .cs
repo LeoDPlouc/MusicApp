@@ -6,8 +6,12 @@ namespace MusicLibTest
     public class ArstisCollectionTest
     {
         [Fact]
-        public void FetchAlbumTest()
+        public void FetchArtistsTest()
         {
+            SongCollection.GetMainCollection().Clear();
+            AlbumCollection.GetMainCollection().Clear();
+            ArtistCollection.GetMainCollection().Clear();
+
             Album a1 = new Album { Title = "album 1", Artist = "artist 1" };
             Album a2 = new Album { Title = "album 2", Artist = "artist 2" };
             Album a3 = new Album { Title = "album 3", Artist = "artist 3" };
