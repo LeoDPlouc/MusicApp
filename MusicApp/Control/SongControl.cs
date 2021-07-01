@@ -1,4 +1,5 @@
-﻿using MusicLib.Objects;
+﻿using MusicLib.Config;
+using MusicLib.Objects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,6 +34,20 @@ namespace MusicLib.Control
             l_duration.Text = s.Duration.ToString();
             l_artist.Text = s.Artist;
             l_album.Text = s.Album;
+        }
+
+        private void l_like_DoubleClick(object sender, EventArgs e)
+        {
+            Song.Like = !Song.Like;
+            Song.Save(Configuration.ServerEnabled).Wait();
+            LoadSong(Song);
+        }
+
+        private void l_heart_DoubleClick(object sender, EventArgs e)
+        {
+            Song.Heart = !Song.Heart;
+            Song.Save(Configuration.ServerEnabled).Wait();
+            LoadSong(Song);
         }
     }
 }

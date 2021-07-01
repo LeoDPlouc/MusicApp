@@ -11,7 +11,7 @@ namespace MusicLibTest
         {
             SongInfo si = new SongInfo() { AcousticId = "test", Heart = true, Host = "test", Like = false };
 
-            InfoFiles.Save(si).Wait();
+            InfoFiles.Save(si);
             SongInfo siTest = InfoFiles.Load("test");
 
             Assert.Equal(si.AcousticId, siTest.AcousticId);

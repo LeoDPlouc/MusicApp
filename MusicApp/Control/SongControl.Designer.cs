@@ -66,7 +66,7 @@ namespace MusicLib.Control
             this.l_like.TabIndex = 0;
             this.l_like.Text = "false";
             this.l_like.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.l_like.DoubleClick += new System.EventHandler(this.SongControl_DoubleClick);
+            this.l_like.DoubleClick += new System.EventHandler(this.l_like_DoubleClick);
             // 
             // l_heart
             // 
@@ -77,7 +77,7 @@ namespace MusicLib.Control
             this.l_heart.TabIndex = 1;
             this.l_heart.Text = "false";
             this.l_heart.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.l_heart.DoubleClick += new System.EventHandler(this.SongControl_DoubleClick);
+            this.l_heart.DoubleClick += new System.EventHandler(this.l_heart_DoubleClick);
             // 
             // l_n
             // 

@@ -15,7 +15,7 @@ namespace MusicLib.Files
     {
         public static string PATH = "Info/";
 
-        public static async Task Save(SongInfo songInfo)
+        public static void Save(SongInfo songInfo)
         {
             FileHandler.CheckDirectory(PATH);
 
@@ -25,7 +25,7 @@ namespace MusicLib.Files
             using (var fs = File.Create(PATH + hash))
             {
                 byte[] buffer = Encoding.Unicode.GetBytes(json);
-                await fs.WriteAsync(buffer, 0, buffer.Length);
+                fs.Write(buffer, 0, buffer.Length);
             }
         }
 

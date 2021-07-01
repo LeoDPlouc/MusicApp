@@ -38,7 +38,7 @@ namespace MusicLib.Objects
             if (serverEnabled)
                 await Client.SendSongInfo(GetSongInfo(), "127.0.0.1");
             else
-                await InfoFiles.Save(GetSongInfo());
+                InfoFiles.Save(GetSongInfo());
         }
 
         public string Serialize()
