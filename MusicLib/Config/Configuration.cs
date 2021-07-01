@@ -57,7 +57,7 @@ namespace MusicLib.Config
                 config[PARAM_SERVER_ENABLED] = value;
                 SaveConfig(config);
 
-                ConfigChanged.Invoke(null, new ConfigEventArgs() { Config = ConfigEventArgs.Configs.Serverenabled, Arg = value });
+                ConfigChanged?.Invoke(null, new ConfigEventArgs() { Config = ConfigEventArgs.Configs.Serverenabled, Arg = value });
             }
         }
         public static string LibraryPath
@@ -76,7 +76,7 @@ namespace MusicLib.Config
                 config[PARAM_LIBRARY_PATHS] = value;
                 SaveConfig(config);
 
-                ConfigChanged.Invoke(null, new ConfigEventArgs() { Config = ConfigEventArgs.Configs.LibraryPath, Arg = value });
+                ConfigChanged?.Invoke(null, new ConfigEventArgs() { Config = ConfigEventArgs.Configs.LibraryPath, Arg = value });
             }
         }
         #endregion
