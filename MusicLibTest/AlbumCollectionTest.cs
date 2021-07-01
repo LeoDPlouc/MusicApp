@@ -3,6 +3,7 @@ using Xunit;
 
 namespace MusicLibTest
 {
+    [Collection("Collection Tests")]
     public class AlbumCollectionTest
     {
         [Fact]
