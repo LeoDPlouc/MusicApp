@@ -68,7 +68,7 @@ namespace MusicLib.Config
 
                 if (config.TryGetValue(PARAM_LIBRARY_PATHS, out object res))
                     return (string)res;
-                return null;
+                return Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
             }
             set
             {

@@ -41,8 +41,7 @@ namespace MusicLib
             Playlist.InitPlaylist();
 
             //Fetch all the songs
-            string libraryPath = Configuration.LibraryPath;
-            SongCollector.Start(libraryPath, false);
+            SongCollector.Start();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) => SongCollector.Stop();
@@ -54,7 +53,7 @@ namespace MusicLib
 
             SongCollector.Stop();
             SongCollection.GetMainCollection().Clear();
-            SongCollector.Start(Configuration.LibraryPath, Configuration.ServerEnabled);
+            SongCollector.Start();
         }
         #endregion
 

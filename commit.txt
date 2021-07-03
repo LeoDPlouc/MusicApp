@@ -1,7 +1,0 @@
-Put the song collection in a separated thread, move some logic and datastructures to MusicLib, create some objects to manage song, album, artist collection
-
-The song collection is now in a thread so the collection doesn't lock the app during the process. The collection is retriggerd every 5 sec during the lifetime of the app
-
-Beans from MusicApp have been merged with beans from MusicLib, plans is to move all the logic and datastructures to MusicLib et have MusicApp only beeing a front end to the objects in MusicLib
-
-Collection objects have been created to better manage lists of songs, album and artists

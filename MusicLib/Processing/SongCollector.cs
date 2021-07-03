@@ -7,30 +7,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using MusicLib.Config;
 
 namespace MusicLib.Processing
 {
     public class SongCollector
     {
         private static Thread collector;
+        private static bool cancel;
 
-        public static void Start(string path, bool serverEnabled)
+        public static void Start()
         {
+            cancel = false;
+
             collector = new Thread(DoWork);
             collector.Start(new object[]
             {
-                path,
-                serverEnabled
+                Configuration.LibraryPath,
+                Configuration.ServerEnabled
             });
         }
 
-        public static void Stop() => collector.Abort();
+        public static void Stop()
+        {
+            cancel = true;
+            while (collector.IsAlive)
+                Thread.Sleep(10);
+        }
 
         private static void DoWork(object arg)
         {
             object[] args = arg as object[];
 
-            while (true)
+            while (!cancel)
             {
                 Collect(args[0] as string, (bool)args[1]).Wait();
                 Thread.Sleep(5000);
@@ -46,6 +55,9 @@ namespace MusicLib.Processing
 
             foreach(string p in paths)
             {
+                if (cancel)
+                    return;
+
                 Song song = null;
                 try
                 {
