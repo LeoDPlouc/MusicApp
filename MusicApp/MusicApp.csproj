@@ -119,5 +119,4 @@
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
   <Import Project="packages\Microsoft.NETFramework.ReferenceAssemblies.net472.1.0.2\build\Microsoft.NETFramework.ReferenceAssemblies.net472.targets" Condition="Exists('packages\Microsoft.NETFramework.ReferenceAssemblies.net472.1.0.2\build\Microsoft.NETFramework.ReferenceAssemblies.net472.targets')" />
-  <Import Project="packages\VideoLAN.LibVLC.Windows.3.0.14\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('packages\VideoLAN.LibVLC.Windows.3.0.14\build\VideoLAN.LibVLC.Windows.targets')" />
 </Project>

@@ -39,14 +39,14 @@ namespace MusicLib.Control
         private void l_like_DoubleClick(object sender, EventArgs e)
         {
             Song.Like = !Song.Like;
-            Song.Save(Configuration.ServerEnabled).Wait();
+            Song.GetSongInfo().Save().Wait();
             LoadSong(Song);
         }
 
         private void l_heart_DoubleClick(object sender, EventArgs e)
         {
             Song.Heart = !Song.Heart;
-            Song.Save(Configuration.ServerEnabled).Wait();
+            Song.GetSongInfo().Save().Wait();
             LoadSong(Song);
         }
     }

@@ -21,7 +21,7 @@ namespace MusicLib.Objects
         public string AcousticId { get; set; }
 
 
-        public Byte[] GetCover() => FileHandler.LoadCover(Path);
+        public byte[] GetCover() => FileHandler.LoadCover(Path);
         public SongInfo GetSongInfo()
         {
             return new SongInfo
@@ -31,14 +31,9 @@ namespace MusicLib.Objects
                 Heart = this.Heart
             };
         }
-        public async Task Save(bool serverEnabled)
+        public async Task Save()
         {
             FileHandler.SaveSong(this);
-
-            if (serverEnabled)
-                await Client.SendSongInfo(GetSongInfo(), "127.0.0.1");
-            else
-                InfoFiles.Save(GetSongInfo());
         }
 
         public string Serialize()

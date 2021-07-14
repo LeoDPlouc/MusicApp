@@ -1,7 +1,11 @@
-﻿using System;
+﻿using MusicLib.Config;
+using MusicLib.Files;
+using MusicLib.Server;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace MusicLib.Objects
 {
@@ -19,6 +23,14 @@ namespace MusicLib.Objects
         public static SongInfo Deserialize(string json)
         {
             return JsonSerializer.Deserialize<SongInfo>(json);
+        }
+
+        public async Task Save()
+        {
+            if (Configuration.ServerEnabled)
+                await Client.SendSongInfo(this, "127.0.0.1");
+            else
+                InfoFiles.Save(this);
         }
     }
 }
