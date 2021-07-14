@@ -52,6 +52,8 @@ namespace MusicLib
                 return;
 
             SongCollector.Stop();
+            ArtistCollection.GetMainCollection().Clear();
+            AlbumCollection.GetMainCollection().Clear();
             SongCollection.GetMainCollection().Clear();
             SongCollector.Start();
         }

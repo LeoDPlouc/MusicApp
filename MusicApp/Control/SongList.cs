@@ -55,6 +55,7 @@ namespace MusicLib.Control
                 case SongCollectionEventArgs.ChangeType.Clear:
                     foreach (System.Windows.Forms.Control ctrl in panel.Controls)
                         CleanSongControls(ctrl);
+                    panel.Controls.Clear();
                     LoadSongs();
                     break;
                 case SongCollectionEventArgs.ChangeType.Remove:
